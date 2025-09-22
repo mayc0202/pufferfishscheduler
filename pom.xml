@@ -4,21 +4,22 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.etledge</groupId>
+    <groupId>com.pufferfishscheduler</groupId>
     <artifactId>pufferfishscheduler</artifactId>
     <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
 
     <modules>
-<!--        <module>pufferfishscheduler-common</module>-->
-<!--        <module>pufferfishscheduler-api</module>-->
-<!--        <module>pufferfishscheduler-aop</module>-->
-<!--        <module>pufferfishscheduler-alert</module>-->
-<!--        <module>pufferfishscheduler-scheduler</module>-->
-<!--        <module>pufferfishscheduler-upms</module>-->
-<!--        <module>pufferfishscheduler-database</module>-->
-<!--        <module>pufferfishscheduler-collect</module>-->
-<!--        <module>etl-collect-plugin</module>-->
+        <module>pufferfishscheduler-aop</module>
+        <module>pufferfishscheduler-api</module>
+        <module>pufferfishscheduler-master</module>
+        <module>pufferfishscheduler-worker</module>
+        <module>pufferfishscheduler-service</module>
+        <module>pufferfishscheduler-alert</module>
+        <module>pufferfishscheduler-dao</module>
+        <module>pufferfishscheduler-cdc</module>
+        <module>pufferfishscheduler-common</module>
+        <module>pufferfishscheduler-domain</module>
     </modules>
 
     <parent>
@@ -33,6 +34,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <maven.compiler.encoding>UTF-8</maven.compiler.encoding>
+        <hikariCP.version>5.0.1</hikariCP.version> <!-- HikariCP -->
         <mysql.version>8.0.20</mysql.version> <!--Mysql-->
         <postgresql.version>42.2.8</postgresql.version> <!--Postgresql-->
         <oracle.version>12.2.0.1.0</oracle.version> <!--Oracle-->
@@ -119,6 +121,13 @@
                 <groupId>com.dameng</groupId>
                 <artifactId>DmJdbcDriver18</artifactId>
                 <version>${dm.version}</version>
+            </dependency>
+
+            <!-- hikaricp -->
+            <dependency>
+                <groupId>com.zaxxer</groupId>
+                <artifactId>HikariCP</artifactId>
+                <version>${hikaricp.version}</version>
             </dependency>
 
             <!-- commons-pool2 -->

@@ -1,0 +1,129 @@
+server:
+  servlet:
+    context-path: /pufferfishscheduler
+  port: 8080
+
+spring:
+  main:
+    allow-bean-definition-overriding: true # 开启循环依赖
+  application:
+    name: pufferfishscheduler
+  servlet:
+    multipart: # 限制上传的文件最大值
+      max-request-size: 900MB
+      max-file-size: 900MB
+  mail:
+    host: smtp.qq.com
+    username: 203373485@qq.com # 发件人
+    password: fsfvylegjvaacaii # 授权码
+    port: 587
+    default-encoding: UTF-8 # 字符编码
+    properties: # 其他参数
+      mail:
+        smtp:
+          ssl: # 配置SSL 加密工厂
+            enable: false
+            required: false
+        debug: true  # 开启debug模式，这样邮件发送过程的日志会在控制台打印出来，方便排查错误
+  # 数据源
+  datasource:
+    # mysql
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    type: com.zaxxer.hikari.HikariDataSource
+    url: jdbc:mysql://81.69.250.183:3306/etl-database?useSSL=true&useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
+    username: root
+    password: Etl2025
+    # HikariCP连接池 性能 > Druid，专为高性能优化，号称"零开销"连接池
+    hikari:
+      pool-name: mysql-hikari
+      connection-timeout: 30000           # 获取连接的超时时间（毫秒）
+      validation-timeout: 5000            # 控制将测试连接的活动性的最长时间
+      idle-timeout: 300000                # 空闲连接被回收前的最大空闲时间（毫秒），应小于数据库的wait_timeout参数
+      max-lifetime: 1800000               # 连接的最大存活时间（毫秒），应小于数据库的interactive_timeout参数
+      maximum-pool-size: 100              # 连接池中允许的最大连接数，通常设置为 (CPU核心数 * 2) + 磁盘数 的倍数
+      minimum-idle: 5                     # 连接池中保持的最小空闲连接数
+      leak-detection-threshold: 60000     # 检测连接泄露的阈值（毫秒）
+      connection-test-query: SELECT 1     # MySQL连接测试查询
+
+  # 配置redis
+  redis:
+    host: 81.69.250.183
+    port: 6379
+    password: Etl2025
+    database: 0 # 数据库默认索引为0
+    lettuce:
+      pool:
+        max-active: 50        # 增大连接池
+        max-idle: 20          # 最大空闲连接
+        min-idle: 5           # 最小空闲连接
+        max-wait: 3000ms      # 获取连接最大等待时间
+      shutdown-timeout: 200ms # 关闭超时时间
+    timeout: 30000ms          # 命令超时时间(30秒)
+
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher  # 兼容Swagger的路径匹配策略
+
+# mybatis-plus配置
+mybatis-plus:
+  configuration:
+    default-executor-type: REUSE  # 使用REUSE执行器
+    cache-enabled: false          # 如果不是必须，关闭二级缓存
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl #mybatis-plus日志实现类
+  global-config:
+    db-config:
+      id-type: auto #主键自增
+      table-prefix: #数据表前缀
+      update-strategy: not_empty #配置mybatis-plus
+      logic-delete-field: deleted # 逻辑删除字段
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+
+# log日志
+logging:
+  level:
+    web: debug #扫描web
+    com.pufferfishscheduler.common: debug
+    com.pufferfishscheduler.master: debug
+    com.zaxxer.hikari: debug
+    org.apache.dubbo.spring.extension.SpringExtensionFactory: WARN
+  pattern:
+    console: "%d %clr(%5p) ---- [%t] %clr(%-40.40c){cyan} : %m %n"
+
+# JWT配置
+jwt:
+  token-secret: pufferfishscheduler1q2w3e4R # 密钥
+  expiration-time: 3600000 # 过期时间 1小时 3600000 => 1 * 60 * 60 * 1000
+  issuer: etl-ds # 令牌签发者
+
+# 安全配置
+security:
+  # AES密钥
+  aes:
+    key: 1q2w3e4r5t6ymayc
+  # RSA公钥
+  rsa:
+    public-key: MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCBYupdUTMX6LKiMZvRa3rxUDiE5oiKVWkEFE6oVvggrumLJr2iZwr5UsFjKjrr+9vIZrHQW6IjL0cJ4o3bs7UE51VHeTHxEUs6Sl0Q9xconreQC94X70tYj0feYk+NqkGOO+THLd9+BXtoh9gRB0Iv2E2VVYuWWC6rutQKJUTAkwIDAQAB
+    private-key: MIICdwIBADANBgkqhkiG9w0BAQEFAASCAmEwggJdAgEAAoGBAIFi6l1RMxfosqIxm9FrevFQOITmiIpVaQQUTqhW+CCu6YsmvaJnCvlSwWMqOuv728hmsdBboiMvRwnijduztQTnVUd5MfERSzpKXRD3Fyiet5AL3hfvS1iPR95iT42qQY475Mct334Fe2iH2BEHQi/YTZVVi5ZYLru61AolRMCTAgMBAAECgYAlRZhb32tHhOoInR/U2RBmeYR+jGZi6y3AVhU+mycJSznNsxBHu0VHA1bgOScWGcx7U1H/wpXXauQc7d2Nn5wSbUVlUQKWMhiilL4ZEqivn9cw5Fk3iMRcwzoi4PFLhva1VQc2s2TgH9tgjjXeip5MKbRFS3lDaW8t3HamM0+8uQJBAOGUSSCbwr3n3RQLU3giB3f1NVRzk4TigH7jbWHLG1ZErVPdcPArS2qXTK/1DsAfvX9uVe26X7obk6qCdDEwCg8CQQCS1b75dtq+9lULPk+ps7m/u4YS/E2GW7J3tSmzx1vo6h75Z70nS35a5PiUSMDUm8/e6DztcaFTVlIXjYaTrvU9AkEAtMjtrneGpEHtuUG2fIHxMF9RhUQ3Rvlr98V3BTgMyZ+ytZK0D5bzExL8v8wLLUiCy1z2+tYyH+o39yAj1MPmWwJAfA7hso2r1Yn0YnJ8BgpWVtsONT48FdelmqRSnpVCXzBniRsP4oJTOGKab1ZkrX0TjOa0i3zk669T3phxapd4lQJBALYz/3ZRGC57S7eCysCwRC/BClcRHmL/4khMtjjPg5I1NI5p/iuMF7tCXI8oOagj6tESUuBX86l57WPQszkmKx8=
+  # 拦截器
+  interceptor:
+    # 开启拦截
+    enabled: true
+    # 拦截路径
+    exclude-paths:
+      - /auth/login.do
+      - /auth/getAuth.do
+      - /swagger-ui/**
+      - /swagger-ui.html
+      - /v3/api-docs/**
+      - /v3/api-docs.yaml
+      - /swagger-resources/**
+      - /swagger-resources
+      - /webjars/**
+      - /doc.html
+
+# 资源根路径
+ftp:
+  path: /data/ftp
+
+

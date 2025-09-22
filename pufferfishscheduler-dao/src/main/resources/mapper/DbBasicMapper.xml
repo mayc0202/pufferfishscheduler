@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.pufferfishscheduler.dao.mapper.DbBasicMapper">
+
+    <resultMap type="com.pufferfishscheduler.dao.entity.DbBasic" id="DbBasicMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="name" column="name" jdbcType="VARCHAR"/>
+        <result property="img" column="img" jdbcType="VARCHAR"/>
+        <result property="imgConfig" column="img_config" jdbcType="VARCHAR"/>
+        <result property="categoryId" column="category_id" jdbcType="INTEGER"/>
+        <result property="orderBy" column="order_by" jdbcType="INTEGER"/>
+        <result property="createdBy" column="created_by" jdbcType="VARCHAR"/>
+        <result property="createdTime" column="created_time" jdbcType="TIMESTAMP"/>
+        <result property="updatedBy" column="updated_by" jdbcType="VARCHAR"/>
+        <result property="updatedTime" column="updated_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <!-- query database basic list -->
+    <select id="selectDbBasicList" resultType="com.pufferfishscheduler.domain.vo.database.DbBasicVo">
+        SELECT db.id,
+               db.`name`,
+               db.img,
+               db.img_config,
+               db.category_id,
+               dc.`name` AS category_name,
+               db.order_by
+        FROM db_basic AS db
+                 LEFT JOIN db_category AS dc ON db.category_id = dc.id
+    </select>
+
+    <!-- query database basic list by category id -->
+    <select id="getDbBasicListByCategoryId" resultType="com.pufferfishscheduler.domain.vo.database.DbBasicVo">
+        SELECT db.id,
+               db.`name`,
+               db.img,
+               db.img_config,
+               db.category_id,
+               dc.`name` AS category_name,
+               db.order_by
+        FROM db_basic AS db
+                 LEFT JOIN db_category AS dc ON db.category_id = dc.id
+        WHERE dc.id = #{categoryId}
+    </select>
+
+</mapper>
+
