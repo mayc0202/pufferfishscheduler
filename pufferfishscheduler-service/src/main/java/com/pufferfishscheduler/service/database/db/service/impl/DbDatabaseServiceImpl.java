@@ -2,6 +2,8 @@ package com.pufferfishscheduler.service.database.db.service.impl;
 
 import com.alibaba.fastjson2.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -10,6 +12,8 @@ import com.pufferfishscheduler.common.constants.Constants;
 import com.pufferfishscheduler.common.dict.service.DictService;
 import com.pufferfishscheduler.common.exception.BusinessException;
 import com.pufferfishscheduler.common.utils.AESUtil;
+import com.pufferfishscheduler.common.utils.Base64Util;
+import com.pufferfishscheduler.common.utils.DateUtil;
 import com.pufferfishscheduler.common.utils.RSAUtil;
 import com.pufferfishscheduler.domain.form.database.DbDatabaseForm;
 import com.pufferfishscheduler.common.result.ConResponse;
@@ -30,6 +34,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -133,6 +138,12 @@ public class DbDatabaseServiceImpl extends ServiceImpl<DbDatabaseMapper, DbDatab
         BeanUtils.copyProperties(dbDatabase, vo);
         vo.setGroupName(groupMap.getOrDefault(vo.getGroupId(), ""));
         vo.setLabelName(dictService.getDictItemCode(Constants.DICT.DATA_SOURCE_LAYERING, dbDatabase.getLabel()));
+        vo.setCategoryName(dictService.getDictItemCode(Constants.DICT.DATABASE_CATEGORY, dbDatabase.getLabel()));
+        vo.setCreatedTimeTxt(DateUtil.formatDateTime(vo.getCreatedTime()));
+
+        if (StringUtils.isNotBlank(dbDatabase.getProperties()) && "{}".equals(dbDatabase.getProperties())) {
+            vo.setProperties(null);
+        }
         return vo;
     }
 
@@ -161,6 +172,7 @@ public class DbDatabaseServiceImpl extends ServiceImpl<DbDatabaseMapper, DbDatab
 
     /**
      * 通过分组id获取数据源集合
+     *
      * @param groupId
      * @return
      */
@@ -210,6 +222,7 @@ public class DbDatabaseServiceImpl extends ServiceImpl<DbDatabaseMapper, DbDatab
      *
      * @param form
      */
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void add(DbDatabaseForm form) {
 
@@ -247,6 +260,7 @@ public class DbDatabaseServiceImpl extends ServiceImpl<DbDatabaseMapper, DbDatab
      *
      * @param form
      */
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void update(DbDatabaseForm form) {
 
@@ -292,6 +306,7 @@ public class DbDatabaseServiceImpl extends ServiceImpl<DbDatabaseMapper, DbDatab
      *
      * @param id
      */
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void delete(Integer id) {
 
@@ -301,10 +316,15 @@ public class DbDatabaseServiceImpl extends ServiceImpl<DbDatabaseMapper, DbDatab
 
         DbDatabase dbDatabase = getDatabaseById(id);
 
-        dbDatabase.setDeleted(Constants.DELETE_FLAG.TRUE);
-        dbDatabase.setUpdatedBy(UserContext.getCurrentAccount());
-        dbDatabase.setUpdatedTime(new Date());
-        dbDatabaseDao.updateById(dbDatabase);
+        // 使用 UpdateWrapper 进行更新
+        UpdateWrapper<DbDatabase> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("id", id)
+                .eq("deleted", Constants.DELETE_FLAG.FALSE)
+                .set("deleted", Constants.DELETE_FLAG.TRUE)
+                .set("updated_by", UserContext.getCurrentAccount())
+                .set("updated_time", new Date());
+
+        dbDatabaseDao.update(null, updateWrapper);
     }
 
     /**
@@ -326,14 +346,14 @@ public class DbDatabaseServiceImpl extends ServiceImpl<DbDatabaseMapper, DbDatab
 
         DatabaseVo databaseVo = convertDatabaseVo(dbDatabase, groupMap);
 
-        // AES解密再RSA加密
+        // AES解密再Base64加密
         try {
             String decrypt = aesUtil.decrypt(dbDatabase.getPassword());
-            String pwd = rsaUtil.encrypt(decrypt);
-            databaseVo.setPassword(pwd);
+            String encode = Base64Util.encode(decrypt);
+            databaseVo.setPassword(encode);
         } catch (Exception e) {
             e.printStackTrace();
-            throw new BusinessException(String.format("数据源[%s]密码解密失败!", dbDatabase.getDbName()));
+            throw new BusinessException(String.format("数据源[%s]密码解密失败!", databaseVo.getDbName()));
         }
 
         return databaseVo;

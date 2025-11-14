@@ -8,8 +8,11 @@ import org.springframework.util.Assert;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 import java.io.ByteArrayOutputStream;
 import java.security.*;
+import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.HashMap;
@@ -103,18 +106,21 @@ public class RSAUtil {
      * @param encryptedText Base64编码的加密文本（不能为空）
      * @return 解密后的明文
      */
+    /**
+     * 私钥解密（支持长文本分段处理）
+     */
     public String decrypt(String encryptedText) {
         Assert.hasText(encryptedText, "解密文本不能为空");
         try {
-            byte[] encryptedBytes = Base64.decodeBase64(encryptedText);
             Cipher cipher = Cipher.getInstance(CIPHER_ALGORITHM);
             cipher.init(Cipher.DECRYPT_MODE, privateKey);
 
+            byte[] encryptedBytes = Base64.decodeBase64(encryptedText);
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             int offset = 0;
             int len = encryptedBytes.length;
 
-            // 分段解密（处理超过MAX_DECRYPT_BLOCK的长文本）
+            // 分段解密
             while (offset < len) {
                 int blockLen = Math.min(len - offset, MAX_DECRYPT_BLOCK);
                 byte[] decryptedBlock = cipher.doFinal(encryptedBytes, offset, blockLen);
@@ -122,15 +128,55 @@ public class RSAUtil {
                 offset += blockLen;
             }
 
-            return out.toString();
+            return new String(out.toByteArray());
         } catch (BadPaddingException e) {
-            log.error("RSA解密失败：密钥不匹配或密文被篡改，密文：{}（前50字符）", encryptedText.substring(0, Math.min(encryptedText.length(), 50)));
-            throw new SecurityException("解密失败：请检查密钥是否匹配或密文是否完整", e);
+            log.error("RSA解密失败：密钥不匹配或密文被篡改");
+            throw new SecurityException("解密失败：请检查密钥是否匹配", e);
         } catch (Exception e) {
-            log.error("RSA解密失败，密文：{}（前50字符）", encryptedText.substring(0, Math.min(encryptedText.length(), 50)), e);
+            log.error("RSA解密失败", e);
             throw new SecurityException("RSA解密失败", e);
         }
     }
+
+    public static byte[] decryptByPrivateKey(byte[] data, String key) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeySpecException, InvalidKeyException, BadPaddingException, IllegalBlockSizeException {
+
+        Map<String, Object> map = privateKey(key);
+        Cipher cipher = (Cipher) map.get("cipher");
+        Key privateKey = (Key) map.get("privateKey");
+
+        cipher.init(Cipher.DECRYPT_MODE, privateKey);
+        return cipher.doFinal(data);
+    }
+
+    public static Map<String, Object> privateKey(String key) throws NoSuchAlgorithmException, InvalidKeySpecException, NoSuchPaddingException {
+
+        Map<String, Object> map = new HashMap<>(2);
+
+        // 对密钥解密
+        byte[] keyBytes = decryptBASE64(key);
+        // 取得私钥
+        PKCS8EncodedKeySpec pkcs8KeySpec = new PKCS8EncodedKeySpec(keyBytes);
+        KeyFactory keyFactory = KeyFactory.getInstance(KEY_ALGORITHM);
+        Key privateKey = keyFactory.generatePrivate(pkcs8KeySpec);
+        // 对数据加密
+        String algorithm = keyFactory.getAlgorithm();
+        Cipher cipher = Cipher.getInstance(algorithm);
+
+        map.put("privateKey", privateKey);
+        map.put("cipher", cipher);
+
+        return map;
+    }
+
+    /**
+     * 将String字符串编码为Base64数组
+     * @param key String
+     * @return
+     */
+    private static byte[] decryptBASE64(String key) {
+        return Base64.decodeBase64(key);
+    }
+
 
     // ---------------------- 数字签名与验证（确保数据完整性和防篡改） ----------------------
 

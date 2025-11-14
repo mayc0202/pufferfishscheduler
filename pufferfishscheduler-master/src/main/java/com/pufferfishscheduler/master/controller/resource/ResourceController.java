@@ -1,4 +1,4 @@
-package com.pufferfishscheduler.master.database.resource.controller;
+package com.pufferfishscheduler.master.controller.resource;
 
 import com.pufferfishscheduler.common.result.ApiResponse;
 import com.pufferfishscheduler.domain.form.database.ResourceForm;

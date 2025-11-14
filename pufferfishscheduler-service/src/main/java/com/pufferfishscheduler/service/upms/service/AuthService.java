@@ -1,5 +1,6 @@
-package com.pufferfishscheduler.master.auth.service;
+package com.pufferfishscheduler.service.upms.service;
 
+import com.pufferfishscheduler.domain.vo.user.AuthVo;
 import com.pufferfishscheduler.domain.vo.user.UserVo;
 import com.pufferfishscheduler.domain.form.auth.LoginForm;
 
@@ -9,12 +10,13 @@ import com.pufferfishscheduler.domain.form.auth.LoginForm;
  * @since 2025-09-21  18:53
  */
 public interface AuthService {
+
     /**
      * 获取认证信息
      *
      * @return
      */
-    String getAuth();
+    AuthVo getAuth();
 
     /**
      * 登录用户

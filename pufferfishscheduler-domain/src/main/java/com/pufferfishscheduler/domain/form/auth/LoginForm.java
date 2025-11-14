@@ -18,7 +18,7 @@ public class LoginForm {
     @NotBlank(message = "账号不能为空!")
     @Size(max = 32, message = "账号长度不能超过32字符!")
     @ApiModelProperty(value = "账号", name = "account", example = "mayc")
-    private String account;
+    private String username;
 
     @NotBlank(message = "密码不能为空!")
     @ApiModelProperty(value = "密码", name = "password", example = "123456")

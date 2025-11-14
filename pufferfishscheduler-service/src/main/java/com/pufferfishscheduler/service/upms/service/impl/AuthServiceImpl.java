@@ -1,4 +1,4 @@
-package com.pufferfishscheduler.master.auth.service.impl;
+package com.pufferfishscheduler.service.upms.service.impl;
 
 import com.pufferfishscheduler.common.config.jwt.JwtConfig;
 import com.pufferfishscheduler.common.constants.Constants;
@@ -6,11 +6,14 @@ import com.pufferfishscheduler.common.exception.BusinessException;
 import com.pufferfishscheduler.common.utils.AESUtil;
 import com.pufferfishscheduler.common.utils.CookieUtil;
 import com.pufferfishscheduler.common.utils.RSAUtil;
+import com.pufferfishscheduler.domain.vo.user.AuthVo;
+import com.pufferfishscheduler.domain.vo.user.RoleVo;
 import com.pufferfishscheduler.domain.vo.user.UserVo;
 import com.pufferfishscheduler.dao.entity.User;
 import com.pufferfishscheduler.domain.form.auth.LoginForm;
-import com.pufferfishscheduler.master.auth.service.AuthService;
-import com.pufferfishscheduler.service.upms.user.service.UserService;
+import com.pufferfishscheduler.service.upms.service.AuthService;
+import com.pufferfishscheduler.service.upms.service.RoleService;
+import com.pufferfishscheduler.service.upms.service.UserService;
 import io.jsonwebtoken.Claims;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -19,7 +22,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -40,6 +46,9 @@ public class AuthServiceImpl implements AuthService {
     private UserService userService;
 
     @Autowired
+    private RoleService roleService;
+
+    @Autowired
     private JwtConfig jwtConfig;
 
     @Autowired
@@ -52,8 +61,10 @@ public class AuthServiceImpl implements AuthService {
      * @return
      */
     @Override
-    public String getAuth() {
-        return rsaUtil.getPublicKeyStr();
+    public AuthVo getAuth() {
+        AuthVo auth = new AuthVo();
+        auth.setPublicKey(rsaUtil.getPublicKeyStr());
+        return auth;
     }
 
     /**
@@ -65,9 +76,9 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public String login(LoginForm loginForm) {
         // 1. 获取用户信息
-        User user = userService.getOneUserByIdAndAccount(null, loginForm.getAccount());
+        User user = userService.getOneUserByIdAndAccount(null, loginForm.getUsername());
         if (user == null) {
-            log.warn("用户[{}]不存在!", loginForm.getAccount());
+            log.warn("用户[{}]不存在!", loginForm.getUsername());
             throw new BusinessException("用户名或密码错误!");
         }
 
@@ -77,7 +88,7 @@ public class AuthServiceImpl implements AuthService {
             String rsaPwd = rsaUtil.decrypt(loginForm.getPassword());
 
             if (!aesPwd.equals(rsaPwd)) {
-                log.warn("用户[{}]密码不正确!", loginForm.getAccount());
+                log.warn("用户[{}]密码不正确!", loginForm.getUsername());
                 throw new BusinessException("用户名或密码错误!");
             }
         } catch (Exception e) {
@@ -155,8 +166,19 @@ public class AuthServiceImpl implements AuthService {
             if (user == null) {
                 throw new BusinessException("请校验用户信息是否存在!");
             }
+
+            // 查询用户角色
+            List<RoleVo> roleVos = roleService.getRoleListByUserId(userId);
+            if (roleVos.isEmpty()) {
+                throw new BusinessException("请验证用户角色是否为空!");
+            }
+            Set<String> roleList = roleVos.stream().map(RoleVo::getRoleName).collect(Collectors.toSet());
+
+            // 复制
             UserVo userVo = new UserVo();
-            BeanUtils.copyProperties(user, userVo);
+            BeanUtils.copyProperties(user,userVo);
+            userVo.setRoles(roleList);
+
             return userVo;
         } catch (Exception e) {
             log.error("获取用户信息失败: {}", e.getMessage(), e);

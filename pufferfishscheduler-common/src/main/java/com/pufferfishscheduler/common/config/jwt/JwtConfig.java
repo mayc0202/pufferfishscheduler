@@ -1,6 +1,7 @@
 package com.pufferfishscheduler.common.config.jwt;
 
 import com.pufferfishscheduler.common.constants.Constants;
+import com.pufferfishscheduler.common.exception.BusinessException;
 import io.jsonwebtoken.*;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -64,6 +65,9 @@ public class JwtConfig {
      * @return
      */
     public Jws<Claims> parseToken(String token) {
+        if (StringUtils.isBlank(token)) {
+            throw new BusinessException("请校验token是否为空!");
+        }
         return Jwts.parser()
                 .setSigningKey(secret)
                 .parseClaimsJws(token);

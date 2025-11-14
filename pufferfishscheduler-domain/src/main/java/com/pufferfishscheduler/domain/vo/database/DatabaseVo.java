@@ -27,7 +27,7 @@ public class DatabaseVo {
     private String groupName;
 
     /**
-     * 数据源分层 1-业务库BIZ；2-贴源库ODS；3-治理库DW；4-应用库ADS；5-共享库DS
+     * 数据源分层 1-来源库SRC；2-贴源库ODS；3-治理库DW；4-应用库ADS；5-共享库DS
      */
     private String label;
 
@@ -37,6 +37,11 @@ public class DatabaseVo {
      * 数据库大类：1-关系型数据库；2-非关系型数据库；3-消息型数据库；4-FTP类型; 5-OSS
      */
     private String category;
+
+    /**
+     * 数据库大类翻译
+     */
+    private String categoryName;
 
     /**
      * 数据库类型：MySQL、Oracle、SQLServer、PostgreSQL等
@@ -98,7 +103,15 @@ public class DatabaseVo {
      */
     private String extConfig;
 
+    /**
+     * 创建时间
+     */
     @JSONField(format = DomainConstants.DEFAULT_DATE_TIME_FORMAT)
     private Date createdTime;
+
+    /**
+     * 创建时间翻译
+     */
+    private String createdTimeTxt;
 
 }

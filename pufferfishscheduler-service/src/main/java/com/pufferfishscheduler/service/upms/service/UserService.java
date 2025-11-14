@@ -1,4 +1,4 @@
-package com.pufferfishscheduler.service.upms.user.service;
+package com.pufferfishscheduler.service.upms.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.pufferfishscheduler.dao.entity.User;

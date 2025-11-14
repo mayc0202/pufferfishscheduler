@@ -1,8 +1,8 @@
-package com.pufferfishscheduler.master.auth.controller;
+package com.pufferfishscheduler.master.controller.auth;
 
 import com.pufferfishscheduler.common.result.ApiResponse;
 import com.pufferfishscheduler.domain.form.auth.LoginForm;
-import com.pufferfishscheduler.master.auth.service.AuthService;
+import com.pufferfishscheduler.service.upms.service.AuthService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.validation.annotation.Validated;

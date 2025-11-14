@@ -10,8 +10,8 @@ spring:
     name: pufferfishscheduler
   servlet:
     multipart: # 限制上传的文件最大值
-      max-request-size: 900MB
-      max-file-size: 900MB
+      max-request-size: 512MB
+      max-file-size: 512MB
   mail:
     host: smtp.qq.com
     username: 203373485@qq.com # 发件人
@@ -30,7 +30,7 @@ spring:
     # mysql
     driver-class-name: com.mysql.cj.jdbc.Driver
     type: com.zaxxer.hikari.HikariDataSource
-    url: jdbc:mysql://81.69.250.183:3306/etl-database?useSSL=true&useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
+    url: jdbc:mysql://81.69.250.183:3306/pufferfishscheduler?useSSL=true&useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
     username: root
     password: Etl2025
     # HikariCP连接池 性能 > Druid，专为高性能优化，号称"零开销"连接池
@@ -103,8 +103,8 @@ security:
     key: 1q2w3e4r5t6ymayc
   # RSA公钥
   rsa:
-    public-key: MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCBYupdUTMX6LKiMZvRa3rxUDiE5oiKVWkEFE6oVvggrumLJr2iZwr5UsFjKjrr+9vIZrHQW6IjL0cJ4o3bs7UE51VHeTHxEUs6Sl0Q9xconreQC94X70tYj0feYk+NqkGOO+THLd9+BXtoh9gRB0Iv2E2VVYuWWC6rutQKJUTAkwIDAQAB
-    private-key: MIICdwIBADANBgkqhkiG9w0BAQEFAASCAmEwggJdAgEAAoGBAIFi6l1RMxfosqIxm9FrevFQOITmiIpVaQQUTqhW+CCu6YsmvaJnCvlSwWMqOuv728hmsdBboiMvRwnijduztQTnVUd5MfERSzpKXRD3Fyiet5AL3hfvS1iPR95iT42qQY475Mct334Fe2iH2BEHQi/YTZVVi5ZYLru61AolRMCTAgMBAAECgYAlRZhb32tHhOoInR/U2RBmeYR+jGZi6y3AVhU+mycJSznNsxBHu0VHA1bgOScWGcx7U1H/wpXXauQc7d2Nn5wSbUVlUQKWMhiilL4ZEqivn9cw5Fk3iMRcwzoi4PFLhva1VQc2s2TgH9tgjjXeip5MKbRFS3lDaW8t3HamM0+8uQJBAOGUSSCbwr3n3RQLU3giB3f1NVRzk4TigH7jbWHLG1ZErVPdcPArS2qXTK/1DsAfvX9uVe26X7obk6qCdDEwCg8CQQCS1b75dtq+9lULPk+ps7m/u4YS/E2GW7J3tSmzx1vo6h75Z70nS35a5PiUSMDUm8/e6DztcaFTVlIXjYaTrvU9AkEAtMjtrneGpEHtuUG2fIHxMF9RhUQ3Rvlr98V3BTgMyZ+ytZK0D5bzExL8v8wLLUiCy1z2+tYyH+o39yAj1MPmWwJAfA7hso2r1Yn0YnJ8BgpWVtsONT48FdelmqRSnpVCXzBniRsP4oJTOGKab1ZkrX0TjOa0i3zk669T3phxapd4lQJBALYz/3ZRGC57S7eCysCwRC/BClcRHmL/4khMtjjPg5I1NI5p/iuMF7tCXI8oOagj6tESUuBX86l57WPQszkmKx8=
+    public-key: MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAgtf8E/OpA+UFff6tU/Z/cktuYdFFQ+835tREB4D5XN4Q/9BYF3cbbEcFBuTke4yotWPKAZYgFtI9u9+pwPJSsPkvyPXTSa72t4XSQ2zL8rppMQFSoeLMAoUI7uk91XzdasM6HPlp0WYgdBRui94Qcb66McAT5dYdedHYsJIKEn1WHFulK29aRL7x8oLa1BPAJqG8PRSIelGLzoQuhF1ieTblb91+GC985YXx+xlRBrp1xJTiUl1FW+bp8lCmx5CBEoRbyyxMqsDdDnrvYY7LmP/K6aiaKfwY9K8912JbCXeX1/m0guYWXKQLzpKNbdWB1KHf5TyB3vD9/xTEjluxKwIDAQAB
+    private-key: MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCC1/wT86kD5QV9/q1T9n9yS25h0UVD7zfm1EQHgPlc3hD/0FgXdxtsRwUG5OR7jKi1Y8oBliAW0j2736nA8lKw+S/I9dNJrva3hdJDbMvyumkxAVKh4swChQju6T3VfN1qwzoc+WnRZiB0FG6L3hBxvroxwBPl1h150diwkgoSfVYcW6Urb1pEvvHygtrUE8Amobw9FIh6UYvOhC6EXWJ5NuVv3X4YL3zlhfH7GVEGunXElOJSXUVb5unyUKbHkIEShFvLLEyqwN0Oeu9hjsuY/8rpqJop/Bj0rz3XYlsJd5fX+bSC5hZcpAvOko1t1YHUod/lPIHe8P3/FMSOW7ErAgMBAAECggEASKHU0M6FmB/d+J8TYHSJMs0krTAaHygABCb4zKGPyzmKfjcNb5kyo9yYsccF/n+Kd4a5cEAB+CklE9GIzg62UH9DQ28Spuh1FFM48SzH2ioYkpeFY1Aep5dp6hWXuZbi4o0VCVh6oT7r7QQaiZHv1vRlL5DMet1s517RxtKKvNADXcpWFqPvAQtCA7s/LUxMyGi3XBujrnxPLnKI8BFGmjUbeDPoffkwbRHWCXxVp6cxu4a67wQH440XCJgogD45Aiv+CykqqoZMovFr3bJJbs2X3L0OuBcexp/6/PlnFj3ZnXOE1o1hmO4hEAvgRBVMb292iARAKvzxAOd/pO13wQKBgQC84pzpkjrXLzLp1nAU0eFtqnBmKhYYR1zWHDLsarTFCteraPVqPJaQVIGUnIUAfxYd3HaYX3nv8FFiCsDb6Uv3DQB0hnjeDABI3NA4qyKcWapFiIilg86mMokzDO0n2dMK9Ldv9AlEOTD40Se6GXgE/wvSxSOgkJCPrQy0NUK5CQKBgQCxVcvEEF3ghsSO4t57wIhTaLRHfPKPw/Fgazu61X+V5CutVl7wWcxVFvuBLXlFYjM1odv8DYXOy2QHmN4P/slxKifxzSosQDoKYDx4EBW42h+EAwzKiFtHtXaBB/T9CHu1pmV2yVZNvsvr2Y0M61YjNUJ3zrQjtgkW/pI1BWEpkwKBgQCXOjx1SW2w0YpK7DRKhwuc2QQq1/FeuOwcRPGElZ5r0FWCWIN87kuB/RbOXE6kahvUBqoxLuga8ebGv2NP7sayYweFRBDLfwJPU/OmG2aXlbac+0akdhZivD1a0TOjX2P39pxTlyhAJiYOYK8U8cVFAsp9kvcGXBhR4DQ2qBnmuQKBgEneJiHGe4RCPvAR+oDsAx1TWP0KQ/O0t//kyx2ZPysNv0/V0Xgmv6GWEC+P5JsNO62UfZDxhRJN0J4FhEJ/bCOyXq8vOejy2/pkeeu9L38vhL81kgdvYy5snS9ERD1+YiGZbVxco5GA72qP1VxTTy8dSVGkjY7ujbzBT9+8HOv3AoGAfuqm0Czn+2+VB6wSrnwxmZCYhB5KIhLz2/m+QMcT4YfOdBchXGiWY5D2HIJRZMB5AyXi5jILl8KjVhanhK+qX4kR3KqTbLAuZHfuRB+ZKeo8ySA54YwjPSZsWTqmAf5+l1yk9+R+uaTrBa+14FuN6+OiZkXOX7pSB6XO0fwklaY=
   # 拦截器
   interceptor:
     # 开启拦截
@@ -113,6 +113,7 @@ security:
     exclude-paths:
       - /auth/login.do
       - /auth/getAuth.do
+      - /auth/getUserInfo.do
       - /swagger-ui/**
       - /swagger-ui.html
       - /v3/api-docs/**

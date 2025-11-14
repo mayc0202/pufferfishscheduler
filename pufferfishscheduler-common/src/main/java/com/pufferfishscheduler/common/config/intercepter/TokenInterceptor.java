@@ -14,8 +14,10 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Enumeration;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -75,7 +77,23 @@ public class TokenInterceptor implements HandlerInterceptor {
     }
 
     private String extractToken(HttpServletRequest request) {
-        String token = request.getHeader(Constants.TOKEN_CONFIG.TOKEN);
+        String token = null;
+
+        // 首先尝试从Authorization头获取
+        token = request.getHeader(Constants.TOKEN_CONFIG.TOKEN);
+
+        // 如果header中没有，尝试从cookie中获取
+        if (StringUtils.isBlank(token)) {
+            Cookie[] cookies = request.getCookies();
+            if (cookies != null) {
+                for (Cookie cookie : cookies) {
+                    if (Constants.TOKEN_CONFIG.TOKEN.equals(cookie.getName())) {
+                        token = cookie.getValue();
+                        break;
+                    }
+                }
+            }
+        }
 
         if (StringUtils.isBlank(token)) {
             log.warn("请求头未携带Authorization信息!");

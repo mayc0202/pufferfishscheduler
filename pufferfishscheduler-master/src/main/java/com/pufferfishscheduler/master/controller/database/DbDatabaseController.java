@@ -1,4 +1,4 @@
-package com.pufferfishscheduler.master.database.db.controller;
+package com.pufferfishscheduler.master.controller.database;
 
 import com.pufferfishscheduler.domain.form.database.DbDatabaseForm;
 import com.pufferfishscheduler.common.result.ApiResponse;

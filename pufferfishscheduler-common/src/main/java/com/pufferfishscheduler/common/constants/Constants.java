@@ -25,6 +25,7 @@ public interface Constants {
     interface DICT {
         String DATA_SOURCE_LAYERING = "data_source_layering"; // 数据源分层
         String CONTROL_ENCODING = "control_encoding";
+        String DATABASE_CATEGORY = "database_category";
     }
 
     /**
@@ -123,8 +124,8 @@ public interface Constants {
         String CLAIM_USER_ID = "userId";
         String CLAIM_ACCOUNT = "account";
 
-        String TOKEN = "ETLedge-Token";
-        String BEARER_PREFIX = "ETL-Bearer:";
+        String TOKEN = "Pufferfish-Token";
+        String BEARER_PREFIX = "Pufferfish-Bearer:";
         String SSO_KEY_PREFIX = "sso:user:";
         String USER_STATUS_PREFIX = "user:status:";
         String BLACKLIST_KEY_PREFIX = "jwt:blacklist:";

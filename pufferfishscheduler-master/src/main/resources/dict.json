@@ -36,6 +36,42 @@
     ]
   },
   {
+    "dictCode": "database_category",
+    "name": "数据源分层",
+    "list": [
+      {
+        "code": "关系型数据库",
+        "value": "1",
+        "order": 1,
+        "description": ""
+      },
+      {
+        "code": "非关系型数据库",
+        "value": "2",
+        "order": 2,
+        "description": ""
+      },
+      {
+        "code": "消息型数据库",
+        "value": "3",
+        "order": 3,
+        "description": ""
+      },
+      {
+        "code": "FTP类型",
+        "value": "4",
+        "order": 4,
+        "description": ""
+      },
+      {
+        "code": "OSS",
+        "value": "5",
+        "order": 5,
+        "description": ""
+      }
+    ]
+  },
+  {
     "dictCode": "ftp_style",
     "name": "FTP协议类型",
     "list": [

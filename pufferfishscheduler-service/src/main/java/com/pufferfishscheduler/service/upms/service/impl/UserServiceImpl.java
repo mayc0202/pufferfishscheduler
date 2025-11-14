@@ -1,4 +1,4 @@
-package com.pufferfishscheduler.service.upms.user.service.impl;
+package com.pufferfishscheduler.service.upms.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -6,7 +6,7 @@ import com.pufferfishscheduler.common.constants.Constants;
 import com.pufferfishscheduler.common.exception.BusinessException;
 import com.pufferfishscheduler.dao.entity.User;
 import com.pufferfishscheduler.dao.mapper.UserMapper;
-import com.pufferfishscheduler.service.upms.user.service.UserService;
+import com.pufferfishscheduler.service.upms.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

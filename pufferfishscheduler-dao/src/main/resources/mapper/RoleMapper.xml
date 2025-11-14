@@ -13,5 +13,16 @@
         <result property="updatedTime" column="updated_time" jdbcType="TIMESTAMP"/>
     </resultMap>
 
+    <select id="getRoleListByUserId" resultType="com.pufferfishscheduler.domain.vo.user.RoleVo">
+        SELECT r.id     AS roleId,
+               r.`name` AS roleName
+        FROM user_role_rel AS ur
+                 LEFT JOIN role AS r ON r.id = ur.role_id
+        WHERE 1 = 1
+          AND ur.user_id = #{userId}
+          AND ur.deleted = 0
+          AND r.deleted = 0
+    </select>
+
 </mapper>
 
