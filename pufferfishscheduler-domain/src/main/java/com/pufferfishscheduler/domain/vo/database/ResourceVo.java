@@ -34,4 +34,7 @@ public class ResourceVo {
      */
     @JSONField(format = DomainConstants.DEFAULT_DATE_TIME_FORMAT)
     private Date createdTime;
+
+    private String createdTimeTxt;
+
 }

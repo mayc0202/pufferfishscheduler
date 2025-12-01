@@ -4,6 +4,7 @@ public interface Constants {
 
     // 默认日志格式
     String DEFAULT_DATE_FORMAT = "yyyy-MM-dd";
+    String DEFAULT_DATE_FORMAT_2 = "yyyyMMdd";
     String DEFAULT_DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
 
@@ -13,19 +14,71 @@ public interface Constants {
 
     String DICT_FILE = "dict.json";
 
+    /**
+     * Header 配置
+     */
+    interface HEADER_CONFIG {
+        String CONTENT_LENGTH = "Content-Length";
+        String CONTENT_DISPOSITION = "Content-Disposition";
+        String CACHE_CONTROL = "Cache-Control";
+        String PRAGMA = "Pragma";
+        String EXPIRES = "Expires";
+    }
+
+    /**
+     * Content 类型
+     */
     interface CONTENT_TYPE {
+        String TXT = "text/plain;charset=UTF-8";
+        String PDF = "application/pdf";
         String ZIP = "application/zip";
+        String XLS = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+        String DOC = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+        String PPT = "application/vnd.openxmlformats-officedocument.presentationml.presentation";
+        String JPG = "image/jpeg";
+        String PNG = "image/png";
+        String GIF = "image/gif";
+        String XML = "application/xml";
         String JSON = "application/json";
         String OCTET_STREAM = "application/octet-stream";
+    }
+
+    /**
+     * 文件类型
+     */
+    interface FILE_TYPE {
+        String TXT = "txt";
+        String PDF = "pdf";
+        String ZIP = "zip";
+        String XLSX = "xlsx";
+        String XLS = "xls";
+        String DOCX = "docx";
+        String DOC = "doc";
+        String PPTX = "pptx";
+        String PPT = "ppt";
+        String JPG = "jpg";
+        String JPEG = "jpeg";
+        String PNG = "png";
+        String GIF = "gif";
+        String XML = "xml";
+        String JSON = "json";
     }
 
     /**
      * 字典标识
      */
     interface DICT {
+        // dict.json
         String DATA_SOURCE_LAYERING = "data_source_layering"; // 数据源分层
         String CONTROL_ENCODING = "control_encoding";
         String DATABASE_CATEGORY = "database_category";
+        String FAILURE_POLICY = "failure_policy";
+        String NOTIFY_POLICY = "notify_policy";
+        String ENABLE = "enable";
+        String TASK_STATUS = "task_status";
+
+        // 业务字典
+        String DB_GROUP = "db_group";
     }
 
     /**
@@ -35,7 +88,7 @@ public interface Constants {
         String MYSQL = "MySQL";
         String ORACLE = "Oracle";
         String SQL_SERVER = "SQLServer";
-        String POSTGRESQL = "PostgreSQL";
+        String POSTGRESQL = "PostgresSQL";
         String DM8 = "DM8";
         String STAR_ROCKS = "StarRocks";
         String DORIS = "Doris";
@@ -61,6 +114,9 @@ public interface Constants {
         String FTPS = "FTPS";
     }
 
+    /**
+     * FTP/FTPS被动模型
+     */
     interface MODE_TYPE {
         String ACTIVE = "1";
         String PASSIVE = "2";
@@ -69,6 +125,9 @@ public interface Constants {
     String FILE_SEPARATOR = "/";
     String DIRECTORY_SIZE = "-";
 
+    /**
+     * FTP文件类型
+     */
     interface FTP_FILE_TYPE {
         String DIRECTORY = "DIRECTORY";
         String FILE = "FILE";

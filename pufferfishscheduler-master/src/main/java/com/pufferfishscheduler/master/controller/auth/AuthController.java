@@ -2,7 +2,7 @@ package com.pufferfishscheduler.master.controller.auth;
 
 import com.pufferfishscheduler.common.result.ApiResponse;
 import com.pufferfishscheduler.domain.form.auth.LoginForm;
-import com.pufferfishscheduler.service.upms.service.AuthService;
+import com.pufferfishscheduler.service.upms.AuthService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.validation.annotation.Validated;
@@ -71,4 +71,14 @@ public class AuthController {
         return ApiResponse.success(authService.getUserInfo(null));
     }
 
+    /**
+     * 刷新token
+     *
+     * @return
+     */
+    @ApiOperation(value = "刷新token")
+    @GetMapping("/refreshToken.do")
+    public ApiResponse refreshToken(@RequestParam String token) {
+        return ApiResponse.success(authService.refreshToken(token));
+    }
 }

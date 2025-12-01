@@ -5,6 +5,8 @@ import lombok.Data;
 import java.util.List;
 
 /**
+ * 字典
+ *
  * @Author: yc
  * @CreateTime: 2025-02-27
  * @Description:

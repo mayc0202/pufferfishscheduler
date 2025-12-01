@@ -2,7 +2,7 @@ package com.pufferfishscheduler.master.controller.database;
 
 import com.pufferfishscheduler.common.result.ApiResponse;
 import com.pufferfishscheduler.domain.form.database.DbGroupForm;
-import com.pufferfishscheduler.service.database.db.service.DbGroupService;
+import com.pufferfishscheduler.service.database.DbGroupService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 
 /**
- * (DbGroup) Controller
+ * 数据源分组控制层
  *
  * @author mayc
  * @since 2025-05-22 00:00:40
@@ -30,6 +30,29 @@ public class DbGroupController {
     @GetMapping("/tree.do")
     public ApiResponse tree(@RequestParam(required = false) String name) {
         return ApiResponse.success(dbGroupService.tree(name));
+    }
+
+    /**
+     * 获取FTP数据源树形结构
+     *
+     * @param name
+     * @return
+     */
+    @ApiOperation(value = "获取FTP数据源树形结构")
+    @GetMapping("/ftpDbTree.do")
+    public ApiResponse ftpDbTree(@RequestParam(required = false) String name) {
+        return ApiResponse.success(dbGroupService.ftpDbTree(name));
+    }
+
+    /**
+     * 获取关系型数据源树形结构
+     *
+     * @return
+     */
+    @ApiOperation(value = "获取关系型数据源树形结构")
+    @GetMapping("/relationalDbTree.do")
+    public ApiResponse relationalDbTree() {
+        return ApiResponse.success(dbGroupService.relationalDbTree());
     }
 
     /**

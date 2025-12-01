@@ -136,5 +136,107 @@
         "description": ""
       }
     ]
+  },
+  {
+    "dictCode": "failure_policy",
+    "name": "失败策略",
+    "list": [
+      {
+        "code": "继续",
+        "value": "0",
+        "order": 1,
+        "description": ""
+      },
+      {
+        "code": "停止",
+        "value": "1",
+        "order": 2,
+        "description": ""
+      }
+    ]
+  },
+  {
+    "dictCode": "notify_policy",
+    "name": "通知策略",
+    "list": [
+      {
+        "code": "都不发",
+        "value": "0",
+        "order": 1,
+        "description": ""
+      },
+      {
+        "code": "成功时通知",
+        "value": "1",
+        "order": 2,
+        "description": ""
+      },
+      {
+        "code": "失败时通知",
+        "value": "2",
+        "order": 3,
+        "description": ""
+      },
+      {
+        "code": "全部通知",
+        "value": "3",
+        "order": 4,
+        "description": ""
+      }
+    ]
+  },
+  {
+    "dictCode": "enable",
+    "name": "启用状态",
+    "list": [
+      {
+        "code": "启用",
+        "value": "0",
+        "order": 1,
+        "description": ""
+      },
+      {
+        "code": "禁用",
+        "value": "1",
+        "order": 2,
+        "description": ""
+      }
+    ]
+  },
+  {
+    "dictCode": "task_status",
+    "name": "任务状态",
+    "list": [
+      {
+        "code": "未启动",
+        "value": "0",
+        "order": 1,
+        "description": ""
+      },
+      {
+        "code": "启动中",
+        "value": "1",
+        "order": 2,
+        "description": ""
+      },
+      {
+        "code": "运行中",
+        "value": "2",
+        "order": 3,
+        "description": ""
+      },
+      {
+        "code": "已停止",
+        "value": "3",
+        "order": 4,
+        "description": ""
+      },
+      {
+        "code": "异常",
+        "value": "4",
+        "order": 5,
+        "description": ""
+      }
+    ]
   }
 ]

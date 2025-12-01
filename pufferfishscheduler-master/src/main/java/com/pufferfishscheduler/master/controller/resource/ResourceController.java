@@ -2,7 +2,7 @@ package com.pufferfishscheduler.master.controller.resource;
 
 import com.pufferfishscheduler.common.result.ApiResponse;
 import com.pufferfishscheduler.domain.form.database.ResourceForm;
-import com.pufferfishscheduler.service.database.resource.service.ResourceService;
+import com.pufferfishscheduler.service.resource.ResourceService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +10,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 @Api(tags = "资源管理")
@@ -20,18 +21,6 @@ public class ResourceController {
 
     @Autowired
     private ResourceService service;
-
-    /**
-     * 获取资源分组
-     *
-     * @param name
-     * @return
-     */
-    @ApiOperation(value = "获取资源分组")
-    @GetMapping("/tree.do")
-    public ApiResponse tree(@RequestParam(required = false) String name) {
-        return ApiResponse.success(service.tree(name));
-    }
 
     /**
      * 文件列表
@@ -46,10 +35,10 @@ public class ResourceController {
     @ApiOperation(value = "文件列表")
     @GetMapping("/list.do")
     public ApiResponse list(@RequestParam(required = false) Integer dbId,
-                        @RequestParam(required = false) String name,
-                        @RequestParam(required = false) String path,
-                        @RequestParam(defaultValue = "1") Integer pageNo,
-                        @RequestParam(defaultValue = "10") Integer pageSize) {
+                            @RequestParam(required = false) String name,
+                            @RequestParam(required = false) String path,
+                            @RequestParam(defaultValue = "1") Integer pageNo,
+                            @RequestParam(defaultValue = "10") Integer pageSize) {
         return ApiResponse.success(service.list(dbId, name, path, pageNo, pageSize));
     }
 
@@ -61,12 +50,12 @@ public class ResourceController {
      * @param files
      * @return
      */
-    
+
     @ApiOperation(value = "上传文件")
     @PostMapping(value = "/upload.do")
     public ApiResponse upload(@RequestParam Integer dbId,
-                          @RequestParam String path,
-                          @RequestPart("files") List<MultipartFile> files) {
+                              @RequestParam String path,
+                              @RequestPart("files") List<MultipartFile> files) {
         service.upload(dbId, path, files);
         return ApiResponse.success("文件上传成功!");
     }
@@ -121,8 +110,8 @@ public class ResourceController {
     @ApiOperation(value = "删除资源")
     @DeleteMapping("/remove.do")
     public ApiResponse remove(@RequestParam Integer dbId,
-                          @RequestParam String type,
-                          @RequestParam String path) {
+                              @RequestParam String type,
+                              @RequestParam String path) {
         service.remove(dbId, type, path);
         return ApiResponse.success("资源删除成功!");
     }
@@ -138,5 +127,17 @@ public class ResourceController {
     @GetMapping("/directoryTree.do")
     public ApiResponse directoryTree(@RequestParam Integer dbId, @RequestParam String path) {
         return ApiResponse.success(service.directoryTree(dbId, path));
+    }
+
+    /**
+     * 下载资源
+     *
+     * @param response
+     * @param form
+     */
+    @ApiOperation(value = "下载资源")
+    @GetMapping(value = "/download.do")
+    public void downloadZip(HttpServletResponse response, ResourceForm form) {
+        service.download(response, form);
     }
 }

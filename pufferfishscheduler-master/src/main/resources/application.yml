@@ -30,7 +30,7 @@ spring:
     # mysql
     driver-class-name: com.mysql.cj.jdbc.Driver
     type: com.zaxxer.hikari.HikariDataSource
-    url: jdbc:mysql://81.69.250.183:3306/pufferfishscheduler?useSSL=true&useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
+    url: jdbc:mysql://81.69.250.183:3306/pufferfishscheduler?useSSL=false&useUnicode=yes&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull&allowMultiQueries=true&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
     username: root
     password: Etl2025
     # HikariCP连接池 性能 > Druid，专为高性能优化，号称"零开销"连接池

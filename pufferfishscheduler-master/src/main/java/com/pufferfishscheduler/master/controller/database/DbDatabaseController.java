@@ -2,8 +2,8 @@ package com.pufferfishscheduler.master.controller.database;
 
 import com.pufferfishscheduler.domain.form.database.DbDatabaseForm;
 import com.pufferfishscheduler.common.result.ApiResponse;
-import com.pufferfishscheduler.service.database.db.service.DbDatabaseService;
-import com.pufferfishscheduler.service.database.db.sync.DbSyncExecutor;
+import com.pufferfishscheduler.service.database.DbDatabaseService;
+import com.pufferfishscheduler.service.database.impl.DbSyncExecutor;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +14,7 @@ import javax.validation.Valid;
 import java.util.Objects;
 
 /**
- * (DbDatabase)表控制层
+ * 数据源控制层
  *
  * @author mayc
  * @since 2025-06-03 21:22:24
@@ -27,9 +27,6 @@ public class DbDatabaseController {
 
     @Autowired
     private DbDatabaseService dbDatabaseService;
-
-    @Autowired
-    private DbSyncExecutor dbSyncExecutor;
 
     /**
      * Get database list
@@ -104,19 +101,6 @@ public class DbDatabaseController {
     public ApiResponse connect(@RequestBody @Valid DbDatabaseForm form) {
         dbDatabaseService.testConnect(form);
         return ApiResponse.success("连接成功!");
-    }
-
-    /**
-     * 同步数据
-     *
-     * @param dbId
-     * @return
-     */
-    @ApiOperation(value = "同步数据")
-    @PostMapping("sync.do")
-    public ApiResponse sync(@RequestParam Integer dbId) {
-        dbSyncExecutor.execute(dbId);
-        return ApiResponse.success("开始同步!");
     }
 }
 

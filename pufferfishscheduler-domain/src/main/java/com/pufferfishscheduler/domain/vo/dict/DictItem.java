@@ -3,6 +3,8 @@ package com.pufferfishscheduler.domain.vo.dict;
 import lombok.Data;
 
 /**
+ * 字典项
+ *
  * @Author: yc
  * @CreateTime: 2025-02-27
  * @Description:

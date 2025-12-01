@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.pufferfishscheduler.dao.mapper.MetadataTaskMapper">
+    <resultMap id="BaseResultMap" type="com.pufferfishscheduler.dao.entity.MetadataTask">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="db_id" jdbcType="INTEGER" property="dbId"/>
+        <result column="worker_id" jdbcType="VARCHAR" property="workerId"/>
+        <result column="cron" jdbcType="VARCHAR" property="cron"/>
+        <result column="failure_policy" jdbcType="VARCHAR" property="failurePolicy"/>
+        <result column="notify_policy" jdbcType="VARCHAR" property="notifyPolicy"/>
+        <result column="enable" jdbcType="BOOLEAN" property="enable"/>
+        <result column="status" jdbcType="VARCHAR" property="status"/>
+        <result column="remark" jdbcType="VARCHAR" property="remark"/>
+        <result column="execute_time" jdbcType="TIMESTAMP" property="executeTime"/>
+        <result column="deleted" jdbcType="BOOLEAN" property="deleted"/>
+        <result column="created_by" jdbcType="VARCHAR" property="createdBy"/>
+        <result column="created_time" jdbcType="TIMESTAMP" property="createdTime"/>
+        <result column="updated_by" jdbcType="VARCHAR" property="updatedBy"/>
+        <result column="updated_time" jdbcType="TIMESTAMP" property="updatedTime"/>
+    </resultMap>
+
+    <select id="selectTaskList" resultType="com.pufferfishscheduler.domain.vo.metadata.MetadataTaskVo">
+        SELECT
+        mt.id, mt.db_id, mt.worker_id, mt.cron, mt.failure_policy,
+        mt.notify_policy, mt.enable, mt.status, mt.remark,
+        mt.execute_time, mt.created_time,
+        db.NAME AS db_name, dg.id AS db_group_id, dg.NAME AS db_group_name
+        FROM metadata_task AS mt
+        LEFT JOIN db_database AS db ON mt.db_id = db.id AND db.deleted = 0
+        LEFT JOIN db_group AS dg ON db.group_id = dg.id AND dg.deleted = 0
+        WHERE mt.deleted = 0
+        <if test="params.dbId != null">
+            AND mt.db_id = #{params.dbId}
+        </if>
+        <if test="params.dbName != null">
+            AND db.NAME LIKE CONCAT('%', #{params.dbName}, '%')
+        </if>
+        <if test="params.dbIds != null and !params.dbIds.isEmpty()">
+            AND mt.db_id IN
+            <foreach collection="params.dbIds" item="dbId" open="(" separator="," close=")">
+                #{dbId}
+            </foreach>
+        </if>
+        <if test="params.status != null and params.status != ''">
+            AND mt.status = #{params.status}
+        </if>
+        <if test="params.enable != null">
+            AND mt.enable = #{params.enable}
+        </if>
+        ORDER BY mt.created_time DESC
+    </select>
+
+    <select id="selectTaskById" resultType="com.pufferfishscheduler.domain.vo.metadata.MetadataTaskVo">
+        SELECT mt.*,
+               db.NAME AS db_name,
+               dg.id   AS group_id,
+               dg.NAME AS dg_name
+        FROM metadata_task AS mt
+                 LEFT JOIN db_database AS db ON mt.db_id = db.id
+                 LEFT JOIN db_group AS dg ON db.group_id = dg.id
+        WHERE mt.id = #{id}
+          AND mt.deleted = 0
+          AND db.deleted = 0
+          AND dg.deleted = 0
+    </select>
+
+</mapper>

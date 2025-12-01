@@ -2,7 +2,7 @@ package com.pufferfishscheduler.master.controller.database;
 
 
 import com.pufferfishscheduler.common.result.ApiResponse;
-import com.pufferfishscheduler.service.database.db.service.DbBasicService;
+import com.pufferfishscheduler.service.database.DbBasicService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 
 /**
- * (DbBasic) Controller
+ * 数据库基础信息控制层
  *
  * @author mayc
  * @since 2025-05-20 23:34:42

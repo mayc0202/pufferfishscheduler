@@ -30,6 +30,10 @@
             <artifactId>pufferfishscheduler-dao</artifactId>
             <version>1.0.0</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.tomcat.embed</groupId>
+            <artifactId>tomcat-embed-core</artifactId>
+        </dependency>
 
 
     </dependencies>
