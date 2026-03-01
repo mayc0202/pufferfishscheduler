@@ -4,8 +4,6 @@ import com.pufferfishscheduler.common.result.ApiResponse;
 import com.pufferfishscheduler.domain.form.metadata.MetadataTaskForm;
 import com.pufferfishscheduler.domain.form.metadata.MetadataTaskUpdateForm;
 import com.pufferfishscheduler.service.database.MetadataService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -16,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
  * @author Mayc
  * @since 2025-11-17  17:18
  */
-@Api(tags = "元数据管理")
+//@Api(tags = "元数据管理")
 @Validated
 @RestController
 @RequestMapping(value = "/metadata", produces = {"application/json;charset=utf-8"})
@@ -25,13 +23,13 @@ public class MetaDataController {
     @Autowired
     private MetadataService metaDataService;
 
-    @ApiOperation(value = "获取同步任务分组")
+//    @ApiOperation(value = "获取同步任务分组")
     @GetMapping("/tree.do")
     public ApiResponse tree(@RequestParam(required = false) String name) {
         return ApiResponse.success(metaDataService.tree(name));
     }
 
-    @ApiOperation(value = "获取同步任务列表")
+//    @ApiOperation(value = "获取同步任务列表")
     @GetMapping("/list.do")
     public ApiResponse list(
             @RequestParam(required = false) Integer dbId,
@@ -51,7 +49,7 @@ public class MetaDataController {
      * @param id
      * @return
      */
-    @ApiOperation(value = "获取同步任务详情")
+//    @ApiOperation(value = "获取同步任务详情")
     @GetMapping("/detail.do")
     public ApiResponse detail(@RequestParam Integer id) {
         return ApiResponse.success(metaDataService.detail(id));
@@ -63,7 +61,7 @@ public class MetaDataController {
      * @param taskForm
      * @return
      */
-    @ApiOperation(value = "新增元数据同步任务")
+//    @ApiOperation(value = "新增元数据同步任务")
     @PostMapping("/add.do")
     public ApiResponse add(@RequestBody MetadataTaskForm taskForm) {
         metaDataService.add(taskForm);
@@ -76,7 +74,7 @@ public class MetaDataController {
      * @param taskForm
      * @return
      */
-    @ApiOperation(value = "编辑元数据同步任务")
+//    @ApiOperation(value = "编辑元数据同步任务")
     @PostMapping("/update.do")
     public ApiResponse update(@RequestBody MetadataTaskUpdateForm taskForm) {
         metaDataService.update(taskForm);
@@ -89,7 +87,7 @@ public class MetaDataController {
      * @param id
      * @return
      */
-    @ApiOperation(value = "切换启用状态")
+//    @ApiOperation(value = "切换启用状态")
     @GetMapping("/toggleEnableStatus.do")
     public ApiResponse toggleEnableStatus(@RequestParam Integer id) {
         metaDataService.toggleEnableStatus(id);
@@ -102,7 +100,7 @@ public class MetaDataController {
      * @param id
      * @return
      */
-    @ApiOperation(value = "删除同步任务")
+//    @ApiOperation(value = "删除同步任务")
     @GetMapping("/delete.do")
     public ApiResponse delete(@RequestParam Integer id) {
         metaDataService.delete(id);
@@ -115,7 +113,7 @@ public class MetaDataController {
      * @param dbId
      * @return
      */
-    @ApiOperation(value = "同步数据")
+//    @ApiOperation(value = "同步数据")
     @PostMapping("/sync.do")
     public ApiResponse sync(@RequestParam Integer dbId) {
         metaDataService.metadataSync(dbId);

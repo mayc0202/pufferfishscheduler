@@ -1,6 +1,5 @@
 package com.pufferfishscheduler.service.upms.impl;
 
-import com.pufferfishscheduler.common.config.jwt.JwtConfig;
 import com.pufferfishscheduler.common.constants.Constants;
 import com.pufferfishscheduler.common.exception.BusinessException;
 import com.pufferfishscheduler.common.utils.AESUtil;
@@ -11,6 +10,7 @@ import com.pufferfishscheduler.domain.vo.user.RoleVo;
 import com.pufferfishscheduler.domain.vo.user.UserVo;
 import com.pufferfishscheduler.dao.entity.User;
 import com.pufferfishscheduler.domain.form.auth.LoginForm;
+import com.pufferfishscheduler.service.config.jwt.JwtConfig;
 import com.pufferfishscheduler.service.upms.AuthService;
 import com.pufferfishscheduler.service.upms.RoleService;
 import com.pufferfishscheduler.service.upms.UserService;

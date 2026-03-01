@@ -92,6 +92,7 @@ public class FTPManager {
         this.ftpClient.setControlEncoding(controlEncoding);
         FTPClientConfig conf = new FTPClientConfig();
         conf.setServerLanguageCode("zh");
+        conf.setServerTimeZoneId("Asia/Shanghai");
         this.ftpClient.configure(conf);
 
         this.ftpClient.setConnectTimeout(connectTimeout);

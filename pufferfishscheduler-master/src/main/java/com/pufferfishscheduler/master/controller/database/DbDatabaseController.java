@@ -3,14 +3,11 @@ package com.pufferfishscheduler.master.controller.database;
 import com.pufferfishscheduler.domain.form.database.DbDatabaseForm;
 import com.pufferfishscheduler.common.result.ApiResponse;
 import com.pufferfishscheduler.service.database.DbDatabaseService;
-import com.pufferfishscheduler.service.database.impl.DbSyncExecutor;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
 import java.util.Objects;
 
 /**
@@ -19,7 +16,7 @@ import java.util.Objects;
  * @author mayc
  * @since 2025-06-03 21:22:24
  */
-@Api(tags = "数据源管理")
+//@Api(tags = "数据源管理")
 @Validated
 @RestController
 @RequestMapping(value = "/dbDatabase", produces = {"application/json;charset=utf-8"})
@@ -38,7 +35,7 @@ public class DbDatabaseController {
      * @param pageSize
      * @return
      */
-    @ApiOperation(value = "获取数据源列表")
+//    @ApiOperation(value = "获取数据源列表")
     @GetMapping("/list.do")
     public ApiResponse list(@RequestParam(required = false) Integer groupId,
                             @RequestParam(required = false) Integer dbId,
@@ -54,7 +51,7 @@ public class DbDatabaseController {
      *
      * @return
      */
-    @ApiOperation(value = "保存数据源配置")
+//    @ApiOperation(value = "保存数据源配置")
     @PostMapping("/save.do")
     public ApiResponse save(@RequestBody @Valid DbDatabaseForm form) {
         if (Objects.isNull(form.getId())) {
@@ -71,7 +68,7 @@ public class DbDatabaseController {
      *
      * @return
      */
-    @ApiOperation(value = "删除数据源")
+//    @ApiOperation(value = "删除数据源")
     @PutMapping("/delete.do")
     public ApiResponse delete(@RequestParam Integer id) {
         dbDatabaseService.delete(id);
@@ -84,7 +81,7 @@ public class DbDatabaseController {
      * @param id
      * @return
      */
-    @ApiOperation(value = "获取数据源详情")
+//    @ApiOperation(value = "获取数据源详情")
     @GetMapping("/detail.do")
     public ApiResponse detail(@RequestParam Integer id) {
         return ApiResponse.success(dbDatabaseService.detail(id));
@@ -96,7 +93,7 @@ public class DbDatabaseController {
      * @param form
      * @return
      */
-    @ApiOperation(value = "测试链接")
+//    @ApiOperation(value = "测试链接")
     @PostMapping("/connect.do")
     public ApiResponse connect(@RequestBody @Valid DbDatabaseForm form) {
         dbDatabaseService.testConnect(form);

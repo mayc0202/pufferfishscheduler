@@ -7,13 +7,13 @@ import com.pufferfishscheduler.service.database.DbGroupService;
 import com.pufferfishscheduler.service.dict.service.DictService;
 import com.pufferfishscheduler.domain.vo.dict.Dict;
 import com.pufferfishscheduler.domain.vo.dict.DictItem;
+import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;

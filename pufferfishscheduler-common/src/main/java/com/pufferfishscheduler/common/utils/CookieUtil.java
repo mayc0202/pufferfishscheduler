@@ -2,12 +2,12 @@ package com.pufferfishscheduler.common.utils;
 
 import com.pufferfishscheduler.common.constants.Constants;
 import com.pufferfishscheduler.common.exception.BusinessException;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
 import java.util.Objects;
 
 /**

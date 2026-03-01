@@ -12,7 +12,6 @@
     <groupId>com.pufferfishscheduler.domain</groupId>
     <artifactId>pufferfishscheduler-domain</artifactId>
     <version>1.0.0</version>
-    <packaging>jar</packaging>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
@@ -36,25 +35,11 @@
             <artifactId>fastjson2</artifactId>
         </dependency>
 
-        <!-- swagger-ui -->
-        <dependency>
-            <groupId>io.springfox</groupId>
-            <artifactId>springfox-boot-starter</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>com.github.xiaoymin</groupId>
-            <artifactId>knife4j-spring-boot-starter</artifactId>
-        </dependency>
-
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-validation</artifactId>
         </dependency>
-        <dependency>
-            <groupId>commons-collections</groupId>
-            <artifactId>commons-collections</artifactId>
-        </dependency>
+
     </dependencies>
 
 </project>

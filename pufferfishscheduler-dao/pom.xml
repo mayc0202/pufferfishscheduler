@@ -12,29 +12,34 @@
     <groupId>com.pufferfishscheduler.dao</groupId>
     <artifactId>pufferfishscheduler-dao</artifactId>
     <version>1.0.0</version>
-    <packaging>jar</packaging>
 
+    <!-- 关键修正：统一编译版本为 Java 17（和父 POM 一致） -->
     <properties>
-        <maven.compiler.source>8</maven.compiler.source>
-        <maven.compiler.target>8</maven.compiler.target>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <maven.compiler.encoding>UTF-8</maven.compiler.encoding>
     </properties>
 
     <dependencies>
-
-        <!-- common -->
+        <!-- pufferfishscheduler-common -->
         <dependency>
             <groupId>com.pufferfishscheduler.common</groupId>
             <artifactId>pufferfishscheduler-common</artifactId>
             <version>1.0.0</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.springframework.boot</groupId>
-                    <artifactId>spring-boot-starter-web</artifactId>
-                </exclusion>
-            </exclusions>
+        </dependency>
+
+        <!-- Mybatis-Plus -->
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-boot-starter</artifactId>
+        </dependency>
+
+        <!-- Mybatis-Spring -->
+        <dependency>
+            <groupId>org.mybatis</groupId>
+            <artifactId>mybatis-spring</artifactId>
         </dependency>
 
     </dependencies>

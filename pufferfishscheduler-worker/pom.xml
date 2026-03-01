@@ -17,4 +17,52 @@
         <maven.compiler.target>8</maven.compiler.target>
     </properties>
 
+    <dependencies>
+
+        <!-- dao -->
+        <dependency>
+            <groupId>com.pufferfishscheduler.dao</groupId>
+            <artifactId>pufferfishscheduler-dao</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+
+        <!-- api -->
+        <dependency>
+            <groupId>com.pufferfishscheduler</groupId>
+            <artifactId>pufferfishscheduler-api</artifactId>
+            <version>1.0.0</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.pufferfishscheduler.domain</groupId>
+                    <artifactId>pufferfishscheduler-domain</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <!--nacos-->
+        <dependency>
+            <groupId>com.alibaba.nacos</groupId>
+            <artifactId>nacos-client</artifactId>
+        </dependency>
+
+        <!-- dubbo -->
+        <dependency>
+            <groupId>org.apache.dubbo</groupId>
+            <artifactId>dubbo-spring-boot-starter</artifactId>
+        </dependency>
+
+        <!--  quartz -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-quartz</artifactId>
+        </dependency>
+
+        <!-- c3p0 -->
+        <dependency>
+            <groupId>com.mchange</groupId>
+            <artifactId>c3p0</artifactId>
+        </dependency>
+
+    </dependencies>
+
 </project>

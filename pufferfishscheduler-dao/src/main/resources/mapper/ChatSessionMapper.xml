@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.pufferfishscheduler.dao.mapper.ChatSessionMapper">
+
+    <resultMap id="BaseResultMap" type="com.pufferfishscheduler.dao.entity.ChatSessionEntity">
+        <id column="id" property="id" javaType="INTEGER"/>
+        <result column="session_id" property="sessionId" jdbcType="VARCHAR"/>
+        <result column="session_type" property="sessionType" jdbcType="VARCHAR"/>
+        <result column="user_id" property="userId" jdbcType="VARCHAR"/>
+        <result column="title" property="title" jdbcType="VARCHAR"/>
+        <result column="status" property="status" jdbcType="INTEGER"/>
+        <result column="message_count" property="messageCount" jdbcType="INTEGER"/>
+        <result column="token_count" property="tokenCount" jdbcType="INTEGER"/>
+        <result column="model_name" property="modelName" jdbcType="VARCHAR"/>
+        <result column="created_at" property="createdAt" jdbcType="TIMESTAMP"/>
+        <result column="updated_at" property="updatedAt" jdbcType="TIMESTAMP"/>
+        <result column="deleted_at" property="deletedAt" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <update id="incrementMessageCount">
+        UPDATE chat_session
+        SET message_count = message_count + 1,
+            updated_at    = NOW()
+        WHERE session_id = #{sessionId}
+    </update>
+
+    <update id="softDelete">
+        UPDATE chat_session
+        SET status     = 0,
+            deleted_at = NOW()
+        WHERE session_id = #{sessionId}
+    </update>
+
+    <update id="softDeleteByType">
+        UPDATE chat_session
+        SET status     = 0,
+            deleted_at = NOW()
+        WHERE session_type = #{sessionType}
+    </update>
+
+    <select id="selectRecentSessions" resultType="com.pufferfishscheduler.dao.entity.ChatSessionEntity">
+        SELECT *
+        FROM chat_session
+        WHERE session_type = #{sessionType}
+          AND status = 1
+          AND updated_at >= #{since}
+        ORDER BY updated_at DESC LIMIT #{limit}
+    </select>
+
+</mapper>

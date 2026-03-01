@@ -1,7 +1,7 @@
 package com.pufferfishscheduler.common.node;
 
 import com.pufferfishscheduler.common.constants.Constants;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Component;
 
 import java.util.*;

@@ -1,0 +1,91 @@
+server:
+  servlet:
+    context-path: /pufferfishscheduler-worker
+  port: 8082
+
+spring:
+  main:
+    allow-bean-definition-overriding: true # 开启循环依赖
+  application:
+    name: pufferfishscheduler-worker
+  servlet:
+    multipart: # 限制上传的文件最大值
+      max-request-size: 512MB
+      max-file-size: 512MB
+  # 数据源
+  datasource:
+    # mysql
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    type: com.zaxxer.hikari.HikariDataSource
+    url: jdbc:mysql://81.69.250.183:3306/pufferfishscheduler?useSSL=false&useUnicode=yes&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull&allowMultiQueries=true&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+    username: root
+    password: Etl2025
+    # HikariCP连接池 性能 > Druid，专为高性能优化，号称"零开销"连接池
+    hikari:
+      pool-name: mysql-hikari
+      connection-timeout: 30000           # 获取连接的超时时间（毫秒）
+      validation-timeout: 5000            # 控制将测试连接的活动性的最长时间
+      idle-timeout: 300000                # 空闲连接被回收前的最大空闲时间（毫秒），应小于数据库的wait_timeout参数
+      max-lifetime: 1800000               # 连接的最大存活时间（毫秒），应小于数据库的interactive_timeout参数
+      maximum-pool-size: 100              # 连接池中允许的最大连接数，通常设置为 (CPU核心数 * 2) + 磁盘数 的倍数
+      minimum-idle: 5                     # 连接池中保持的最小空闲连接数
+      leak-detection-threshold: 60000     # 检测连接泄露的阈值（毫秒）
+      connection-test-query: SELECT 1     # MySQL连接测试查询
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher  # 兼容Swagger的路径匹配策略
+
+dubbo:
+  application:
+    name: pufferfishscheduler-worker
+    qos-enable: false
+  # 协议配置：推荐dubbo协议（性能优），端口默认20880
+  protocol:
+    name: dubbo
+    port: 20880
+  # 注册中心配置
+  registry:
+    address: nacos://127.0.0.1:8848 # 注册中心
+    username: nacos # Nacos账号
+    password: nacos # Nacos密码
+    check: false # 注册订阅失败时报错
+    timeout: 6000  # 注册中心超时时间（毫秒）
+    parameters:
+      nacos.retry: 1  # 重试次数
+    file: /data/dubbo-cache/pufferfishscheduler-worker-registry.cache  # 独立路径，需确保目录存在且有读写权限
+  config-center:
+    timeout: 25000 # 超时
+  # 服务配置：扫描Dubbo注解
+  scan:
+    base-packages: com.pufferfishscheduler.worker.service # 服务实现类所在包
+  # 消费者配置（服务端可省略，客户端需配置）
+  consumer:
+    check: false # 启动时不检查服务是否存在（避免服务未启动导致客户端启动失败）
+
+# mybatis-plus配置
+mybatis-plus:
+  configuration:
+    default-executor-type: REUSE  # 使用REUSE执行器
+    cache-enabled: false          # 如果不是必须，关闭二级缓存
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl #mybatis-plus日志实现类
+  global-config:
+    db-config:
+      id-type: auto #主键自增
+      table-prefix: #数据表前缀
+      update-strategy: not_empty #配置mybatis-plus
+      logic-delete-field: deleted # 逻辑删除字段
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+
+# log日志
+logging:
+  level:
+    web: debug #扫描web
+    com.pufferfishscheduler.common: debug
+    com.pufferfishscheduler.master: debug
+    com.zaxxer.hikari: debug
+    org.apache.dubbo.spring.extension.SpringExtensionFactory: WARN
+  pattern:
+    console: "%d %clr(%5p) ---- [%t] %clr(%-40.40c){cyan} : %m %n"
+
+

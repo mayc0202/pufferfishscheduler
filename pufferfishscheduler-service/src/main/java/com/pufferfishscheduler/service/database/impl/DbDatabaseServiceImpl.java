@@ -28,7 +28,7 @@ import com.pufferfishscheduler.service.database.connect.relationdb.DatabaseConne
 import com.pufferfishscheduler.service.database.DbDatabaseService;
 import com.pufferfishscheduler.service.database.DbGroupService;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;

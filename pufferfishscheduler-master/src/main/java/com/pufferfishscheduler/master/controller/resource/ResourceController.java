@@ -3,17 +3,14 @@ package com.pufferfishscheduler.master.controller.resource;
 import com.pufferfishscheduler.common.result.ApiResponse;
 import com.pufferfishscheduler.domain.form.database.ResourceForm;
 import com.pufferfishscheduler.service.resource.ResourceService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
-@Api(tags = "资源管理")
 @Validated
 @RestController
 @RequestMapping(value = "/resource", produces = {"application/json;charset=utf-8"})
@@ -32,7 +29,6 @@ public class ResourceController {
      * @param pageSize
      * @return
      */
-    @ApiOperation(value = "文件列表")
     @GetMapping("/list.do")
     public ApiResponse list(@RequestParam(required = false) Integer dbId,
                             @RequestParam(required = false) String name,
@@ -50,8 +46,6 @@ public class ResourceController {
      * @param files
      * @return
      */
-
-    @ApiOperation(value = "上传文件")
     @PostMapping(value = "/upload.do")
     public ApiResponse upload(@RequestParam Integer dbId,
                               @RequestParam String path,
@@ -66,7 +60,6 @@ public class ResourceController {
      * @param form
      * @return
      */
-    @ApiOperation(value = "创建目录")
     @PostMapping("/mkdir.do")
     public ApiResponse mkdir(@RequestBody ResourceForm form) {
         service.mkdir(form);
@@ -79,7 +72,6 @@ public class ResourceController {
      * @param form
      * @return
      */
-    @ApiOperation(value = "目录重命名")
     @PutMapping("/rename.do")
     public ApiResponse rename(@RequestBody ResourceForm form) {
         service.rename(form);
@@ -92,7 +84,6 @@ public class ResourceController {
      * @param form
      * @return
      */
-    @ApiOperation(value = "移动资源")
     @PostMapping("/move.do")
     public ApiResponse move(@RequestBody ResourceForm form) {
         service.move(form);
@@ -107,7 +98,6 @@ public class ResourceController {
      * @param path
      * @return
      */
-    @ApiOperation(value = "删除资源")
     @DeleteMapping("/remove.do")
     public ApiResponse remove(@RequestParam Integer dbId,
                               @RequestParam String type,
@@ -123,7 +113,6 @@ public class ResourceController {
      * @param path
      * @return
      */
-    @ApiOperation(value = "获取资源目录列表(树形结构)")
     @GetMapping("/directoryTree.do")
     public ApiResponse directoryTree(@RequestParam Integer dbId, @RequestParam String path) {
         return ApiResponse.success(service.directoryTree(dbId, path));
@@ -135,7 +124,6 @@ public class ResourceController {
      * @param response
      * @param form
      */
-    @ApiOperation(value = "下载资源")
     @GetMapping(value = "/download.do")
     public void downloadZip(HttpServletResponse response, ResourceForm form) {
         service.download(response, form);

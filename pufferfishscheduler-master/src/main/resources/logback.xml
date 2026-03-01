@@ -7,7 +7,7 @@
     <!-- 定义公共属性 -->
     <property name="LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"/>
     <property name="LOG_DIR" value="${catalina.base:-.}/logs"/>
-    <property name="APP_NAME" value="pufferfish-scheduler"/>
+    <property name="APP_NAME" value="pufferfish-scheduler-master"/>
     <property name="MAX_FILE_SIZE" value="100MB"/>
     <property name="MAX_HISTORY" value="30"/>
     <property name="TOTAL_SIZE_CAP" value="3GB"/>

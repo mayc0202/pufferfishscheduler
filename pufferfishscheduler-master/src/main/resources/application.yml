@@ -5,7 +5,7 @@ server:
 
 spring:
   main:
-    allow-bean-definition-overriding: true # 开启循环依赖
+    allow-circular-references: true # 开启循环依赖
   application:
     name: pufferfishscheduler
   servlet:
@@ -92,7 +92,7 @@ logging:
 
 # JWT配置
 jwt:
-  token-secret: pufferfishscheduler1q2w3e4R # 密钥
+  token-secret: upSPHSHJfiiWtP+WWOpUJ9Iza1Fq3J11nJv6SGgAz9pFAX61WIckr/pQuN6TL0LR # 密钥
   expiration-time: 3600000 # 过期时间 1小时 3600000 => 1 * 60 * 60 * 1000
   issuer: etl-ds # 令牌签发者
 

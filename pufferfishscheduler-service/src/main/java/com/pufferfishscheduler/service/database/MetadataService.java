@@ -5,7 +5,6 @@ import com.pufferfishscheduler.domain.form.metadata.MetadataTaskForm;
 import com.pufferfishscheduler.common.node.Tree;
 import com.pufferfishscheduler.domain.form.metadata.MetadataTaskUpdateForm;
 import com.pufferfishscheduler.domain.vo.metadata.MetadataTaskVo;
-import io.swagger.models.auth.In;
 
 import java.util.List;
 

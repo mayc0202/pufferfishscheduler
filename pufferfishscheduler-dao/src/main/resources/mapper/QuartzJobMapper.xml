@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.pufferfishscheduler.dao.mapper.QuartzJobMapper">
+
+    <resultMap type="com.pufferfishscheduler.dao.entity.QuartzJob" id="DbBasicMap">
+        <result property="jobId" column="job_id" jdbcType="INTEGER"/>
+        <result property="jobName" column="job_name" jdbcType="VARCHAR"/>
+        <result property="jobGroup" column="jobGroup" jdbcType="VARCHAR"/>
+        <result property="invokeTarget" column="invoke_target" jdbcType="VARCHAR"/>
+        <result property="cronExpression" column="cron_expression" jdbcType="VARCHAR"/>
+        <result property="misfirePolicy" column="misfire_policy" jdbcType="VARCHAR"/>
+        <result property="concurrent" column="concurrent" jdbcType="VARCHAR"/>
+        <result property="status" column="status" jdbcType="VARCHAR"/>
+        <result property="remark" column="remark" jdbcType="VARCHAR"/>
+    </resultMap>
+
+</mapper>
+

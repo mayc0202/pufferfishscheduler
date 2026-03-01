@@ -47,9 +47,11 @@ public interface Constants {
      * 文件类型
      */
     interface FILE_TYPE {
+        String MD = "md";
         String TXT = "txt";
         String PDF = "pdf";
         String ZIP = "zip";
+        String CSV = "csv";
         String XLSX = "xlsx";
         String XLS = "xls";
         String DOCX = "docx";
@@ -82,6 +84,14 @@ public interface Constants {
     }
 
     /**
+     * 任务类型
+     */
+    interface TASK_TYPE {
+        String METADATA_TASK = "metadata_task";
+        String REALTIME_TASK = "realtime_task";
+    }
+
+    /**
      * 数据库类型
      */
     interface DATABASE_TYPE {
@@ -97,6 +107,22 @@ public interface Constants {
         String MONGODB = "MongoDB";
 
         String KAFKA = "Kafka";
+    }
+
+    interface DbType {
+        String mysql = "mysql";
+        String oracle = "oracle";
+        String sqlServer = "sqlserver";
+        String postgresql = "postgresql";
+        String dm = "dm8";
+        String starRocks = "starrocks";
+        String doris = "doris";
+        String cache = "cache";
+        String tidb = "tidb";
+        String kyuubi = "kyuubi";
+        String vastbaseg100 = "vastbase_g100";
+        String gaussdb = "gaussdb";
+        String kingbase = "kingbasees_v8";
     }
 
     /**
@@ -215,6 +241,24 @@ public interface Constants {
         String CATEGORY = "category";
         String DB_BASIC = "db_basic";
     }
+
+    String CHAT_MEMORY_CONVERSATION_ID_KEY = "chat_memory_conversation_id";
+
+    /**
+     * 消息类型
+     */
+    interface MESSAGE_TYPE {
+        String USER = "user";
+        String ASSISTANT = "assistant";
+        String SYSTEM = "system";
+        String TOOL = "tool";
+        String UNKNOWN = "unknown";
+    }
+
+    interface CONVERSATION_TYPE {
+        String CHAT = "chat";
+    }
+
 
     /**
      * 组件code

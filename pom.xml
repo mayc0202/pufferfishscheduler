@@ -11,63 +11,126 @@
 
     <modules>
         <module>pufferfishscheduler-aop</module>
-        <module>pufferfishscheduler-api</module>
         <module>pufferfishscheduler-master</module>
         <module>pufferfishscheduler-worker</module>
         <module>pufferfishscheduler-service</module>
-        <module>pufferfishscheduler-alert</module>
         <module>pufferfishscheduler-dao</module>
         <module>pufferfishscheduler-cdc</module>
         <module>pufferfishscheduler-common</module>
         <module>pufferfishscheduler-domain</module>
+        <module>pufferfishscheduler-ai</module>
     </modules>
-
-    <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.3.7.RELEASE</version>
-        <relativePath/>
-    </parent>
 
     <!-- version -->
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <maven.compiler.encoding>UTF-8</maven.compiler.encoding>
-        <hikariCP.version>5.0.1</hikariCP.version> <!-- HikariCP -->
-        <mysql.version>8.0.20</mysql.version> <!--Mysql-->
-        <postgresql.version>42.2.8</postgresql.version> <!--Postgresql-->
-        <oracle.version>12.2.0.1.0</oracle.version> <!--Oracle-->
-        <sqlserver.version>9.4.1.jre8</sqlserver.version> <!--Sqlserver-->
-        <dm.version>8.1.3.62</dm.version> <!--DM8-->
-        <commons-pool2.version>2.11.1</commons-pool2.version> <!-- commons-pool2 -->
-        <kafka.version>3.6.1</kafka.version> <!--Kafka-->
-        <rabbitmq.version>2.1.7.RELEASE</rabbitmq.version> <!--RabbitMQ-->
-        <mybatis-plus.version>3.5.0</mybatis-plus.version> <!--Mybatis-plus-->
-        <lombok.version>1.18.26</lombok.version> <!--Lombok-->
-        <fastjson.version>2.0.20</fastjson.version> <!--Fastjson2-->
-        <commons-net.version>3.6</commons-net.version> <!--commons-net.version-->
-        <commons-io.version>2.10.0</commons-io.version> <!--commons-io.version-->
-        <commons-collections>3.2.2</commons-collections> <!--commons-collections-->
-        <commons-lang3.version>3.12.0</commons-lang3.version> <!--commons-lang3-->
-        <aes-rsa.version>1.56</aes-rsa.version> <!--Ase&Rsa-->
-        <base64.version>1.8</base64.version> <!--Base64-->
-        <jjwt.version>0.9.0</jjwt.version> <!--Jjwt-->
-        <jwt.version>3.10.3</jwt.version> <!--Jwt-->
-        <easy-excel.version>2.2.11</easy-excel.version> <!-- easy-excel -->
-        <swagger-fox>3.0.0</swagger-fox> <!--Swagger3-->
-        <knife4j-version>3.0.3</knife4j-version><!--Swagger3-UI面-->
-        <dubbo.version>2.7.10</dubbo.version> <!--Dubbo-->
-        <nacos.version>1.2.1</nacos.version> <!--Nacos-->
-        <hystrix.version>2.2.1.RELEASE</hystrix.version> <!--Hystrix-->
-        <poi-tl.version>1.12.1</poi-tl.version> <!--poi-tl-->
-        <kettle.revision>9.2.0.0-290</kettle.revision> <!-- kettle -->
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+
+        <!-- maven plugin -->
+        <maven-deploy-plugin.version>3.1.1</maven-deploy-plugin.version>
+        <flatten-maven-plugin.version>1.3.0</flatten-maven-plugin.version>
+        <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
+
+        <!-- Spring Boot -->
+        <spring-boot.version>3.2.5</spring-boot.version>
+        <!-- Spring AI -->
+        <spring-ai.version>1.0.0</spring-ai.version>
+        <spring-ai-alibaba.version>1.0.0.4</spring-ai-alibaba.version>
+
+        <!-- mybatis-plus -->
+        <mybatis-plus.version>3.5.8</mybatis-plus.version>
+        <!-- mybatis-spring -->
+        <mybatis-spring.version>3.0.3</mybatis-spring.version>
+
+        <!-- hikaricp -->
+        <hikaricp.version>5.0.1</hikaricp.version>
+
+        <!-- Mysql -->
+        <mysql.version>8.0.33</mysql.version>
+        <!--Postgresql-->
+        <postgresql.version>42.6.0</postgresql.version>
+        <!--Oracle-->
+        <oracle.version>12.2.0.1.0</oracle.version>
+        <!--Sqlserver-->
+        <sqlserver.version>9.4.1.jre8</sqlserver.version>
+        <!--DM8-->
+        <dm.version>8.1.3.62</dm.version>
+
+        <!--Kafka-->
+        <kafka.version>3.6.1</kafka.version>
+
+        <!-- caffeine -->
+        <caffeine.version>3.1.8</caffeine.version>
+        <!-- commons-csv -->
+        <commons-csv.version>1.10.0</commons-csv.version>
+        <!-- pdfbox -->
+        <pdfbox.version>2.0.30</pdfbox.version>
+        <!-- poi-ooxml -->
+        <poi-ooxml.version>5.2.5</poi-ooxml.version>
+        <!-- tika-core -->
+        <tika-core.version>2.9.2</tika-core.version>
+        <!--lombok-->
+        <lombok.version>1.18.36</lombok.version>
+        <!--fastjson2-->
+        <fastjson.version>2.0.20</fastjson.version>
+        <!--commons-net-->
+        <commons-net.version>3.6</commons-net.version>
+        <!--commons-io-->
+        <commons-io.version>2.10.0</commons-io.version>
+        <!--commons-lang3-->
+        <commons-lang3.version>3.12.0</commons-lang3.version>
+        <!-- commons-pool2 -->
+        <commons-pool2.version>2.11.1</commons-pool2.version>
+        <!--Ase&Rsa-->
+        <aes-rsa.version>1.56</aes-rsa.version>
+        <!--Base64-->
+        <base64.version>1.8</base64.version>
+        <!--Jwt-->
+        <jwt.version>3.10.3</jwt.version>
+        <!-- jjwt -->
+        <jjwt.version>0.12.5</jjwt.version>
+
+        <!--Dubbo-->
+        <dubbo.version>3.2.7</dubbo.version>
+        <!--Nacos-->
+        <nacos.version>2.2.3</nacos.version>
+
+        <!--poi-tl-->
+        <poi-tl.version>1.12.1</poi-tl.version>
+        <!-- kettle -->
+        <kettle.revision>9.2.0.0-290</kettle.revision>
     </properties>
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${spring-boot.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
 
-            <!-- dubbo -->
+            <dependency>
+                <groupId>org.springframework.ai</groupId>
+                <artifactId>spring-ai-bom</artifactId>
+                <version>${spring-ai.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>com.alibaba.cloud.ai</groupId>
+                <artifactId>spring-ai-alibaba-bom</artifactId>
+                <version>${spring-ai-alibaba.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <!-- Dubbo Spring Boot Starter -->
             <dependency>
                 <groupId>org.apache.dubbo</groupId>
                 <artifactId>dubbo-spring-boot-starter</artifactId>
@@ -81,11 +144,18 @@
                 <version>${nacos.version}</version>
             </dependency>
 
-            <!-- mybatis-plus -->
+            <!-- Mybatis-Plus -->
             <dependency>
                 <groupId>com.baomidou</groupId>
                 <artifactId>mybatis-plus-boot-starter</artifactId>
                 <version>${mybatis-plus.version}</version>
+            </dependency>
+
+            <!-- Mybatis-Spring -->
+            <dependency>
+                <groupId>org.mybatis</groupId>
+                <artifactId>mybatis-spring</artifactId>
+                <version>${mybatis-spring.version}</version>
             </dependency>
 
             <!-- mysql -->
@@ -179,19 +249,14 @@
                 <version>${commons-lang3.version}</version>
             </dependency>
 
-            <dependency>
-                <groupId>commons-collections</groupId>
-                <artifactId>commons-collections</artifactId>
-                <version>${commons-collections}</version>
-            </dependency>
-
-            <!-- jwt -->
+            <!-- jjwt -->
             <dependency>
                 <groupId>io.jsonwebtoken</groupId>
                 <artifactId>jjwt</artifactId>
                 <version>${jjwt.version}</version>
             </dependency>
 
+            <!-- jwt -->
             <dependency>
                 <groupId>com.auth0</groupId>
                 <artifactId>java-jwt</artifactId>
@@ -212,24 +277,46 @@
                 <version>${base64.version}</version>
             </dependency>
 
-            <!-- swagger -->
-            <dependency>
-                <groupId>io.springfox</groupId>
-                <artifactId>springfox-boot-starter</artifactId>
-                <version>${swagger-fox}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>com.github.xiaoymin</groupId>
-                <artifactId>knife4j-spring-boot-starter</artifactId>
-                <version>${knife4j-version}</version>
-            </dependency>
-
             <!-- c3p0 -->
             <dependency>
                 <groupId>com.mchange</groupId>
                 <artifactId>c3p0</artifactId>
                 <version>0.9.5.5</version>
+            </dependency>
+
+            <!-- caffeine -->
+            <dependency>
+                <groupId>com.github.ben-manes.caffeine</groupId>
+                <artifactId>caffeine</artifactId>
+                <version>${caffeine.version}</version>
+            </dependency>
+
+            <!-- CSV 解析 -->
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-csv</artifactId>
+                <version>${commons-csv.version}</version>
+            </dependency>
+
+            <!-- PDF 处理 -->
+            <dependency>
+                <groupId>org.apache.pdfbox</groupId>
+                <artifactId>pdfbox</artifactId>
+                <version>${pdfbox.version}</version>
+            </dependency>
+
+            <!-- Word 处理 -->
+            <dependency>
+                <groupId>org.apache.poi</groupId>
+                <artifactId>poi-ooxml</artifactId>
+                <version>${poi-ooxml.version}</version>
+            </dependency>
+
+            <!-- 文本提取工具 -->
+            <dependency>
+                <groupId>org.apache.tika</groupId>
+                <artifactId>tika-core</artifactId>
+                <version>${tika-core.version}</version>
             </dependency>
 
             <!-- poi-tl -->
@@ -238,42 +325,69 @@
                 <artifactId>poi-tl</artifactId>
                 <version>${poi-tl.version}</version>
             </dependency>
-
-            <!-- Kettle -->
-            <dependency>
-                <groupId>org.pentaho</groupId>
-                <artifactId>pentaho-metadata</artifactId>
-                <version>${kettle.revision}</version>
-            </dependency>
-            <dependency>
-                <groupId>pentaho-kettle</groupId>
-                <artifactId>kettle-core</artifactId>
-                <version>${kettle.revision}</version>
-            </dependency>
-            <dependency>
-                <groupId>pentaho-kettle</groupId>
-                <artifactId>kettle-engine</artifactId>
-                <version>${kettle.revision}</version>
-            </dependency>
-            <dependency>
-                <groupId>pentaho-kettle</groupId>
-                <artifactId>kettle-ui-swt</artifactId>
-                <version>${kettle.revision}</version>
-            </dependency>
         </dependencies>
     </dependencyManagement>
 
-    <repositories>
-        <repository>
-            <id>pentaho-public</id>
-            <name>Pentaho Public Repository</name>
-            <url>https://repository.pentaho.org/artifactory/public/</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-    </repositories>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>${spring-boot.version}</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <version>${maven-deploy-plugin.version}</version>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${maven-compiler-plugin.version}</version>
+                <configuration>
+                    <release>17</release>
+                    <compilerArgs>
+                        <compilerArg>-parameters</compilerArg>
+                    </compilerArgs>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>flatten-maven-plugin</artifactId>
+                <version>${flatten-maven-plugin.version}</version>
+                <inherited>true</inherited>
+                <executions>
+                    <execution>
+                        <id>flatten</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>flatten</goal>
+                        </goals>
+                        <configuration>
+                            <updatePomFile>true</updatePomFile>
+                            <flattenMode>ossrh</flattenMode>
+                            <pomElements>
+                                <distributionManagement>remove</distributionManagement>
+                                <dependencyManagement>remove</dependencyManagement>
+                                <repositories>remove</repositories>
+                                <scm>keep</scm>
+                                <url>keep</url>
+                                <organization>resolve</organization>
+                            </pomElements>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>flatten.clean</id>
+                        <phase>clean</phase>
+                        <goals>
+                            <goal>clean</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>

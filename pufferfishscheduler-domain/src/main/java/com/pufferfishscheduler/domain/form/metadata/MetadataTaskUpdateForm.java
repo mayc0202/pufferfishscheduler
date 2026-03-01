@@ -2,7 +2,7 @@ package com.pufferfishscheduler.domain.form.metadata;
 
 import lombok.Data;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 /**
  * 编辑表单

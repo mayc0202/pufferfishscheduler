@@ -3,26 +3,22 @@ package com.pufferfishscheduler.master.controller.auth;
 import com.pufferfishscheduler.common.result.ApiResponse;
 import com.pufferfishscheduler.domain.form.auth.LoginForm;
 import com.pufferfishscheduler.service.upms.AuthService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import javax.annotation.Resource;
-import javax.validation.Valid;
 
 /**
  *
  * @author Mayc
  * @since 2025-09-22  00:52
  */
-@Api(tags = "用户信息认证管理")
 @Validated
 @RestController
 @RequestMapping(value = "/auth", produces = {"application/json;charset=utf-8"})
 public class AuthController {
 
-    @Resource
+    @Autowired
     private AuthService authService;
 
     /**
@@ -30,7 +26,6 @@ public class AuthController {
      *
      * @return
      */
-    @ApiOperation(value = "获取认证信息")
     @GetMapping("/getAuth.do")
     public ApiResponse getPublicKey() {
         return ApiResponse.success(authService.getAuth());
@@ -42,7 +37,6 @@ public class AuthController {
      * @param loginInfo
      * @return
      */
-    @ApiOperation(value = "用户登录")
     @PostMapping("/login.do")
     public ApiResponse login(@RequestBody @Valid LoginForm loginInfo) {
         return ApiResponse.success(authService.login(loginInfo));
@@ -53,7 +47,6 @@ public class AuthController {
      *
      * @return
      */
-    @ApiOperation(value = "注销用户")
     @PostMapping("/logout.do")
     public ApiResponse logout() {
         authService.logout();
@@ -65,7 +58,6 @@ public class AuthController {
      *
      * @return
      */
-    @ApiOperation(value = "获取用户信息")
     @GetMapping("/getUserInfo.do")
     public ApiResponse getInfo() {
         return ApiResponse.success(authService.getUserInfo(null));
@@ -76,7 +68,6 @@ public class AuthController {
      *
      * @return
      */
-    @ApiOperation(value = "刷新token")
     @GetMapping("/refreshToken.do")
     public ApiResponse refreshToken(@RequestParam String token) {
         return ApiResponse.success(authService.refreshToken(token));

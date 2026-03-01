@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.pufferfishscheduler.common.bean.EtlApplicationContext;
 import com.pufferfishscheduler.common.bean.UserContext;
 import com.pufferfishscheduler.common.constants.Constants;
 import com.pufferfishscheduler.common.enums.DatabaseCategory;
@@ -13,21 +14,16 @@ import com.pufferfishscheduler.common.exception.BusinessException;
 import com.pufferfishscheduler.common.node.GenericTreeBuilder;
 import com.pufferfishscheduler.common.node.TreeNode;
 import com.pufferfishscheduler.common.utils.DateUtil;
-import com.pufferfishscheduler.dao.entity.DbDatabase;
-import com.pufferfishscheduler.dao.entity.DbGroup;
-import com.pufferfishscheduler.dao.entity.MetadataTask;
+import com.pufferfishscheduler.dao.entity.*;
 import com.pufferfishscheduler.dao.mapper.MetadataTaskMapper;
 import com.pufferfishscheduler.domain.form.metadata.MetadataTaskForm;
 import com.pufferfishscheduler.common.node.Tree;
 import com.pufferfishscheduler.domain.form.metadata.MetadataTaskUpdateForm;
 import com.pufferfishscheduler.domain.vo.metadata.MetadataTaskVo;
-import com.pufferfishscheduler.service.database.DbBasicService;
-import com.pufferfishscheduler.service.database.DbDatabaseService;
-import com.pufferfishscheduler.service.database.DbGroupService;
-import com.pufferfishscheduler.service.database.MetadataService;
+import com.pufferfishscheduler.service.database.*;
 import com.pufferfishscheduler.service.dict.service.DictService;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,13 +57,16 @@ public class MetadataServiceImpl implements MetadataService {
     private DbBasicService basicService;
 
     @Autowired
-    private DbSyncExecutor dbSyncExecutor;
-
-    @Autowired
     private MetadataTaskMapper metadataTaskMapper;
 
     @Autowired
     private GenericTreeBuilder treeBuilder;
+
+    @Autowired
+    private DbSyncExecutor dbSyncExecutor;
+//
+//    @Autowired
+//    private SchedulerManager schedulerManager;
 
     /**
      * 获取元数据分组树形结构
@@ -253,6 +252,9 @@ public class MetadataServiceImpl implements MetadataService {
         // 是否启用
         metadataTask.setEnable(Enable.ENABLE.getCode().equals(taskForm.getEnable()));
         metadataTaskMapper.insert(metadataTask);
+
+        // 创建对应的Quartz定时任务
+        createQuartzJobForMetadataTask(metadataTask);
     }
 
     /**
@@ -274,6 +276,9 @@ public class MetadataServiceImpl implements MetadataService {
         task.setUpdatedBy(UserContext.getCurrentAccount());
         task.setUpdatedTime(new Date());
         metadataTaskMapper.updateById(task);
+
+        // 更新对应的Quartz定时任务
+        updateQuartzJobForMetadataTask(task);
     }
 
     /**
@@ -312,6 +317,56 @@ public class MetadataServiceImpl implements MetadataService {
                 .set("updated_time", new Date());
 
         metadataTaskMapper.update(null, updateWrapper);
+    }
+
+    /**
+     * 为元数据同步任务创建定时任务
+     *
+     * @param metadataTask 元数据任务
+     */
+    private void createQuartzJobForMetadataTask(MetadataTask metadataTask) {
+//        try {
+//            QuartzJobDetail quartzJob = new QuartzJobDetail();
+//            quartzJob.setJobId(metadataTask.getId().longValue());
+//            quartzJob.setJobName("metadata_sync_" + metadataTask.getId());
+//            quartzJob.setJobGroup("METADATA_SYNC");
+//            quartzJob.setInvokeTarget("metadataService.metadataSync(" + metadataTask.getDbId() + ")");
+//            quartzJob.setCronExpression(metadataTask.getCronExpression());
+//            quartzJob.setMisfirePolicy(WorkerConstants.MISFIRE_DEFAULT);
+//            quartzJob.setConcurrent("0"); // 不允许并发执行
+//            quartzJob.setStatus(WorkerConstants.Status.NORMAL.getValue());
+//
+//            schedulerManager.createJob(quartzJob);
+//            log.info("成功为元数据同步任务[id={}]创建定时任务", metadataTask.getId());
+//        } catch (Exception e) {
+//            log.error("为元数据同步任务[id={}]创建定时任务失败", metadataTask.getId(), e);
+//            throw new BusinessException("创建定时任务失败: " + e.getMessage());
+//        }
+    }
+
+    /**
+     * 更新元数据同步任务的定时任务
+     *
+     * @param metadataTask 元数据任务
+     */
+    private void updateQuartzJobForMetadataTask(MetadataTask metadataTask) {
+//        try {
+//            QuartzJobDetail quartzJob = new QuartzJobDetail();
+//            quartzJob.setJobId(metadataTask.getId().longValue());
+//            quartzJob.setJobName("metadata_sync_" + metadataTask.getId());
+//            quartzJob.setJobGroup("METADATA_SYNC");
+//            quartzJob.setInvokeTarget("metadataService.metadataSync(" + metadataTask.getDbId() + ")");
+//            quartzJob.setCronExpression(metadataTask.getCronExpression());
+//            quartzJob.setMisfirePolicy(WorkerConstants.MISFIRE_DEFAULT);
+//            quartzJob.setConcurrent("0"); // 不允许并发执行
+//            quartzJob.setStatus(WorkerConstants.Status.NORMAL.getValue());
+//
+//            schedulerManager.updateJob(quartzJob);
+//            log.info("成功更新元数据同步任务[id={}]的定时任务", metadataTask.getId());
+//        } catch (Exception e) {
+//            log.error("更新元数据同步任务[id={}]的定时任务失败", metadataTask.getId(), e);
+//            throw new BusinessException("更新定时任务失败: " + e.getMessage());
+//        }
     }
 
     /**
