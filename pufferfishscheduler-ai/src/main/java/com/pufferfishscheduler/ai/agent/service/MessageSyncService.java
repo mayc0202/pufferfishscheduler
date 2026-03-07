@@ -1,11 +1,13 @@
 package com.pufferfishscheduler.ai.agent.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.pufferfishscheduler.ai.mannger.ChatMessageRedisManager;
 import com.pufferfishscheduler.dao.entity.ChatMessageEntity;
 import com.pufferfishscheduler.dao.entity.ChatSessionEntity;
 import com.pufferfishscheduler.dao.mapper.ChatMessageMapper;
 import com.pufferfishscheduler.dao.mapper.ChatSessionMapper;
-import com.pufferfishscheduler.domain.model.RedisMessageEntity;
+import com.pufferfishscheduler.domain.model.agent.RedisMessageEntity;
+
 import lombok.Builder;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;

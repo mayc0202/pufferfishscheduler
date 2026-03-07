@@ -1,5 +1,6 @@
 package com.pufferfishscheduler.common.enums;
 
+import com.pufferfishscheduler.common.exception.BusinessException;
 import lombok.Getter;
 
 import java.util.Arrays;
@@ -48,13 +49,9 @@ public enum FileType {
     }
 
     /**
-     * 根据状态码获取对应的 Enable 枚举实例 (推荐使用)。
-     * <p>
-     * 这是一个类型安全的转换方法，参数和枚举的 code 字段都是 String 类型。
-     * 当输入未知的状态码时，它会返回一个空的 {@link Optional} 对象，避免了空指针异常。
      *
-     * @param code 状态码 (字符串类型)
-     * @return 一个包含对应 {@link Enable} 实例的 {@link Optional}，如果找不到则为空
+     * @param code
+     * @return
      */
     public static Optional<FileType> fromCode(String code) {
         return Arrays.stream(FileType.values())
@@ -63,17 +60,12 @@ public enum FileType {
     }
 
     /**
-     * 根据状态码获取对应的 Enable 枚举实例 (快速失败版)。
-     * <p>
-     * 适用于调用方能够保证输入状态码（字符串类型）一定有效的场景。
-     * 如果输入了无效的状态码，它会立即抛出 {@link IllegalArgumentException}。
      *
-     * @param code 状态码 (字符串类型)
-     * @return TaskStatus 枚举实例
-     * @throws IllegalArgumentException 如果状态码无效
+     * @param code
+     * @return
      */
     public static FileType valueOfCode(String code) {
         return fromCode(code)
-                .orElseThrow(() -> new IllegalArgumentException("无效的状态类型: " + code));
+                .orElseThrow(() -> new BusinessException("无效的状态类型: " + code));
     }
 }

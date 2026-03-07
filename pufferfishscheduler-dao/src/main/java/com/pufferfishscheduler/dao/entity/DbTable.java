@@ -3,8 +3,12 @@ package com.pufferfishscheduler.dao.entity;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -12,9 +16,13 @@ import java.util.Date;
  * db_table
  */
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @TableName(value = "db_table")
 public class DbTable implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     /**

@@ -1,13 +1,33 @@
 server:
   servlet:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
     context-path: /pufferfishscheduler
-  port: 8080
+  port: 8081
 
 spring:
+  messages:
+    encoding: UTF-8
   main:
     allow-circular-references: true # 开启循环依赖
   application:
     name: pufferfishscheduler
+  # Springdoc OpenAPI 配置
+  doc:
+    api-docs:
+      enabled: true
+      path: /api-docs
+    swagger-ui:
+      enabled: true
+      path: /swagger-ui.html
+      operations-sorter: method
+      tags-sorter: alpha
+      display-request-duration: true
+      try-it-out-enabled: true
+      filter: true
+
   servlet:
     multipart: # 限制上传的文件最大值
       max-request-size: 512MB
@@ -63,6 +83,35 @@ spring:
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher  # 兼容Swagger的路径匹配策略
+
+# Dubbo配置
+dubbo:
+  metrics:
+    enable-jvm: false
+    enable-registry: false
+    enable-metadata: false
+    enable-rpc: false
+  application:
+    name: pufferfishscheduler
+    qos-enable: false
+    parameters: # 连接池配置
+      connection-pool: true
+      max-idle-per-key: 10
+      min-idle-per-key: 2
+      max-total: 100
+  protocol:
+    name: dubbo
+    port: 20881
+  consumer:
+    check: false  # 关闭启动时检查
+    timeout: 60000
+    retries: 3 # 重试次数
+  registry: # 注册中心配置
+    check: false  # 注册中心启动时不检查
+    address: nacos://localhost:8848
+#    username: nacos
+#    password: nacos
+#    timeout: 5000
 
 # mybatis-plus配置
 mybatis-plus:

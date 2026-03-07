@@ -9,6 +9,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
@@ -22,7 +24,10 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @TableName("chat_session")
-public class ChatSessionEntity {
+public class ChatSessionEntity implements Serializable {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     @TableId(type = IdType.AUTO)
     private Integer id;

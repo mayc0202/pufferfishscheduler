@@ -19,7 +19,7 @@
         <result property="isStatsByDay" column="is_stats_by_day" jdbcType="INTEGER"/>
         <result property="lastSyncTime" column="last_sync_time" jdbcType="TIMESTAMP"/>
         <result property="dataSyncCycle" column="data_sync_cycle" jdbcType="INTEGER"/>
-        <result property="deleted" column="deleted" jdbcType="INTEGER"/>
+        <result property="deleted" column="deleted" jdbcType="BOOLEAN"/>
         <result property="createdBy" column="created_by" jdbcType="VARCHAR"/>
         <result property="createdTime" column="created_time" jdbcType="TIMESTAMP"/>
         <result property="updatedBy" column="updated_by" jdbcType="VARCHAR"/>

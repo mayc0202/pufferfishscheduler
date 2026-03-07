@@ -1,6 +1,7 @@
 package com.pufferfishscheduler.common.exception;
 
 import com.pufferfishscheduler.common.result.ApiResponse;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -21,6 +22,8 @@ import java.net.SocketTimeoutException;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 
@@ -67,6 +70,17 @@ public class GlobalExceptionHandler {
     @ResponseBody
     public ApiResponse handleIllegalArgumentException(IllegalArgumentException e) {
         log.warn("参数不合法异常: {}", e.getMessage());
+        return ApiResponse.failure(e.getMessage());
+    }
+
+    /**
+     * 处理参数不合法异常
+     */
+    @ExceptionHandler(IllegalStateException.class)
+    @ResponseBody
+    public ApiResponse handleIllegalStateException(IllegalStateException e, HttpServletRequest request) {
+        // 其他IllegalStateException情况
+        log.warn("非法状态异常: {}", e.getMessage());
         return ApiResponse.failure(e.getMessage());
     }
 

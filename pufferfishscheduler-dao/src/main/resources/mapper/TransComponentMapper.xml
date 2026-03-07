@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.pufferfishscheduler.dao.mapper.TransComponentMapper">
+
+    <resultMap type="com.pufferfishscheduler.dao.entity.TransComponent" id="TransComponentMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="code" column="code" jdbcType="VARCHAR"/>
+        <result property="name" column="name" jdbcType="VARCHAR"/>
+        <result property="type" column="type" jdbcType="VARCHAR"/>
+        <result property="type" column="type" jdbcType="VARCHAR"/>
+        <result property="className" column="class_name" jdbcType="VARCHAR"/>
+        <result property="icon" column="icon" jdbcType="VARCHAR"/>
+        <result property="orderBy" column="order_by" jdbcType="INTEGER"/>
+        <result property="config" column="config" jdbcType="VARCHAR"/>
+        <result property="enabled" column="enabled" jdbcType="BOOLEAN"/>
+        <result property="description" column="description" jdbcType="VARCHAR"/>
+        <result property="createdBy" column="created_by" jdbcType="VARCHAR"/>
+        <result property="createdTime" column="created_time" jdbcType="TIMESTAMP"/>
+        <result property="updatedBy" column="updated_by" jdbcType="VARCHAR"/>
+        <result property="updatedTime" column="updated_time" jdbcType="TIMESTAMP"/>
+        <result property="supportError" column="support_error" jdbcType="BOOLEAN"/>
+        <result property="supportCopy" column="support_copy" jdbcType="BOOLEAN"/>
+        <result property="supportLocalFile" column="support_local_file" jdbcType="BOOLEAN"/>
+        <result property="stage" column="stage" jdbcType="VARCHAR"/>
+    </resultMap>
+
+</mapper>
+

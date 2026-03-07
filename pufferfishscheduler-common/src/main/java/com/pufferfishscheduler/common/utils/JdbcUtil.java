@@ -4,7 +4,8 @@ import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
 import com.pufferfishscheduler.common.constants.Constants;
 import com.pufferfishscheduler.common.exception.BusinessException;
-import com.pufferfishscheduler.domain.model.DatabaseConnectionInfo;
+import com.pufferfishscheduler.domain.model.database.DatabaseConnectionInfo;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -105,7 +106,7 @@ public class JdbcUtil {
                 return DM_DRIVER;
 
             default:
-                throw new IllegalArgumentException("Unsupported database type: " + type);
+                throw new BusinessException("Unsupported database type: " + type);
         }
     }
 

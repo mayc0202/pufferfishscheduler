@@ -1,6 +1,6 @@
 package com.pufferfishscheduler.worker.quartz.util;
 
-import com.pufferfishscheduler.domain.model.QuartzJobDetail;
+import com.pufferfishscheduler.domain.model.quartz.QuartzJobDetail;
 import com.pufferfishscheduler.worker.quartz.constants.WorkerConstants;
 import com.pufferfishscheduler.worker.quartz.job.QuartzDisallowConcurrentExecution;
 import com.pufferfishscheduler.worker.quartz.job.QuartzJobExecution;

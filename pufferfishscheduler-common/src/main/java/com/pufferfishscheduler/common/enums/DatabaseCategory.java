@@ -1,5 +1,6 @@
 package com.pufferfishscheduler.common.enums;
 
+import com.pufferfishscheduler.common.exception.BusinessException;
 import lombok.Getter;
 
 import java.util.Arrays;
@@ -69,14 +70,14 @@ public enum DatabaseCategory {
      * 根据状态码获取对应的 DatabaseCategory 枚举实例 (快速失败版)。
      * <p>
      * 适用于调用方能够保证输入状态码（字符串类型）一定有效的场景。
-     * 如果输入了无效的状态码，它会立即抛出 {@link IllegalArgumentException}。
+     * 如果输入了无效的状态码，它会立即抛出 {@link BusinessException}。
      *
      * @param code 状态码 (字符串类型)
      * @return TaskStatus 枚举实例
-     * @throws IllegalArgumentException 如果状态码无效
+     * @throws BusinessException 如果状态码无效
      */
     public static DatabaseCategory valueOfCode(String code) {
         return fromCode(code)
-                .orElseThrow(() -> new IllegalArgumentException("无效的数据库类型: " + code));
+                .orElseThrow(() -> new BusinessException("无效的数据库类型: " + code));
     }
 }

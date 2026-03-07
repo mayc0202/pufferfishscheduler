@@ -1,7 +1,8 @@
 package com.pufferfishscheduler.worker.quartz.util;
 
-import com.pufferfishscheduler.common.bean.EtlApplicationContext;
-import com.pufferfishscheduler.domain.model.QuartzJobDetail;
+import com.pufferfishscheduler.common.bean.PufferfishSchedulerApplicationContext;
+import com.pufferfishscheduler.domain.model.quartz.QuartzJobDetail;
+
 import org.apache.commons.lang3.StringUtils;
 
 import java.lang.reflect.InvocationTargetException;
@@ -31,7 +32,7 @@ public class JobInvokeUtil {
         List<Object[]> methodParams = getMethodParams(invokeTarget);
 
         if (!isValidClassName(beanName)) {
-            Object bean = EtlApplicationContext.getBean(beanName);
+            Object bean = PufferfishSchedulerApplicationContext.getBean(beanName);
             invokeMethod(bean, methodName, methodParams);
         } else {
             Object bean = Class.forName(beanName).newInstance();

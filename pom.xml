@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.pufferfishscheduler</groupId>
@@ -10,15 +10,15 @@
     <version>1.0-SNAPSHOT</version>
 
     <modules>
-        <module>pufferfishscheduler-aop</module>
-        <module>pufferfishscheduler-master</module>
-        <module>pufferfishscheduler-worker</module>
-        <module>pufferfishscheduler-service</module>
-        <module>pufferfishscheduler-dao</module>
-        <module>pufferfishscheduler-cdc</module>
         <module>pufferfishscheduler-common</module>
         <module>pufferfishscheduler-domain</module>
+        <module>pufferfishscheduler-dao</module>
+        <module>pufferfishscheduler-aop</module>
+        <module>pufferfishscheduler-cdc</module>
+        <module>pufferfishscheduler-master</module>
+        <module>pufferfishscheduler-worker</module>
         <module>pufferfishscheduler-ai</module>
+        <module>pufferfishscheduler-api</module>
     </modules>
 
     <!-- version -->
@@ -39,6 +39,11 @@
         <!-- Spring AI -->
         <spring-ai.version>1.0.0</spring-ai.version>
         <spring-ai-alibaba.version>1.0.0.4</spring-ai-alibaba.version>
+
+        <!--Dubbo-->
+        <dubbo.version>3.2.14</dubbo.version>
+        <!--Nacos-->
+        <nacos.version>3.1.1</nacos.version>
 
         <!-- mybatis-plus -->
         <mybatis-plus.version>3.5.8</mybatis-plus.version>
@@ -75,7 +80,7 @@
         <!--lombok-->
         <lombok.version>1.18.36</lombok.version>
         <!--fastjson2-->
-        <fastjson.version>2.0.20</fastjson.version>
+        <fastjson.version>2.0.53</fastjson.version>
         <!--commons-net-->
         <commons-net.version>3.6</commons-net.version>
         <!--commons-io-->
@@ -92,16 +97,22 @@
         <jwt.version>3.10.3</jwt.version>
         <!-- jjwt -->
         <jjwt.version>0.12.5</jjwt.version>
+        <!-- easyexcel -->
+        <easyexcel.version>2.2.11</easyexcel.version>
+        <!-- c3p0 -->
+        <c3p0.version>0.9.5.5</c3p0.version>
 
-        <!--Dubbo-->
-        <dubbo.version>3.2.7</dubbo.version>
-        <!--Nacos-->
-        <nacos.version>2.2.3</nacos.version>
+        <!-- springdoc-openapi -->
+        <springdoc.version>2.4.0</springdoc.version>
 
         <!--poi-tl-->
         <poi-tl.version>1.12.1</poi-tl.version>
+        <!-- eclipse swt -->
+        <swt.version>3.114.0</swt.version>
+        <!-- expiringmap -->
+        <expiringmap.version>0.5.13</expiringmap.version>
         <!-- kettle -->
-        <kettle.revision>9.2.0.0-290</kettle.revision>
+        <pentaho-kettle.version>9.2.0.0-290</pentaho-kettle.version>
     </properties>
 
     <dependencyManagement>
@@ -137,7 +148,14 @@
                 <version>${dubbo.version}</version>
             </dependency>
 
-            <!--nacos-->
+            <!-- Dubbo Registry -->
+            <dependency>
+                <groupId>org.apache.dubbo</groupId>
+                <artifactId>dubbo-registry-nacos</artifactId>
+                <version>${dubbo.version}</version>
+            </dependency>
+
+            <!-- Nacos 客户端 -->
             <dependency>
                 <groupId>com.alibaba.nacos</groupId>
                 <artifactId>nacos-client</artifactId>
@@ -218,7 +236,7 @@
             <dependency>
                 <groupId>com.alibaba</groupId>
                 <artifactId>easyexcel</artifactId>
-                <version>2.2.11</version>
+                <version>${easyexcel.version}</version>
             </dependency>
 
             <!-- lombok -->
@@ -281,7 +299,7 @@
             <dependency>
                 <groupId>com.mchange</groupId>
                 <artifactId>c3p0</artifactId>
-                <version>0.9.5.5</version>
+                <version>${c3p0.version}</version>
             </dependency>
 
             <!-- caffeine -->
@@ -319,12 +337,114 @@
                 <version>${tika-core.version}</version>
             </dependency>
 
+            <!-- Springdoc OpenAPI (替代Springfox，支持Spring Boot 3.x) -->
+            <dependency>
+                <groupId>org.springdoc</groupId>
+                <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+                <version>${springdoc.version}</version>
+            </dependency>
+
             <!-- poi-tl -->
             <dependency>
                 <groupId>com.deepoove</groupId>
                 <artifactId>poi-tl</artifactId>
                 <version>${poi-tl.version}</version>
             </dependency>
+
+            <!-- Kettle核心依赖 -->
+            <dependency>
+                <groupId>pentaho-kettle</groupId>
+                <artifactId>kettle-core</artifactId>
+                <version>${pentaho-kettle.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.slf4j</groupId>
+                        <artifactId>slf4j-log4j12</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.javassist</groupId>
+                        <artifactId>javassist</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <dependency>
+                <groupId>pentaho-kettle</groupId>
+                <artifactId>kettle-engine</artifactId>
+                <version>${pentaho-kettle.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>javax.servlet</groupId>
+                        <artifactId>servlet-api</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.eclipse.jetty</groupId>
+                        <artifactId>jetty-server</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.eclipse.jetty</groupId>
+                        <artifactId>jetty-plus</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.eclipse.jetty</groupId>
+                        <artifactId>jetty-security</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.eclipse.jetty</groupId>
+                        <artifactId>jetty-servlet</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.eclipse.jetty</groupId>
+                        <artifactId>jetty-xml</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.eclipse.jetty</groupId>
+                        <artifactId>jetty-webapp</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.springframework.security</groupId>
+                        <artifactId>spring-security-core</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.springframework</groupId>
+                        <artifactId>spring-beans</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.codehaus.groovy</groupId>
+                        <artifactId>groovy-all</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <dependency>
+                <groupId>pentaho-kettle</groupId>
+                <artifactId>kettle-dbdialog</artifactId>
+                <version>${pentaho-kettle.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>pentaho-kettle</groupId>
+                <artifactId>kettle-ui-swt</artifactId>
+                <version>${pentaho-kettle.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.slf4j</groupId>
+                        <artifactId>slf4j-log4j12</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>commons-net</groupId>
+                        <artifactId>commons-net</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <!-- 添加 pentaho 加密库 -->
+            <dependency>
+                <groupId>pentaho</groupId>
+                <artifactId>pentaho-encryption</artifactId>
+                <version>9.4.0.0-343</version>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 
@@ -387,6 +507,11 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>3.4.0</version>
             </plugin>
         </plugins>
     </build>

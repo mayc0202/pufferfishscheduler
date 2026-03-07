@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.pufferfishscheduler.dao.mapper.KettleFlowRepositoryMapper">
+
+    <resultMap id="BaseResultMap" type="com.pufferfishscheduler.dao.entity.KettleFlowRepository">
+        <id column="id" jdbcType="VARCHAR" property="id" />
+        <result column="biz_type" jdbcType="VARCHAR" property="bizType" />
+        <result column="biz_object_id" jdbcType="VARCHAR" property="bizObjectId" />
+        <result column="flow_status" jdbcType="TINYINT" property="flowStatus" />
+        <result column="flow_type" jdbcType="VARCHAR" property="flowType" />
+        <result column="flow_content" jdbcType="VARCHAR" property="flowContent" />
+        <result column="flow_json" jdbcType="VARCHAR" property="flowJson" />
+        <result column="executor_host" jdbcType="VARCHAR" property="executorHost" />
+        <result column="executor_port" jdbcType="INTEGER" property="executorPort" />
+        <result column="version" jdbcType="INTEGER" property="version" />
+        <result column="created_by" jdbcType="VARCHAR" property="createdBy" />
+        <result column="created_time" jdbcType="TIMESTAMP" property="createdTime" />
+        <result column="updated_by" jdbcType="VARCHAR" property="updatedBy" />
+        <result column="updated_time" jdbcType="TIMESTAMP" property="updatedTime" />
+    </resultMap>
+
+    <sql id="Base_Column_List"> id, biz_type, biz_object_id, flow_status, flow_type, flow_content,
+        flow_json, executor_host, executor_port, version, created_by, created_time, updated_by,
+        updated_time </sql>
+
+    <!-- 对应INSERT语句 -->
+    <insert id="insertFlow" parameterType="com.pufferfishscheduler.dao.entity.KettleFlowRepository">
+        INSERT INTO kettle_flow_repository ( id, biz_type, biz_object_id, flow_status, flow_type,
+        flow_content, flow_json, executor_host, executor_port, version, created_by, created_time,
+        updated_by, updated_time ) VALUES ( #{id}, #{bizType}, #{bizObjectId}, #{flowStatus},
+        #{flowType}, #{flowContent}, #{flowJson}, #{executorHost}, #{executorPort}, #{version},
+        #{createdBy}, #{createdTime}, #{updatedBy}, #{updatedTime} ) </insert>
+
+    <!-- 更新指定业务类型和业务对象ID的流程 -->
+    <update id="updateFlow"> UPDATE kettle_flow_repository SET flow_type = #{flowType}, flow_content
+        = #{flowContent}, updated_time = NOW() WHERE biz_type = #{bizType} AND biz_object_id =
+        #{bizObjectId} </update>
+
+    <!-- 更新指定业务类型和业务对象ID的主机名 -->
+    <update id="updateHostName"> UPDATE kettle_flow_repository SET executor_host = #{hostName},
+        updated_time = NOW() WHERE biz_type = #{bizType} AND biz_object_id = #{bizObjectId} </update>
+
+    <!-- 删除指定业务类型和业务对象ID的流程 -->
+    <delete id="deleteFlow"> DELETE FROM kettle_flow_repository WHERE biz_type = #{bizType} AND
+        biz_object_id = #{bizObjectId} </delete>
+
+    <!-- 根据业务表关联ID查询最新版本流程 -->
+    <select id="selectByBizTypeAndBizObjectId" resultMap="BaseResultMap"> SELECT <include
+            refid="Base_Column_List" /> FROM kettle_flow_repository WHERE biz_type = #{bizType} AND
+        biz_object_id = #{bizObjectId} ORDER BY version DESC LIMIT 1 </select>
+
+    <!-- 根据主机名查询所有流程 -->
+    <select id="selectByHostName" resultMap="BaseResultMap"> SELECT <include
+            refid="Base_Column_List" /> FROM kettle_flow_repository WHERE executor_host =
+        #{hostName} ORDER BY updated_time DESC </select>
+
+
+</mapper>

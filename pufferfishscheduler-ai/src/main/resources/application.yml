@@ -7,12 +7,13 @@ server:
       force: true
 
 spring:
+  application:
+    name: pufferfishscheduler-ai # 应用名称
   main:
-    allow-circular-references: true  # 允许循环依赖
-
+    allow-circular-references: false  # 允许循环依赖
   autoconfigure:
     exclude:
-        - org.springframework.ai.vectorstore.redis.autoconfigure.RedisVectorStoreAutoConfiguration
+      - org.springframework.ai.vectorstore.redis.autoconfigure.RedisVectorStoreAutoConfiguration
 
   # datasource
   datasource:
@@ -87,6 +88,16 @@ spring:
         index-name: custom-index # Redis键名前缀，用于区分不同应用的向量数据
         prefix: custom-prefix  # Redis向量索引名称
 
+# Dubbo 服务
+dubbo:
+  application:
+    name: pufferfishscheduler-ai
+  protocol:
+    name: dubbo
+    port: 20882
+  registry:
+    address: nacos://localhost:8848
+
 # 安全配置
 security:
   # AES密钥
@@ -122,7 +133,8 @@ logging:
     com.zaxxer.hikari: info
     org.springframework.ai.chat.client.advisor: debug
     org.springframework.ai: debug
-    org.springframework.ai.ollama: debug
     com.pufferfish.ai: debug
+    org.apache.dubbo: DEBUG
+    com.alibaba.nacos: DEBUG
   pattern:
     console: "%d %clr(%5p) ---- [%t] %clr(%-40.40c){cyan} : %m %n"

@@ -4,9 +4,11 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 /**
@@ -16,11 +18,13 @@ import java.io.Serializable;
  * @since 2025-09-11  01:30
  */
 @Data
-@AllArgsConstructor
+@Builder
 @NoArgsConstructor
+@AllArgsConstructor
 @TableName(value = "quartz_job")
 public class QuartzJob implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     // 任务id

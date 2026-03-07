@@ -1,5 +1,6 @@
 package com.pufferfishscheduler.ai;
 
+import org.apache.dubbo.config.spring.context.annotation.EnableDubbo;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -12,6 +13,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
  * @author Mayc
  * @since 2026-02-28  18:16
  */
+@EnableDubbo
 @EnableScheduling
 @ComponentScan(basePackages = {"com.pufferfishscheduler"})
 @MapperScan(value = "com.pufferfishscheduler.dao.mapper", annotationClass = org.apache.ibatis.annotations.Mapper.class) // 扫描所有Mapper接口

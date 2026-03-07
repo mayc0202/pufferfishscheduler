@@ -1,7 +1,8 @@
 package com.pufferfishscheduler.ai.repository;
 
-import com.pufferfishscheduler.ai.agent.service.ChatMessageRedisManager;
-import com.pufferfishscheduler.domain.model.RedisMessageEntity;
+import com.pufferfishscheduler.ai.mannger.ChatMessageRedisManager;
+import com.pufferfishscheduler.domain.model.agent.RedisMessageEntity;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.memory.ChatMemoryRepository;

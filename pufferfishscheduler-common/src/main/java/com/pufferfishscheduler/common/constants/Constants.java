@@ -7,7 +7,6 @@ public interface Constants {
     String DEFAULT_DATE_FORMAT_2 = "yyyyMMdd";
     String DEFAULT_DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
-
     // 默认编码UTF-8
     String CONTROL_ENCODING = "UTF-8";
     String TIME_ZONE = "Etc/GMT-8";
@@ -109,6 +108,9 @@ public interface Constants {
         String KAFKA = "Kafka";
     }
 
+    /**
+     * 数据库类型
+     */
     interface DbType {
         String mysql = "mysql";
         String oracle = "oracle";
@@ -123,6 +125,86 @@ public interface Constants {
         String vastbaseg100 = "vastbase_g100";
         String gaussdb = "gaussdb";
         String kingbase = "kingbasees_v8";
+    }
+
+    /**
+     * 任务配置类型
+     */
+    interface JOB_CONFIG_TYPE {
+        String SQL = "1";
+        String VISUAL = "2";
+    }
+
+    /**
+     * 增量类型
+     */
+    interface INCREMENT_TYPE {
+        String NUMBER_TYPE = "1";
+        String DATE_TYPE = "2";
+    }
+
+    /*
+     * 表输出分区类型
+     */
+    interface PARTITIONING_TYPE {
+        String TIME = "1"; // 按时间
+        String CUSTOMIZE = "2"; // 自定义
+    }
+
+    /**
+     * 表输出分区时间类型
+     */
+    interface PARTITIONING_TIME {
+        String MONTH = "m"; // 按月
+        String DAY = "d"; // 按天
+    }
+
+    /**
+     * 
+     */
+    interface Category {
+        String R = "R";
+        String N = "N";
+        String B = "B";
+        String E = "E";
+        String O = "O";
+    }
+
+    /**
+     * kettle 数据库类型
+     */
+    interface Kettle_DataBaseType {
+        String mysql = "MYSQL";
+        String oracle = "ORACLE";
+        String sqlServer = "MSSQL";
+        String postgresql = "POSTGRESQL";
+        String generic = "GENERIC";
+    }
+
+    /**
+     * 缓存配置
+     */
+    interface CACHE_CONFIG {
+        String ATRRIBUTE_CUSTOM_URL = "CUSTOM_URL";
+        String ATRRIBUTE_CUSTOM_DRIVER_CLASS = "CUSTOM_DRIVER_CLASS";
+    }
+
+    /**
+     * Debezium JSON 字段
+     */
+    interface DEBEZIUM_JSON {
+        String FIELDS = "fields";
+        String FIELD = "field";
+        String OP = "op";
+        String SAMPLE_DATA = "sampleData";
+        String PAY_LOAD = "payload";
+        String SCHEMA = "schema";
+        String AFTER = "after";
+        String BEFORE = "before";
+        String R = "r";
+        String C = "c";
+        String U = "u";
+        String D = "d";
     }
 
     /**
@@ -259,10 +341,85 @@ public interface Constants {
         String CHAT = "chat";
     }
 
+    /**
+     * 执行状态
+     */
+    interface EXECUTE_STATUS {
+        String BREAKPOINT = "B";
+        String RUNNING = "R";
+        String FAILURE = "F";
+        String SUCCESS = "S";
+    }
+
+    String TRANS = "TRANS";
+
+    String START = "start";
+
+    String END = "end";
+
+    String DEFAULT = "default";
 
     /**
-     * 组件code
+     * 执行类型
      */
-    interface PLUGIN_CODE {
+    interface EXECUTE_TYPE {
+        String TIMING = "1";
+        String FLOW = "2";
+        String STREAM = "3";
+    }
+
+    /**
+     * 组件类型
+     */
+    interface StepMetaType {
+        String TABLE_INPUT = "TableInput";
+        String GENERATE_TEST_DATA = "generateTestData";
+        String EXCEL_INPUT = "excelInput";
+        String CSV_INPUT = "csvInput";
+        String JSON_INPUT = "jsonInput";
+        String MONGODB_INPUT = "mongoDBInput";
+        String FIELD_SELECT = "fieldSelect";
+        String API_INPUT = "apiInput";
+        String KAFKA_CONSUMER_INPUT = "KafkaConsumerInput";
+        String RECORDS_FROM_STREAM = "RecordsFromStream";
+        String REDIS_INPUT = "RedisInput";
+
+        String TABLE_OUTPUT = "TableOutput";
+        String INSERT_OR_UPDATE = "insertOrUpdate";
+        String UPDATE = "update";
+        String EXCEL_OUTPUT = "excelOutput";
+        String JSON_OUTPUT = "jsonOutput";
+        String MONGODB_OUTPUT = "mongoDBOutput";
+        String API_OUTPUT = "apiOutput";
+        String FILE_DOWNLOAD = "fileDownload";
+        String KAFKA_PRODUCER_OUTPUT = "KafkaProducerOutput";
+        String REDIS_OUTPUT = "RedisOutput";
+        String STARROCKS_OUTPUT = "StarRocksOutput";
+        String DORIS_OUTPUT = "DorisOutput"; // DorisOutput输出
+
+        String JAVA_CODE = "JavaCode";
+        String EXECUTE_SQL_SCRIPT = "executeSQL";
+
+        String CONDITIONAL_JAVA = "conditionalJava";
+        String PROCESS_BRANCH = "processBranch";
+
+        String GET_VARIABLES = "geVariables";
+        String SET_VARIABLES = "setVariables";
+
+        String SYSTEM_DATE = "SystemDate";
+        String FORMULA = "formula";
+        String DENORMALISER = "Denormaliser"; // 行转列
+        String NORMALISER = "Normaliser"; // 列转行
+        String SPLITFIELDTOROWS3 = "SplitFieldToRows3"; // 字段拆分为多行
+        String FIELDSPLITTER = "FieldSplitter"; // 字段拆分为多列
+        String GROUPBY = "GroupBy"; // 分组
+        String FILTER = "filter"; // 过滤
+        String DATA_CLEAN = "dataclean"; // 清洗
+        String DEBEZIUM_JSON = "DebeziumJson"; // Debezium格式JSON
+
+        String FTP_UPLOAD = "FTPUpload"; // FTP上传
+        String FTP_DOWNLOAD = "FTPDownload"; // FTP下载
+
+        String WRITE_TO_LOG = "WriteToLog";
     }
 }
