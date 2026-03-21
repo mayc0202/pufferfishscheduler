@@ -4,16 +4,36 @@ import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
 import com.pufferfishscheduler.common.constants.Constants;
 import com.pufferfishscheduler.common.exception.BusinessException;
+import com.pufferfishscheduler.domain.domain.ColumnMetadata;
+import com.pufferfishscheduler.domain.domain.QueryResult;
+import com.pufferfishscheduler.domain.domain.TableMetadata;
 import com.pufferfishscheduler.domain.model.database.DatabaseConnectionInfo;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.sql.*;
+import java.sql.Blob;
+import java.sql.Clob;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
+import java.util.Collections;
 
 
 /**
@@ -32,7 +52,8 @@ public class JdbcUtil {
     private static final String DM_URL_FORMAT = "jdbc:dm://%s:%s/%s";
 
     // 驱动类名常量
-    private static final String MYSQL_DRIVER = "com.mysql.jdbc.Driver";
+    // MySQL 8.x 推荐驱动类（旧的 com.mysql.jdbc.Driver 已废弃）
+    private static final String MYSQL_DRIVER = "com.mysql.cj.jdbc.Driver";
     private static final String ORACLE_DRIVER = "oracle.jdbc.driver.OracleDriver";
     private static final String POSTGRESQL_DRIVER = "org.postgresql.Driver";
     private static final String SQLSERVER_DRIVER = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
@@ -200,6 +221,8 @@ public class JdbcUtil {
      */
     private static void addMysqlDefaultProperties(Properties properties, boolean useCursorFetch) {
         properties.put("useSSL", "false");
+        // MySQL 8 + caching_sha2_password 常见必需项，否则会报 “Public Key Retrieval is not allowed”
+        properties.put("allowPublicKeyRetrieval", "true");
         properties.put("useUnicode", "yes");
         properties.put("characterEncoding", "UTF-8");
         properties.put("zeroDateTimeBehavior", "convertToNull");
@@ -308,6 +331,226 @@ public class JdbcUtil {
 
     public static void close(Connection conn) {
         closeConnection(conn);
+    }
+
+    // ======================== 以下为从 JdbcUtils 合并的通用查询/元数据方法 ========================
+
+    private static final int SAMPLE_DATA_LIMIT = 1;
+
+    /**
+     * 获取多张表的元数据（表结构 + 样例数据）。
+     */
+    public static List<TableMetadata> getTablesMetadata(Connection connection, List<String> tableNames) throws SQLException {
+        if (tableNames == null || tableNames.isEmpty()) {
+            return Collections.emptyList();
+        }
+        List<TableMetadata> result = new ArrayList<>();
+        for (String tableName : tableNames) {
+            result.add(getTableMetadata(connection, tableName));
+        }
+        return result;
+    }
+
+    /**
+     * 获取单表元数据。
+     */
+    public static TableMetadata getTableMetadata(Connection connection, String tableName) throws SQLException {
+        logger.debug("获取表元数据: {}", tableName);
+
+        TableMetadata.TableMetadataBuilder builder = TableMetadata.builder().tableName(tableName);
+        List<ColumnMetadata> columns = new ArrayList<>();
+        DatabaseMetaData metaData = connection.getMetaData();
+
+        builder.tableComment(getTableComment(metaData, tableName));
+        columns.addAll(getColumnMetadata(metaData, tableName));
+        setPrimaryKeys(metaData, tableName, columns);
+
+        Map<String, Object> sampleData = getSampleData(connection, tableName);
+        builder.sampleData(sampleData);
+
+        if (sampleData != null) {
+            for (ColumnMetadata column : columns) {
+                if (sampleData.containsKey(column.getColumnName())) {
+                    Object value = sampleData.get(column.getColumnName());
+                    column.setSampleValue(value != null ? safeToString(value) : "NULL");
+                }
+            }
+        }
+
+        builder.columns(columns);
+        return builder.build();
+    }
+
+    private static String getTableComment(DatabaseMetaData metaData, String tableName) throws SQLException {
+        try (ResultSet rs = metaData.getTables(null, null, tableName, new String[]{"TABLE"})) {
+            if (rs.next()) {
+                return rs.getString("REMARKS");
+            }
+        }
+        return "";
+    }
+
+    private static List<ColumnMetadata> getColumnMetadata(DatabaseMetaData metaData, String tableName) throws SQLException {
+        List<ColumnMetadata> columns = new ArrayList<>();
+
+        try (ResultSet rs = metaData.getColumns(null, null, tableName, "%")) {
+            while (rs.next()) {
+                ColumnMetadata column = ColumnMetadata.builder()
+                        .columnName(rs.getString("COLUMN_NAME"))
+                        .columnType(rs.getString("TYPE_NAME"))
+                        .columnSize(rs.getInt("COLUMN_SIZE"))
+                        .decimalDigits(rs.getInt("DECIMAL_DIGITS"))
+                        .isNullable(rs.getInt("NULLABLE") == DatabaseMetaData.columnNullable)
+                        .columnComment(rs.getString("REMARKS"))
+                        .build();
+                columns.add(column);
+            }
+        }
+
+        return columns;
+    }
+
+    private static void setPrimaryKeys(DatabaseMetaData metaData, String tableName, List<ColumnMetadata> columns) throws SQLException {
+        Set<String> pkColumns = new HashSet<>();
+
+        try (ResultSet rs = metaData.getPrimaryKeys(null, null, tableName)) {
+            while (rs.next()) {
+                pkColumns.add(rs.getString("COLUMN_NAME"));
+            }
+        }
+
+        for (ColumnMetadata col : columns) {
+            if (pkColumns.contains(col.getColumnName())) {
+                col.setPrimaryKey(true);
+            }
+        }
+    }
+
+    private static String safeToString(Object obj) {
+        if (obj == null) {
+            return "NULL";
+        }
+        return obj.toString();
+    }
+
+    /**
+     * 获取单行样例数据。
+     */
+    public static Map<String, Object> getSampleData(Connection conn, String tableName) {
+        Map<String, Object> sampleData = new HashMap<>();
+
+        String query = "SELECT * FROM " + tableName + " LIMIT " + SAMPLE_DATA_LIMIT;
+
+        try (Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(query)) {
+
+            ResultSetMetaData metaData = rs.getMetaData();
+            int columnCount = metaData.getColumnCount();
+
+            if (rs.next()) {
+                for (int i = 1; i <= columnCount; i++) {
+                    String columnName = metaData.getColumnName(i);
+                    Object value = rs.getObject(i);
+                    sampleData.put(columnName, value);
+                }
+            }
+        } catch (SQLException e) {
+            logger.warn("获取样例数据失败，表：{}", tableName, e);
+        }
+
+        return sampleData;
+    }
+
+    /**
+     * 通用查询执行，返回 QueryResult。
+     */
+    public static QueryResult executeQuery(Connection conn, String sql) {
+        long start = System.currentTimeMillis();
+        List<Map<String, Object>> data = new ArrayList<>();
+        int rowCount = 0;
+
+        try (Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+
+            ResultSetMetaData metaData = rs.getMetaData();
+            int columnCount = metaData.getColumnCount();
+
+            while (rs.next()) {
+                Map<String, Object> row = new HashMap<>();
+                for (int i = 1; i <= columnCount; i++) {
+                    String columnName = metaData.getColumnLabel(i);
+                    if (columnName == null || columnName.isEmpty()) {
+                        columnName = metaData.getColumnName(i);
+                    }
+                    Object value = rs.getObject(i);
+                    row.put(columnName, convertValue(value));
+                }
+                data.add(row);
+                rowCount++;
+            }
+
+            long cost = System.currentTimeMillis() - start;
+            return QueryResult.builder()
+                    .sql(sql)
+                    .data(data)
+                    .rowCount(rowCount)
+                    .executionTime(cost)
+                    .success(true)
+                    .build();
+        } catch (SQLException e) {
+            logger.error("执行SQL失败: {}", sql, e);
+            long cost = System.currentTimeMillis() - start;
+            return QueryResult.builder()
+                    .sql(sql)
+                    .data(Collections.emptyList())
+                    .rowCount(0)
+                    .executionTime(cost)
+                    .success(false)
+                    .errorMessage(e.getMessage())
+                    .build();
+        }
+    }
+
+    /**
+     * 将数据库值安全转换为更适合 JSON 的类型。
+     */
+    private static Object convertValue(Object value) {
+        if (value == null) {
+            return null;
+        }
+        if (value instanceof java.sql.Date) {
+            return ((java.sql.Date) value).toLocalDate().toString();
+        }
+        if (value instanceof java.sql.Time) {
+            return ((java.sql.Time) value).toLocalTime().toString();
+        }
+        if (value instanceof java.sql.Timestamp) {
+            return ((java.sql.Timestamp) value).toInstant().toString();
+        }
+        if (value instanceof LocalDate || value instanceof LocalTime || value instanceof LocalDateTime) {
+            return value.toString();
+        }
+        if (value instanceof Clob) {
+            try {
+                Clob clob = (Clob) value;
+                return clob.getSubString(1, (int) clob.length());
+            } catch (SQLException e) {
+                logger.warn("读取CLOB失败", e);
+                return null;
+            }
+        }
+        if (value instanceof Blob) {
+            try {
+                Blob blob = (Blob) value;
+                int len = (int) blob.length();
+                byte[] bytes = blob.getBytes(1, len);
+                return "BLOB[" + bytes.length + "]";
+            } catch (SQLException e) {
+                logger.warn("读取BLOB失败", e);
+                return null;
+            }
+        }
+        return value;
     }
 
 }

@@ -2,6 +2,7 @@ package com.pufferfishscheduler.master.collect.trans.controller;
 
 import com.pufferfishscheduler.common.result.ApiResponse;
 import com.pufferfishscheduler.master.collect.trans.service.TransComponentService;
+import com.pufferfishscheduler.master.common.config.openapi.OpenApiTags;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @since 2026-03-02  23:38
  * @since 2026-03-02  22:49
  */
-@Tag(name = "转换组件管理")
+@Tag(name = OpenApiTags.TRANS_FLOW_COMPONENT, description = OpenApiTags.TRANS_FLOW_COMPONENT_DESC)
 @RestController
 @RequestMapping(value = "/trans/component", produces = {"application/json;charset=utf-8"})
 

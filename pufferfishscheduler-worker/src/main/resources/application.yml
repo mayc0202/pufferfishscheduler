@@ -12,6 +12,21 @@ spring:
     multipart: # 限制上传的文件最大值
       max-request-size: 512MB
       max-file-size: 512MB
+  # email
+  mail:
+    host: smtp.qq.com
+    username: 203373485@qq.com # 发件人
+    password: fsfvylegjvaacaii # 授权码
+    port: 587
+    default-encoding: UTF-8 # 字符编码
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+        debug: true
   # 数据源
   datasource:
     # mysql
@@ -45,13 +60,10 @@ dubbo:
     port: 20880
   # 注册中心配置
   registry:
-    address: nacos://127.0.0.1:8848 # 注册中心
-    username: nacos # Nacos账号
-    password: nacos # Nacos密码
+    # 统一改为 Zookeeper 注册中心
+    address: zookeeper://81.69.250.183:2181?zookeeper.sasl.client=false
     check: false # 注册订阅失败时报错
     timeout: 6000  # 注册中心超时时间（毫秒）
-    parameters:
-      nacos.retry: 1  # 重试次数
     file: /data/dubbo-cache/pufferfishscheduler-worker-registry.cache  # 独立路径，需确保目录存在且有读写权限
   config-center:
     timeout: 25000 # 超时
@@ -61,6 +73,25 @@ dubbo:
   # 消费者配置（服务端可省略，客户端需配置）
   consumer:
     check: false # 启动时不检查服务是否存在（避免服务未启动导致客户端启动失败）
+
+# 安全配置
+security:
+  # AES密钥
+  aes:
+    key: 1q2w3e4r5t6ymayc
+  # RSA公钥
+  rsa:
+    public-key: MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAgtf8E/OpA+UFff6tU/Z/cktuYdFFQ+835tREB4D5XN4Q/9BYF3cbbEcFBuTke4yotWPKAZYgFtI9u9+pwPJSsPkvyPXTSa72t4XSQ2zL8rppMQFSoeLMAoUI7uk91XzdasM6HPlp0WYgdBRui94Qcb66McAT5dYdedHYsJIKEn1WHFulK29aRL7x8oLa1BPAJqG8PRSIelGLzoQuhF1ieTblb91+GC985YXx+xlRBrp1xJTiUl1FW+bp8lCmx5CBEoRbyyxMqsDdDnrvYY7LmP/K6aiaKfwY9K8912JbCXeX1/m0guYWXKQLzpKNbdWB1KHf5TyB3vD9/xTEjluxKwIDAQAB
+    private-key: MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCC1/wT86kD5QV9/q1T9n9yS25h0UVD7zfm1EQHgPlc3hD/0FgXdxtsRwUG5OR7jKi1Y8oBliAW0j2736nA8lKw+S/I9dNJrva3hdJDbMvyumkxAVKh4swChQju6T3VfN1qwzoc+WnRZiB0FG6L3hBxvroxwBPl1h150diwkgoSfVYcW6Urb1pEvvHygtrUE8Amobw9FIh6UYvOhC6EXWJ5NuVv3X4YL3zlhfH7GVEGunXElOJSXUVb5unyUKbHkIEShFvLLEyqwN0Oeu9hjsuY/8rpqJop/Bj0rz3XYlsJd5fX+bSC5hZcpAvOko1t1YHUod/lPIHe8P3/FMSOW7ErAgMBAAECggEASKHU0M6FmB/d+J8TYHSJMs0krTAaHygABCb4zKGPyzmKfjcNb5kyo9yYsccF/n+Kd4a5cEAB+CklE9GIzg62UH9DQ28Spuh1FFM48SzH2ioYkpeFY1Aep5dp6hWXuZbi4o0VCVh6oT7r7QQaiZHv1vRlL5DMet1s517RxtKKvNADXcpWFqPvAQtCA7s/LUxMyGi3XBujrnxPLnKI8BFGmjUbeDPoffkwbRHWCXxVp6cxu4a67wQH440XCJgogD45Aiv+CykqqoZMovFr3bJJbs2X3L0OuBcexp/6/PlnFj3ZnXOE1o1hmO4hEAvgRBVMb292iARAKvzxAOd/pO13wQKBgQC84pzpkjrXLzLp1nAU0eFtqnBmKhYYR1zWHDLsarTFCteraPVqPJaQVIGUnIUAfxYd3HaYX3nv8FFiCsDb6Uv3DQB0hnjeDABI3NA4qyKcWapFiIilg86mMokzDO0n2dMK9Ldv9AlEOTD40Se6GXgE/wvSxSOgkJCPrQy0NUK5CQKBgQCxVcvEEF3ghsSO4t57wIhTaLRHfPKPw/Fgazu61X+V5CutVl7wWcxVFvuBLXlFYjM1odv8DYXOy2QHmN4P/slxKifxzSosQDoKYDx4EBW42h+EAwzKiFtHtXaBB/T9CHu1pmV2yVZNvsvr2Y0M61YjNUJ3zrQjtgkW/pI1BWEpkwKBgQCXOjx1SW2w0YpK7DRKhwuc2QQq1/FeuOwcRPGElZ5r0FWCWIN87kuB/RbOXE6kahvUBqoxLuga8ebGv2NP7sayYweFRBDLfwJPU/OmG2aXlbac+0akdhZivD1a0TOjX2P39pxTlyhAJiYOYK8U8cVFAsp9kvcGXBhR4DQ2qBnmuQKBgEneJiHGe4RCPvAR+oDsAx1TWP0KQ/O0t//kyx2ZPysNv0/V0Xgmv6GWEC+P5JsNO62UfZDxhRJN0J4FhEJ/bCOyXq8vOejy2/pkeeu9L38vhL81kgdvYy5snS9ERD1+YiGZbVxco5GA72qP1VxTTy8dSVGkjY7ujbzBT9+8HOv3AoGAfuqm0Czn+2+VB6wSrnwxmZCYhB5KIhLz2/m+QMcT4YfOdBchXGiWY5D2HIJRZMB5AyXi5jILl8KjVhanhK+qX4kR3KqTbLAuZHfuRB+ZKeo8ySA54YwjPSZsWTqmAf5+l1yk9+R+uaTrBa+14FuN6+OiZkXOX7pSB6XO0fwklaY=
+
+# Kafka配置
+kafka:
+  brokers: 101.34.66.45:9092
+  dispatch:
+    topic: pufferfishscheduler-task-dispatch
+  consumer:
+    group-id: pufferfishscheduler-worker-dispatch
+    auto-offset-reset: latest
 
 # mybatis-plus配置
 mybatis-plus:

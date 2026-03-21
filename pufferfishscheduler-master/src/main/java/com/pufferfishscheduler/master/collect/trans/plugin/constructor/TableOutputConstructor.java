@@ -26,7 +26,7 @@ import com.pufferfishscheduler.dao.entity.DbDatabase;
 import com.pufferfishscheduler.domain.vo.collect.FieldMappingVo;
 import com.pufferfishscheduler.master.collect.trans.plugin.AbstractStepMetaConstructor;
 import com.pufferfishscheduler.master.collect.trans.plugin.StepContext;
-import com.pufferfishscheduler.master.database.service.DbDatabaseService;
+import com.pufferfishscheduler.master.database.database.service.DbDatabaseService;
 
 /**
  * 表输出组件元数据构造器
@@ -151,7 +151,7 @@ public class TableOutputConstructor extends AbstractStepMetaConstructor {
      */
     private String extractCommitSize(JSONObject data) {
         String commitSize = data.getString("commitSize");
-        return StringUtils.isBlank(commitSize) ? "1000" : commitSize;
+        return StringUtils.isBlank(commitSize) ? "10000" : commitSize;
     }
 
     /**
@@ -198,7 +198,7 @@ public class TableOutputConstructor extends AbstractStepMetaConstructor {
                 throw new BusinessException("数据源不存在!");
             }
             
-            String kettleDbType = ListenDatabaseType.listenDatabseType(database.getType());
+            String kettleDbType = ListenDatabaseType.listenDatabaseType(database.getType());
             String connectType = getConnectType(database);
             String decodePassword = aesUtil.decrypt(database.getPassword());
 
@@ -278,7 +278,7 @@ public class TableOutputConstructor extends AbstractStepMetaConstructor {
         }
 
         // 配置达梦数据库属性
-        if (Constants.DbType.dm.equals(database.getType())) {
+        if (Constants.DATABASE_TYPE.DM8.equals(database.getType())) {
             configureDMDatabaseProperties(dataMeta, database);
         }
 
@@ -365,7 +365,7 @@ public class TableOutputConstructor extends AbstractStepMetaConstructor {
         tableOutputMeta.setDatabaseMeta(databaseMeta);
         tableOutputMeta.setSchemaName(schemaName);
         tableOutputMeta.setTableName(tableName);
-        tableOutputMeta.setCommitSize(StringUtils.isBlank(commitSize) ? "2000" : commitSize);
+        tableOutputMeta.setCommitSize(StringUtils.isBlank(commitSize) ? "10000" : commitSize);
         tableOutputMeta.setSpecifyFields(true);
         tableOutputMeta.setTruncateTable(truncateTable);
         tableOutputMeta.setIgnoreErrors(ignoreErrors);

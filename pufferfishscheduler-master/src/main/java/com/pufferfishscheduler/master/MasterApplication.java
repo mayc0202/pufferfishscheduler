@@ -19,6 +19,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @MapperScan("com.pufferfishscheduler.dao.mapper") // 扫描所有Mapper接口
 public class MasterApplication {
     public static void main(String[] args) {
+        // 强制关闭 ZK 的 SASL 校验，解决 canonicalize 报错
+        System.setProperty("zookeeper.sasl.client", "false");
         SpringApplication.run(MasterApplication.class, args);
     }
 }

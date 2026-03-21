@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.pufferfishscheduler.dao.mapper.RuleProcessorMapper">
+    <resultMap id="BaseResultMap" type="com.pufferfishscheduler.dao.entity.RuleProcessor">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="processor_name" jdbcType="VARCHAR" property="processorName"/>
+        <result column="params_config" jdbcType="VARCHAR" property="paramsConfig"/>
+        <result column="processor_class" jdbcType="VARCHAR" property="processorClass"/>
+        <result column="style_type" jdbcType="INTEGER" property="styleType"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        id
+        , processor_name, params_config, processor_class, style_type
+    </sql>
+
+</mapper>

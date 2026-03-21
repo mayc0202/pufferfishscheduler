@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.pufferfishscheduler.dao.mapper.RtFieldMapperMapper">
+    <resultMap id="BaseResultMap" type="com.pufferfishscheduler.dao.entity.RtFieldMapper">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="task_id" jdbcType="INTEGER" property="taskId"/>
+        <result column="table_mapper_id" jdbcType="INTEGER" property="tableMapperId"/>
+        <result column="source_field_id" jdbcType="INTEGER" property="sourceFieldId"/>
+        <result column="source_field_name" jdbcType="VARCHAR" property="sourceFieldName"/>
+        <result column="target_field_id" jdbcType="INTEGER" property="targetFieldId"/>
+        <result column="target_filed_name" jdbcType="VARCHAR" property="targetFiledName"/>
+        <result column="deleted" jdbcType="BOOLEAN" property="deleted"/>
+        <result column="created_by" jdbcType="VARCHAR" property="createdBy"/>
+        <result column="created_time" jdbcType="TIMESTAMP" property="createdTime"/>
+        <result column="updated_by" jdbcType="VARCHAR" property="updatedBy"/>
+        <result column="updated_time" jdbcType="TIMESTAMP" property="updatedTime"/>
+    </resultMap>
+
+    <!-- 批量插入字段映射 -->
+    <insert id="insertBatch">
+        INSERT INTO rt_field_mapper (
+        task_id, table_mapper_id, source_field_id, source_field_name,
+        target_field_id, target_filed_name, deleted,
+        created_by, created_time, updated_by, updated_time
+        ) VALUES
+        <foreach collection="list" item="item" separator=",">
+            (
+            #{item.taskId}, #{item.tableMapperId}, #{item.sourceFieldId}, #{item.sourceFieldName},
+            #{item.targetFieldId}, #{item.targetFiledName}, #{item.deleted},
+            #{item.createdBy}, #{item.createdTime}, #{item.updatedBy}, #{item.updatedTime}
+            )
+        </foreach>
+    </insert>
+
+    <!-- 根据table_mapper_id查询字段映射列表 -->
+    <select id="selectByTableMapperId" resultMap="BaseResultMap">
+        SELECT * FROM rt_field_mapper 
+        WHERE table_mapper_id = #{tableMapperId} 
+        AND deleted = false
+    </select>
+
+    <!-- 根据task_id查询字段映射列表 -->
+    <select id="selectByTaskId" resultMap="BaseResultMap">
+        SELECT * FROM rt_field_mapper 
+        WHERE task_id = #{taskId} 
+        AND deleted = false
+    </select>
+
+    <!-- 根据table_mapper_id删除字段映射 -->
+    <delete id="deleteByTableMapperId">
+        UPDATE rt_field_mapper 
+        SET deleted = true, 
+            updated_by = #{updatedBy}, 
+            updated_time = NOW() 
+        WHERE table_mapper_id = #{tableMapperId}
+    </delete>
+
+    <!-- 根据task_id删除字段映射 -->
+    <delete id="deleteByTaskId">
+        UPDATE rt_field_mapper 
+        SET deleted = true, 
+            updated_by = #{updatedBy}, 
+            updated_time = NOW() 
+        WHERE task_id = #{taskId}
+    </delete>
+
+</mapper>

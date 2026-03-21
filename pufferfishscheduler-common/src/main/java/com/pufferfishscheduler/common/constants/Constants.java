@@ -2,6 +2,20 @@ package com.pufferfishscheduler.common.constants;
 
 public interface Constants {
 
+    /**
+     * 系统操作信息
+     */
+    interface SYS_OP_INFO {
+        /**
+         * 系统调度器账号
+         */
+        String SYSTEM_ACCOUNT = "SYSTEM";
+        /**
+         * 系统调度器名称
+         */
+        String SYSTEM_NAME = "系统";
+    }
+
     // 默认日志格式
     String DEFAULT_DATE_FORMAT = "yyyy-MM-dd";
     String DEFAULT_DATE_FORMAT_2 = "yyyyMMdd";
@@ -76,10 +90,17 @@ public interface Constants {
         String FAILURE_POLICY = "failure_policy";
         String NOTIFY_POLICY = "notify_policy";
         String ENABLE = "enable";
+        // 任务状态s
         String TASK_STATUS = "task_status";
 
         // 业务字典
         String DB_GROUP = "db_group";
+        // CDC引擎类型
+        String CDC_ENGINE_TYPE = "cdc_engine_type";
+        // 作业管理状态
+        String JOB_MANAGE_STATUS = "job_manage_status";
+        // 调度类型
+        String SCHEDULE_TYPE = "schedule_type";
     }
 
     /**
@@ -87,7 +108,7 @@ public interface Constants {
      */
     interface TASK_TYPE {
         String METADATA_TASK = "metadata_task";
-        String REALTIME_TASK = "realtime_task";
+        String TRANS_TASK = "trans_task";
     }
 
     /**
@@ -109,22 +130,29 @@ public interface Constants {
     }
 
     /**
-     * 数据库类型
+     * db_tale_properties 属性类型
+     * 1-物理主键字段；
+     * 2-逻辑主键字段；
+     * 3-业务标识字段；
+     * 4-数据同步时间字段；
+     * 5-创建时间字段；
+     * 6-更新时间字段；
+     * 7-数据同步方式;
+     * 8-增量标识字段;
+     * 9-数据同步周期;
      */
-    interface DbType {
-        String mysql = "mysql";
-        String oracle = "oracle";
-        String sqlServer = "sqlserver";
-        String postgresql = "postgresql";
-        String dm = "dm8";
-        String starRocks = "starrocks";
-        String doris = "doris";
-        String cache = "cache";
-        String tidb = "tidb";
-        String kyuubi = "kyuubi";
-        String vastbaseg100 = "vastbase_g100";
-        String gaussdb = "gaussdb";
-        String kingbase = "kingbasees_v8";
+    interface TABLE_PROPERTIES {
+        String PRIMARY_KEY = "1";
+        String LOGIC_KEY = "2";
+        String BUSINESS_FLAG = "3";
+        String DATA_SYNC_TIME = "4";
+        String CREATE_TIME = "5";
+        String UPDATE_TIME = "6";
+        String SYNC_TYPE = "7";
+        String SYNC_INR_COLUMN = "8";
+        String DATA_SYNC_CYCLE = "9";
+        String RELATE_BIZ_FLAG = "10";
+
     }
 
     /**
@@ -160,14 +188,14 @@ public interface Constants {
     }
 
     /**
-     * 
+     * 数据库大类
      */
     interface Category {
-        String R = "R";
-        String N = "N";
-        String B = "B";
-        String E = "E";
-        String O = "O";
+        String R = "1"; // 关系型数据库
+        String N = "2"; // 非关系型数据库
+        String M = "3"; // 消息型数据库
+        String F = "4"; // FTP类型
+        String O = "5"; // OSS
     }
 
     /**
@@ -205,13 +233,6 @@ public interface Constants {
         String C = "c";
         String U = "u";
         String D = "d";
-    }
-
-    /**
-     * 数据源配置信息
-     */
-    interface DATABASE_PROPERTIES {
-
     }
 
     /**
@@ -284,6 +305,14 @@ public interface Constants {
     }
 
     /**
+     * 系统内置角色名（与 role.name 一致）
+     */
+    interface ROLE_NAME {
+        String ADMIN = "admin";
+        String EDITOR = "editor";
+    }
+
+    /**
      * token
      */
     interface TOKEN_CONFIG {
@@ -314,6 +343,7 @@ public interface Constants {
     interface TREE_TYPE {
         String GROUP = "GROUP";
         String DATABASE = "DATABASE";
+        String TRANS_FLOW = "TRANS_FLOW";
     }
 
     /**
@@ -322,9 +352,16 @@ public interface Constants {
     interface REDIS_KEY {
         String CATEGORY = "category";
         String DB_BASIC = "db_basic";
-    }
 
-    String CHAT_MEMORY_CONVERSATION_ID_KEY = "chat_memory_conversation_id";
+        /**
+         * 实时统计：累计量 key 前缀，完整 key: rt:stats:task:{taskId}:table:{tableMapperId}
+         */
+        String RT_STATS_PREFIX = "rt:stats:task:";
+        /**
+         * 实时统计：按小时日志 key 前缀，完整 key: rt:log:task:{taskId}:table:{tableMapperId}:{yyyyMMdd}:{HH}
+         */
+        String RT_LOG_PREFIX = "rt:log:task:";
+    }
 
     /**
      * 消息类型
@@ -342,6 +379,23 @@ public interface Constants {
     }
 
     /**
+     * kafka状态
+     */
+    interface KAFKA_STATUS {
+        String RUNNING = "RUNNING";
+        String STOP = "STOP";
+    }
+
+    /**
+     * 数据处理阶段
+     */
+    interface STAGE {
+        String CONVERGE = "1"; //归集
+        String INTEGRATION = "2"; //清洗
+        String MT_TASK = "8"; //多表同步任务
+    }
+
+    /**
      * 执行状态
      */
     interface EXECUTE_STATUS {
@@ -350,6 +404,58 @@ public interface Constants {
         String FAILURE = "F";
         String SUCCESS = "S";
     }
+
+    /**
+     * 实时任务状态
+     */
+    interface RT_TASK_STATUS {
+        String RUNNING = "R";
+        String FAILURE = "F";
+        String STOP = "T";
+        String START = "S";
+    }
+
+    /**
+     * 任务管理任务的状态
+     */
+    interface JOB_MANAGE_STATUS {
+        /**
+         * 未启动（首次添加进来时此状态）
+         */
+        String INIT = "INIT";
+        String INIT_TXT = "未启动";
+
+        /**
+         * 运行中
+         */
+        String RUNNING = "RUNNING";
+        String RUNNING_TXT = "运行中";
+
+        /**
+         * 已停止
+         */
+        String STOP = "STOP";
+        String STOP_TXT = "已停止";
+
+        /**
+         * 异常
+         */
+        String FAILURE = "FAILURE";
+        String FAILURE_TXT = "失败";
+
+        /**
+         * 启动中
+         */
+        String STARTING = "STARTING";
+        String STARTING_TXT = "启动中";
+
+        /**
+         * 停止中
+         */
+        String STOPPING = "STOPPING";
+        String STOPPING_TXT = "停止中";
+    }
+
 
     String TRANS = "TRANS";
 

@@ -1,6 +1,7 @@
 package com.pufferfishscheduler.ai.repository;
 
 import com.pufferfishscheduler.ai.mannger.ChatMessageRedisManager;
+import com.pufferfishscheduler.common.utils.CommonUtil;
 import com.pufferfishscheduler.domain.model.agent.RedisMessageEntity;
 
 import lombok.RequiredArgsConstructor;
@@ -214,7 +215,7 @@ public class DatabaseChatMemoryRepository implements ChatMemoryRepository {
 
         return RedisMessageEntity.builder()
                 .sessionId(conversationId)
-                .messageId(UUID.randomUUID().toString())
+                .messageId(CommonUtil.getUUIDString())
                 .role(role)
                 .content(content)
                 .contentType("text")

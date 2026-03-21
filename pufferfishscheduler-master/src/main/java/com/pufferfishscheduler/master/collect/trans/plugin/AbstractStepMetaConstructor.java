@@ -70,9 +70,9 @@ public abstract class AbstractStepMetaConstructor implements StepAwareInterface 
         if (context.getStepMetaMap() == null) {
             throw new BusinessException("步骤元数据映射不能为空!");
         }
-        if (StringUtils.isBlank(context.getId())) {
-            throw new BusinessException("步骤ID不能为空!");
-        }
+        // if (StringUtils.isBlank(context.getId())) {
+        //     throw new BusinessException("步骤ID不能为空!");
+        // }
         if (context.getFlowId() == null) {
             throw new BusinessException("流程ID不能为空!");
         }

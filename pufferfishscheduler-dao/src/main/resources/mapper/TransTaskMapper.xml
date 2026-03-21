@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.pufferfishscheduler.dao.mapper.TransTaskMapper">
+
+    <resultMap id="BaseResultMap" type="com.pufferfishscheduler.dao.entity.TransTask">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="remark" jdbcType="LONGVARCHAR" property="remark"/>
+        <result column="flow_id" jdbcType="INTEGER" property="flowId"/>
+        <result column="execute_type" jdbcType="VARCHAR" property="executeType"/>
+        <result column="cron" jdbcType="VARCHAR" property="cron"/>
+        <result column="failure_policy" jdbcType="VARCHAR" property="failurePolicy"/>
+        <result column="notify_policy" jdbcType="VARCHAR" property="notifyPolicy"/>
+        <result column="status" jdbcType="VARCHAR" property="status"/>
+        <result column="enable" jdbcType="BOOLEAN" property="enable"/>
+        <result column="deleted" jdbcType="BOOLEAN" property="deleted"/>
+        <result column="reason" jdbcType="LONGVARCHAR" property="reason"/>
+        <result column="execute_time" jdbcType="TIMESTAMP" property="executeTime"/>
+        <result column="created_by" jdbcType="VARCHAR" property="createdBy"/>
+        <result column="created_time" jdbcType="TIMESTAMP" property="createdTime"/>
+        <result column="updated_by" jdbcType="VARCHAR" property="updatedBy"/>
+        <result column="updated_time" jdbcType="TIMESTAMP" property="updatedTime"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, name, remark, flow_id, execute_type, cron, failure_policy, notify_policy, status,
+        enable, deleted, reason, execute_time, created_by, created_time, updated_by, updated_time
+    </sql>
+
+    <select id="selectTaskList" resultType="com.pufferfishscheduler.domain.vo.collect.TransTaskVo">
+        SELECT
+        tt.id, tt.name, tt.remark, tt.flow_id, tt.execute_type, tt.cron,
+        tt.failure_policy, tt.notify_policy, tt.enable, tt.status, tt.reason,
+        tt.execute_time, tt.created_time,
+        tf.name AS flow_name,
+        tg.id AS group_id,
+        tg.name AS group_name
+        FROM trans_task AS tt
+        LEFT JOIN trans_flow AS tf ON tt.flow_id = tf.id AND tf.deleted = 0
+        LEFT JOIN trans_group AS tg ON tf.group_id = tg.id AND tg.deleted = 0
+        WHERE tt.deleted = 0
+        <if test="params.groupIds != null and !params.groupIds.isEmpty()">
+            AND tf.group_id IN
+            <foreach collection="params.groupIds" item="groupId" open="(" separator="," close=")">
+                #{groupId}
+            </foreach>
+        </if>
+        <if test="params.name != null and params.name != ''">
+            AND tt.name LIKE CONCAT('%', #{params.name}, '%')
+        </if>
+        <if test="params.status != null and params.status != ''">
+            AND tt.status = #{params.status}
+        </if>
+        <if test="params.enable != null">
+            AND tt.enable = #{params.enable}
+        </if>
+        ORDER BY tt.created_time DESC
+    </select>
+
+    <select id="selectTaskById" resultType="com.pufferfishscheduler.domain.vo.collect.TransTaskVo">
+        SELECT
+        tt.id, tt.name, tt.remark, tt.flow_id, tt.execute_type, tt.cron,
+        tt.failure_policy, tt.notify_policy, tt.enable, tt.status, tt.reason,
+        tt.execute_time, tt.created_time,
+        tf.name AS flow_name,
+        tg.id AS group_id,
+        tg.name AS group_name
+        FROM trans_task AS tt
+        LEFT JOIN trans_flow AS tf ON tt.flow_id = tf.id AND tf.deleted = 0
+        LEFT JOIN trans_group AS tg ON tf.group_id = tg.id AND tg.deleted = 0
+        WHERE tt.id = #{id}
+          AND tt.deleted = 0
+    </select>
+
+</mapper>
+

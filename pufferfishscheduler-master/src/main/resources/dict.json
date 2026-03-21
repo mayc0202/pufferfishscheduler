@@ -4,32 +4,32 @@
     "name": "数据源分层",
     "list": [
       {
-        "code": "来源库SRC",
-        "value": "1",
+        "code": "1",
+        "value": "来源库",
         "order": 1,
         "description": ""
       },
       {
-        "code": "贴源库ODS",
-        "value": "2",
+        "code": "2",
+        "value": "贴源库",
         "order": 2,
         "description": ""
       },
       {
-        "code": "治理库DW",
-        "value": "3",
+        "code": "3",
+        "value": "治理库",
         "order": 3,
         "description": ""
       },
       {
-        "code": "应用库ADS",
-        "value": "4",
+        "code": "4",
+        "value": "应用库",
         "order": 4,
         "description": ""
       },
       {
-        "code": "共享库DS",
-        "value": "5",
+        "code": "5",
+        "value": "共享库",
         "order": 5,
         "description": ""
       }
@@ -40,32 +40,32 @@
     "name": "数据源分层",
     "list": [
       {
-        "code": "关系型数据库",
-        "value": "1",
+        "code": "1",
+        "value": "关系型数据库",
         "order": 1,
         "description": ""
       },
       {
-        "code": "非关系型数据库",
-        "value": "2",
+        "code": "2",
+        "value": "非关系型数据库",
         "order": 2,
         "description": ""
       },
       {
-        "code": "消息型数据库",
-        "value": "3",
+        "code": "3",
+        "value": "消息型数据库",
         "order": 3,
         "description": ""
       },
       {
-        "code": "FTP类型",
-        "value": "4",
+        "code": "4",
+        "value": "FTP类型",
         "order": 4,
         "description": ""
       },
       {
-        "code": "OSS",
-        "value": "5",
+        "code": "5",
+        "value": "OSS类型",
         "order": 5,
         "description": ""
       }
@@ -76,14 +76,14 @@
     "name": "FTP协议类型",
     "list": [
       {
-        "code": "FTP",
-        "value": "1",
+        "code": "1",
+        "value": "FTP",
         "order": 1,
         "description": ""
       },
       {
-        "code": "FTPS",
-        "value": "2",
+        "code": "2",
+        "value": "FTPS",
         "order": 2,
         "description": ""
       }
@@ -94,14 +94,14 @@
     "name": "FTP模式",
     "list": [
       {
-        "code": "主动模式",
-        "value": "1",
+        "code": "1",
+        "value": "主动模式",
         "order": 1,
         "description": ""
       },
       {
-        "code": "被动模式",
-        "value": "2",
+        "code": "2",
+        "value": "被动模式",
         "order": 2,
         "description": ""
       }
@@ -112,26 +112,26 @@
     "name": "控制编码类型",
     "list": [
       {
-        "code": "UTF-8",
-        "value": "1",
+        "code": "1",
+        "value": "UTF-8",
         "order": 1,
         "description": ""
       },
       {
-        "code": "GB2312",
-        "value": "2",
+        "code": "2",
+        "value": "GB2312",
         "order": 2,
         "description": ""
       },
       {
-        "code": "GBK",
-        "value": "3",
+        "code": "3",
+        "value": "GBK",
         "order": 3,
         "description": ""
       },
       {
-        "code": "ISO-8859-1",
-        "value": "4",
+        "code": "4",
+        "value": "ISO-8859-1",
         "order": 4,
         "description": ""
       }
@@ -142,14 +142,128 @@
     "name": "失败策略",
     "list": [
       {
-        "code": "继续",
-        "value": "0",
+        "code": "0",
+        "value": "继续",
         "order": 1,
         "description": ""
       },
       {
-        "code": "停止",
-        "value": "1",
+        "code": "1",
+        "value": "停止",
+        "order": 2,
+        "description": ""
+      }
+    ]
+  },
+  {
+    "dictCode": "enable",
+    "name": "启用状态",
+    "list": [
+      {
+        "code": "0",
+        "value": "启用",
+        "order": 1,
+        "description": ""
+      },
+      {
+        "code": "1",
+        "value": "禁用",
+        "order": 2,
+        "description": ""
+      }
+    ]
+  },
+  {
+    "dictCode": "job_manage_status",
+    "name": "作业管理状态",
+    "list": [
+      {
+        "code": "INIT",
+        "value": "未启动",
+        "order": 1,
+        "description": ""
+      },
+      {
+        "code": "STARTING",
+        "value": "启动中",
+        "order": 2,
+        "description": ""
+      },
+      {
+        "code": "RUNNING",
+        "value": "运行中",
+        "order": 3,
+        "description": ""
+      },
+      {
+        "code": "STOPPING",
+        "value": "停止中",
+        "order": 4,
+        "description": ""
+      },
+      {
+        "code": "STOP",
+        "value": "已停止",
+        "order": 5,
+        "description": ""
+      },
+      {
+        "code": "FAILURE",
+        "value": "失败",
+        "order": 6,
+        "description": ""
+      }
+    ]
+  },
+  {
+    "dictCode": "schedule_type",
+    "name": "调度类型",
+    "list": [
+      {
+        "code": "0",
+        "value": "流式执行",
+        "order": 1,
+        "description": ""
+      },
+      {
+        "code": "1",
+        "value": "定时调度",
+        "order": 2,
+        "description": ""
+      }
+    ]
+  },
+  {
+    "dictCode": "cdc_engine_type",
+    "name": "CDC引擎类型",
+    "list": [
+      {
+        "code": "0",
+        "value": "Kafka",
+        "order": 1,
+        "description": ""
+      },
+      {
+        "code": "1",
+        "value": "Flink",
+        "order": 2,
+        "description": ""
+      }
+    ]
+  },
+  {
+    "dictCode": "failure_policy",
+    "name": "失败策略",
+    "list": [
+      {
+        "code": "0",
+        "value": "继续",
+        "order": 1,
+        "description": ""
+      },
+      {
+        "code": "1",
+        "value": "停止",
         "order": 2,
         "description": ""
       }
@@ -160,81 +274,27 @@
     "name": "通知策略",
     "list": [
       {
-        "code": "都不发",
-        "value": "0",
+        "code": "0",
+        "value": "都不发",
         "order": 1,
         "description": ""
       },
       {
-        "code": "成功时通知",
-        "value": "1",
+        "code": "1",
+        "value": "成功时通知",
         "order": 2,
         "description": ""
       },
       {
-        "code": "失败时通知",
-        "value": "2",
+        "code": "2",
+        "value": "失败时通知",
         "order": 3,
         "description": ""
       },
       {
-        "code": "全部通知",
-        "value": "3",
+        "code": "3",
+        "value": "全部通知",
         "order": 4,
-        "description": ""
-      }
-    ]
-  },
-  {
-    "dictCode": "enable",
-    "name": "启用状态",
-    "list": [
-      {
-        "code": "启用",
-        "value": "0",
-        "order": 1,
-        "description": ""
-      },
-      {
-        "code": "禁用",
-        "value": "1",
-        "order": 2,
-        "description": ""
-      }
-    ]
-  },
-  {
-    "dictCode": "task_status",
-    "name": "任务状态",
-    "list": [
-      {
-        "code": "未启动",
-        "value": "0",
-        "order": 1,
-        "description": ""
-      },
-      {
-        "code": "启动中",
-        "value": "1",
-        "order": 2,
-        "description": ""
-      },
-      {
-        "code": "运行中",
-        "value": "2",
-        "order": 3,
-        "description": ""
-      },
-      {
-        "code": "已停止",
-        "value": "3",
-        "order": 4,
-        "description": ""
-      },
-      {
-        "code": "异常",
-        "value": "4",
-        "order": 5,
         "description": ""
       }
     ]

@@ -12,6 +12,8 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.TransListener;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.TransPainter;
+import org.pentaho.di.trans.debug.StepDebugMeta;
+import org.pentaho.di.trans.debug.TransDebugMeta;
 import org.pentaho.di.trans.step.StepListener;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaDataCombi;
@@ -36,6 +38,7 @@ import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.imageio.ImageIO;
@@ -44,7 +47,7 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * 数据转换引擎
- *
+ * 
  * @author Mayc
  * @since 2026-03-04 17:44
  */
@@ -325,11 +328,13 @@ public class DataTransEngine {
         DataFlowRepository repository = DataFlowRepository.getRepository();
         TransFlowConfig transFlowConfig = repository.getTrans(stage + "_" + Constants.TRANS, id.toString());
         if (transFlowConfig == null) {
-            throw new DataTransformationEngineException("Trans flow config not found for stage: " + stage + ", id: " + id);
+            throw new DataTransformationEngineException(
+                    "Trans flow config not found for stage: " + stage + ", id: " + id);
         }
         String config = transFlowConfig.getFlowContent();
         if (StringUtils.isBlank(config)) {
-            throw new DataTransformationEngineException("Trans flow config content is empty for stage: " + stage + ", id: " + id);
+            throw new DataTransformationEngineException(
+                    "Trans flow config content is empty for stage: " + stage + ", id: " + id);
         }
         return DataFlowRepository.xml2TransMeta(config);
     }
@@ -547,11 +552,13 @@ public class DataTransEngine {
         DataFlowRepository repository = DataFlowRepository.getRepository();
         TransFlowConfig transFlowConfig = repository.getTrans(type + "_" + Constants.TRANS, id.toString());
         if (transFlowConfig == null) {
-            throw new DataTransformationEngineException("Trans flow config not found for type: " + type + ", id: " + id);
+            throw new DataTransformationEngineException(
+                    "Trans flow config not found for type: " + type + ", id: " + id);
         }
         String config = transFlowConfig.getFlowContent();
         if (StringUtils.isBlank(config)) {
-            throw new DataTransformationEngineException("Trans flow config content is empty for type: " + type + ", id: " + id);
+            throw new DataTransformationEngineException(
+                    "Trans flow config content is empty for type: " + type + ", id: " + id);
         }
         return DataFlowRepository.xml2TransMeta(config);
     }
@@ -583,35 +590,4 @@ public class DataTransEngine {
         return (BufferedImage) gc.getImage();
     }
 
-    /**
-     * 预览数据
-     * 
-     * @param id       转换ID
-     * @param stepName 步骤名称
-     * @return 预览数据VO
-     */
-    public PreviewVo preview(Integer id, String stepName) {
-        PreviewVo previewVo = new PreviewVo();
-        TransWrapper transWrapper = TRANS_MAP.get(id);
-        if (null == transWrapper) {
-            return new PreviewVo();
-        }
-
-        TransMeta transMeta = transWrapper.getTransMeta();
-
-        StepMeta step = transMeta.findStep(stepName);
-
-        RowMetaInterface r;
-        try {
-            r = transMeta.getStepFields(stepName);
-            previewVo.setFieldList(r.getFieldNames());
-            r.getFieldNamesAndTypes(1);
-            Object[] row = r.getRow(null);
-            // previewVo.setDataList(row);
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            throw new BusinessException(e.getMessage());
-        }
-        return previewVo;
-    }
 }

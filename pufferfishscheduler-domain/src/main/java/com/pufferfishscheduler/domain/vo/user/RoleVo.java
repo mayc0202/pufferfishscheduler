@@ -20,4 +20,14 @@ public class RoleVo {
      * 角色名称
      */
     private String roleName;
+
+    /**
+     * 角色描述
+     */
+    private String roleDesc;
+
+    /**
+     * 是否禁用
+     */
+    private Boolean disabled;
 }

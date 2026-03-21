@@ -7,7 +7,7 @@ import lombok.Data;
 import java.util.Date;
 
 /**
- *
+ * 元数据任务VO
  * @author Mayc
  * @since 2025-11-27  14:52
  */
@@ -71,10 +71,9 @@ public class MetadataTaskVo {
     private String remark;
 
     /**
-     * 工作组id
+     * 失败原因
      */
-    private Integer workerId;
-    private String workerName;
+    private String reason;
 
     /**
      * 执行时间

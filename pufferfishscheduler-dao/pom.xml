@@ -23,10 +23,11 @@
     </properties>
 
     <dependencies>
-        <!-- pufferfishscheduler-common -->
+
+        <!-- Mapper resultType 使用 domain 中的 VO，须显式依赖，避免 IDE/增量编译 classpath 不完整 -->
         <dependency>
-            <groupId>com.pufferfishscheduler.common</groupId>
-            <artifactId>pufferfishscheduler-common</artifactId>
+            <groupId>com.pufferfishscheduler.domain</groupId>
+            <artifactId>pufferfishscheduler-domain</artifactId>
             <version>1.0.0</version>
         </dependency>
 

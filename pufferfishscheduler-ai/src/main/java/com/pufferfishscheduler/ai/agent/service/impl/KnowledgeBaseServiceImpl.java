@@ -3,6 +3,7 @@ package com.pufferfishscheduler.ai.agent.service.impl;
 import com.pufferfishscheduler.ai.agent.service.KnowledgeBaseService;
 import com.pufferfishscheduler.common.constants.Constants;
 import com.pufferfishscheduler.common.exception.BusinessException;
+import com.pufferfishscheduler.common.utils.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
@@ -140,7 +141,7 @@ public class KnowledgeBaseServiceImpl implements KnowledgeBaseService {
 
                 // 创建文档
                 Document doc = new Document(
-                        UUID.randomUUID().toString(),
+                        CommonUtil.getUUIDString(),
                         content.toString(),
                         metadata
                 );

@@ -40,9 +40,9 @@ public class GenericTreeBuilder {
                 .filter(this::isRootNode)
                 .collect(Collectors.toList());
 
-        // 为每个根节点构建子树
+        // 为每个根节点构建子树（每棵树使用独立的 visiting 集合，防止父子形成环导致递归死循环）
         for (Tree root : roots) {
-            buildTreeRecursive(root, parentChildMap, comparator);
+            buildTreeRecursive(root, parentChildMap, comparator, new HashSet<>());
         }
 
         // 排序根节点
@@ -54,13 +54,27 @@ public class GenericTreeBuilder {
     }
 
     /**
-     * 递归构建树
+     * 递归构建树（带环检测，使用当前递归路径上的 visiting 集合）
      */
     private void buildTreeRecursive(Tree parent,
                                     Map<Integer, List<Tree>> parentChildMap,
-                                    Comparator<TreeNode<Integer>> comparator) {
-        List<Tree> children = parentChildMap.get(parent.getId());
+                                    Comparator<TreeNode<Integer>> comparator,
+                                    Set<Integer> visiting) {
+        if (parent == null || parent.getId() == null) {
+            return;
+        }
+
+        Integer parentId = parent.getId();
+
+        // 检测环：若当前节点已经在本次递归路径中，说明存在环，直接返回，避免 StackOverflow
+        if (!visiting.add(parentId)) {
+            return;
+        }
+
+        List<Tree> children = parentChildMap.get(parentId);
         if (CollectionUtils.isEmpty(children)) {
+            // 叶子节点，递归结束，移除当前路径上的访问标记
+            visiting.remove(parentId);
             return;
         }
 
@@ -69,13 +83,19 @@ public class GenericTreeBuilder {
 
         // 递归构建子树
         for (Tree child : children) {
-            buildTreeRecursive(child, parentChildMap, comparator);
+            // 防止父子记录相同 ID 导致自递归
+            if (child != null && !Objects.equals(child.getId(), parentId)) {
+                buildTreeRecursive(child, parentChildMap, comparator, visiting);
+            }
         }
 
         // 排序子节点
         if (comparator != null) {
             parent.getChildren().sort(comparator);
         }
+
+        // 当前节点递归结束，移除访问标记
+        visiting.remove(parentId);
     }
 
     private boolean isRootNode(Tree node) {

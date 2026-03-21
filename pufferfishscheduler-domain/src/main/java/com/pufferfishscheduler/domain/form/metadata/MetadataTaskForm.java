@@ -31,9 +31,6 @@ public class MetadataTaskForm {
     @NotBlank(message = "通知策略不能为空!")
     private String notifyPolicy = "0";
 
-    @NotNull(message = "工作组id不能为空!")
-    private Integer workerId;
-
     /**
      * 启用状态 0启用 1禁用
      */

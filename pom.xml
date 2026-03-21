@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.pufferfishscheduler</groupId>
@@ -13,7 +13,6 @@
         <module>pufferfishscheduler-common</module>
         <module>pufferfishscheduler-domain</module>
         <module>pufferfishscheduler-dao</module>
-        <module>pufferfishscheduler-aop</module>
         <module>pufferfishscheduler-cdc</module>
         <module>pufferfishscheduler-master</module>
         <module>pufferfishscheduler-worker</module>
@@ -34,16 +33,21 @@
         <flatten-maven-plugin.version>1.3.0</flatten-maven-plugin.version>
         <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
 
-        <!-- Spring Boot -->
+        <!-- spring boot -->
         <spring-boot.version>3.2.5</spring-boot.version>
-        <!-- Spring AI -->
+        <!-- springdoc-openapi -->
+        <springdoc.version>2.4.0</springdoc.version>
+        <!-- spring ai -->
         <spring-ai.version>1.0.0</spring-ai.version>
+        <!-- spring ai alibaba -->
         <spring-ai-alibaba.version>1.0.0.4</spring-ai-alibaba.version>
 
-        <!--Dubbo-->
+        <!-- dubbo -->
         <dubbo.version>3.2.14</dubbo.version>
-        <!--Nacos-->
-        <nacos.version>3.1.1</nacos.version>
+        <!-- zookeeper -->
+        <zookeeper.version>3.8.4</zookeeper.version>
+        <!-- curator -->
+        <curator.version>5.5.0</curator.version>
 
         <!-- mybatis-plus -->
         <mybatis-plus.version>3.5.8</mybatis-plus.version>
@@ -64,8 +68,12 @@
         <!--DM8-->
         <dm.version>8.1.3.62</dm.version>
 
+        <!-- redisson -->
+        <redisson.version>3.27.2</redisson.version>
         <!--Kafka-->
         <kafka.version>3.6.1</kafka.version>
+        <!-- kafka connect -->
+        <kafka-connect.version>3.6.1</kafka-connect.version>
 
         <!-- caffeine -->
         <caffeine.version>3.1.8</caffeine.version>
@@ -102,9 +110,6 @@
         <!-- c3p0 -->
         <c3p0.version>0.9.5.5</c3p0.version>
 
-        <!-- springdoc-openapi -->
-        <springdoc.version>2.4.0</springdoc.version>
-
         <!--poi-tl-->
         <poi-tl.version>1.12.1</poi-tl.version>
         <!-- eclipse swt -->
@@ -113,6 +118,8 @@
         <expiringmap.version>0.5.13</expiringmap.version>
         <!-- kettle -->
         <pentaho-kettle.version>9.2.0.0-290</pentaho-kettle.version>
+        <!-- kettle 加密 -->
+        <pentaho-encryption.version>9.4.0.0-343</pentaho-encryption.version>
     </properties>
 
     <dependencyManagement>
@@ -141,6 +148,28 @@
                 <scope>import</scope>
             </dependency>
 
+            <!--
+            在分布式系统的 Java 客户端中，Zookeeper、Curator、Dubbo 是三位一体的：
+                Zookeeper 3.8.x (服务端) <-> Curator 5.x (中间桥梁) <-> Dubbo 3.x (应用层)。
+            -->
+
+            <!-- curator -->
+            <dependency>
+                <groupId>org.apache.curator</groupId>
+                <artifactId>curator-framework</artifactId>
+                <version>${curator.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.curator</groupId>
+                <artifactId>curator-recipes</artifactId>
+                <version>${curator.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.curator</groupId>
+                <artifactId>curator-x-discovery</artifactId>
+                <version>${curator.version}</version>
+            </dependency>
+
             <!-- Dubbo Spring Boot Starter -->
             <dependency>
                 <groupId>org.apache.dubbo</groupId>
@@ -148,18 +177,38 @@
                 <version>${dubbo.version}</version>
             </dependency>
 
-            <!-- Dubbo Registry -->
+            <!-- Dubbo Zookeeper 依赖管理：版本与 Dubbo 对齐 -->
             <dependency>
                 <groupId>org.apache.dubbo</groupId>
-                <artifactId>dubbo-registry-nacos</artifactId>
+                <artifactId>dubbo-dependencies-zookeeper</artifactId>
                 <version>${dubbo.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
 
-            <!-- Nacos 客户端 -->
             <dependency>
-                <groupId>com.alibaba.nacos</groupId>
-                <artifactId>nacos-client</artifactId>
-                <version>${nacos.version}</version>
+                <groupId>org.apache.dubbo</groupId>
+                <artifactId>dubbo-registry-zookeeper</artifactId>
+                <version>${dubbo.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.apache.zookeeper</groupId>
+                        <artifactId>zookeeper</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <!-- zookeeper -->
+            <dependency>
+                <groupId>org.apache.zookeeper</groupId>
+                <artifactId>zookeeper</artifactId>
+                <version>${zookeeper.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.slf4j</groupId>
+                        <artifactId>slf4j-log4j12</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
 
             <!-- Mybatis-Plus -->
@@ -344,6 +393,20 @@
                 <version>${springdoc.version}</version>
             </dependency>
 
+            <!-- Kafka 客户端 -->
+            <dependency>
+                <groupId>org.apache.kafka</groupId>
+                <artifactId>kafka-clients</artifactId>
+                <version>${kafka-connect.version}</version>
+            </dependency>
+
+            <!-- Kafka Connect 客户端 -->
+            <dependency>
+                <groupId>org.sourcelab</groupId>
+                <artifactId>kafka-connect-client</artifactId>
+                <version>4.0.1</version>
+            </dependency>
+
             <!-- poi-tl -->
             <dependency>
                 <groupId>com.deepoove</groupId>
@@ -368,6 +431,7 @@
                 </exclusions>
             </dependency>
 
+            <!-- kettle 引擎 -->
             <dependency>
                 <groupId>pentaho-kettle</groupId>
                 <artifactId>kettle-engine</artifactId>
@@ -416,12 +480,14 @@
                 </exclusions>
             </dependency>
 
+            <!-- kettle 数据库对话框 -->
             <dependency>
                 <groupId>pentaho-kettle</groupId>
                 <artifactId>kettle-dbdialog</artifactId>
                 <version>${pentaho-kettle.version}</version>
             </dependency>
 
+            <!-- kettle UI SWT -->
             <dependency>
                 <groupId>pentaho-kettle</groupId>
                 <artifactId>kettle-ui-swt</artifactId>
@@ -438,12 +504,12 @@
                 </exclusions>
             </dependency>
 
-            <!-- 添加 pentaho 加密库 -->
-            <dependency>
-                <groupId>pentaho</groupId>
-                <artifactId>pentaho-encryption</artifactId>
-                <version>9.4.0.0-343</version>
-            </dependency>
+            <!-- pentaho 加密库 -->
+            <!--            <dependency>-->
+            <!--                <groupId>pentaho</groupId>-->
+            <!--                <artifactId>pentaho-encryption</artifactId>-->
+            <!--                <version>${pentaho-encryption.version}</version>-->
+            <!--            </dependency>-->
 
         </dependencies>
     </dependencyManagement>

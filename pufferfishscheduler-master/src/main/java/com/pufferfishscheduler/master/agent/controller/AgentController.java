@@ -2,6 +2,7 @@ package com.pufferfishscheduler.master.agent.controller;
 
 import com.pufferfishscheduler.common.result.ApiResponse;
 import com.pufferfishscheduler.master.agent.service.AIService;
+import com.pufferfishscheduler.master.common.config.openapi.OpenApiTags;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.ai.chat.messages.Message;
@@ -19,7 +20,7 @@ import java.util.List;
  * @author Mayc
  * @since 2026-03-03  10:39
  */
-@Tag(name = "智能体管理")
+@Tag(name = OpenApiTags.AGENT, description = OpenApiTags.AGENT_DESC)
 @RestController
 @RequestMapping(value = "/agent")
 public class AgentController {

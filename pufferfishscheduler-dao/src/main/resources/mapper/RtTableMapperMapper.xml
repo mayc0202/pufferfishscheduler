@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.pufferfishscheduler.dao.mapper.RtTableMapperMapper">
+    <resultMap id="BaseResultMap" type="com.pufferfishscheduler.dao.entity.RtTableMapper">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="task_id" jdbcType="INTEGER" property="taskId"/>
+        <result column="source_table_id" jdbcType="INTEGER" property="sourceTableId"/>
+        <result column="source_table_name" jdbcType="VARCHAR" property="sourceTableName"/>
+        <result column="target_table_id" jdbcType="INTEGER" property="targetTableId"/>
+        <result column="target_table_name" jdbcType="VARCHAR" property="targetTableName"/>
+        <result column="delete_data_flag" jdbcType="BOOLEAN" property="deleteDataFlag"/>
+        <result column="parallel_write_flag" jdbcType="BOOLEAN" property="parallelWriteFlag"/>
+        <result column="parallel_thread_num" jdbcType="INTEGER" property="parallelThreadNum"/>
+        <result column="write_type" jdbcType="VARCHAR" property="writeType"/>
+        <result column="batch_size" jdbcType="INTEGER" property="batchSize"/>
+        <result column="deleted" jdbcType="BOOLEAN" property="deleted"/>
+        <result column="created_by" jdbcType="VARCHAR" property="createdBy"/>
+        <result column="created_time" jdbcType="TIMESTAMP" property="createdTime"/>
+        <result column="updated_by" jdbcType="VARCHAR" property="updatedBy"/>
+        <result column="updated_time" jdbcType="TIMESTAMP" property="updatedTime"/>
+    </resultMap>
+
+    <!-- 根据任务ID查询表映射列表 -->
+    <select id="selectByTaskId" resultMap="BaseResultMap">
+        SELECT * FROM rt_table_mapper 
+        WHERE task_id = #{taskId} 
+        AND deleted = false
+    </select>
+
+    <!-- 根据源表ID查询表映射列表 -->
+    <select id="selectBySourceTableId" resultMap="BaseResultMap">
+        SELECT * FROM rt_table_mapper 
+        WHERE source_table_id = #{sourceTableId} 
+        AND deleted = false
+    </select>
+
+    <!-- 根据目标表ID查询表映射列表 -->
+    <select id="selectByTargetTableId" resultMap="BaseResultMap">
+        SELECT * FROM rt_table_mapper 
+        WHERE target_table_id = #{targetTableId} 
+        AND deleted = false
+    </select>
+
+    <!-- 根据任务ID删除表映射 -->
+    <delete id="deleteByTaskId">
+        UPDATE rt_table_mapper 
+        SET deleted = true,
+            updated_by = #{updatedBy}, 
+            updated_time = NOW() 
+        WHERE task_id = #{taskId}
+    </delete>
+
+    <!-- 根据源表ID和目标表ID查询表映射 -->
+    <select id="selectBySourceAndTarget" resultMap="BaseResultMap">
+        SELECT * FROM rt_table_mapper 
+        WHERE source_table_id = #{sourceTableId} 
+        AND target_table_id = #{targetTableId} 
+        AND deleted = false
+    </select>
+
+</mapper>

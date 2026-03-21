@@ -21,6 +21,19 @@
 
     <dependencies>
 
+        <!-- pufferfishscheduler-common -->
+        <dependency>
+            <groupId>com.pufferfishscheduler.common</groupId>
+            <artifactId>pufferfishscheduler-common</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.pufferfishscheduler.domain</groupId>
+                    <artifactId>pufferfishscheduler-domain</artifactId>
+                </exclusion>
+            </exclusions>
+            <version>1.0.0</version>
+        </dependency>
+
         <!-- pufferfishscheduler-dao -->
         <dependency>
             <groupId>com.pufferfishscheduler.dao</groupId>
@@ -58,16 +71,37 @@
             <artifactId>dubbo-spring-boot-starter</artifactId>
         </dependency>
 
-        <!-- Nacos -->
+        <!-- curator -->
         <dependency>
-            <groupId>com.alibaba.nacos</groupId>
-            <artifactId>nacos-client</artifactId>
+            <groupId>org.apache.curator</groupId>
+            <artifactId>curator-framework</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.curator</groupId>
+            <artifactId>curator-recipes</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.curator</groupId>
+            <artifactId>curator-x-discovery</artifactId>
         </dependency>
 
-        <!-- Dubbo Registry -->
+        <!-- ZooKeeper（Dubbo 注册中心）-->
         <dependency>
             <groupId>org.apache.dubbo</groupId>
-            <artifactId>dubbo-registry-nacos</artifactId>
+            <artifactId>dubbo-dependencies-zookeeper</artifactId>
+            <version>${dubbo.version}</version>
+            <type>pom</type>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.dubbo</groupId>
+            <artifactId>dubbo-registry-zookeeper</artifactId>
+        </dependency>
+
+        <!-- zookeeper -->
+        <dependency>
+            <groupId>org.apache.zookeeper</groupId>
+            <artifactId>zookeeper</artifactId>
         </dependency>
 
         <!-- VectorStore Redis -->

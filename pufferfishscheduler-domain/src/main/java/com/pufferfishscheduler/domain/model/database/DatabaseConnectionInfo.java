@@ -1,6 +1,9 @@
 package com.pufferfishscheduler.domain.model.database;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  *
@@ -8,6 +11,9 @@ import lombok.Data;
  * @since 2025-09-06  23:45
  */
 @Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class DatabaseConnectionInfo {
 
     /**

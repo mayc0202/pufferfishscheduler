@@ -13,7 +13,7 @@ import com.pufferfishscheduler.domain.vo.user.UserVo;
 import com.pufferfishscheduler.master.auth.service.AuthService;
 import com.pufferfishscheduler.master.auth.service.RoleService;
 import com.pufferfishscheduler.master.auth.service.UserService;
-import com.pufferfishscheduler.master.config.jwt.JwtConfig;
+import com.pufferfishscheduler.master.common.config.jwt.JwtConfig;
 import io.jsonwebtoken.Claims;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -239,9 +239,36 @@ public class AuthServiceImpl implements AuthService {
     /**
      * 刷新token
      *
-     * @param oldToken
+     * @param userId
      * @return
      */
+    @Override
+    public void invalidateUserSessions(Integer userId) {
+        if (userId == null) {
+            return;
+        }
+        String redisKey = Constants.TOKEN_CONFIG.SSO_KEY_PREFIX + userId;
+        String oldToken = redisTemplate.opsForValue().get(redisKey);
+        if (StringUtils.isNotBlank(oldToken)) {
+            try {
+                Claims oldClaims = jwtConfig.parseToken(oldToken).getBody();
+                long ttl = oldClaims.getExpiration().getTime() - System.currentTimeMillis();
+                if (ttl > 0) {
+                    String blacklistKey = Constants.TOKEN_CONFIG.BLACKLIST_KEY_PREFIX + oldToken;
+                    redisTemplate.opsForValue().set(
+                            blacklistKey,
+                            "1",
+                            ttl,
+                            TimeUnit.MILLISECONDS
+                    );
+                }
+            } catch (Exception e) {
+                log.warn("清理用户会话时解析 token 失败 userId={}", userId, e);
+            }
+        }
+        redisTemplate.delete(redisKey);
+    }
+
     @Override
     public String refreshToken(String oldToken) {
         try {

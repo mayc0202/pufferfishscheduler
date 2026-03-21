@@ -1,8 +1,8 @@
 package com.pufferfishscheduler.master.collect.trans.engine;
 
 import java.util.List;
-import java.util.UUID;
 
+import com.pufferfishscheduler.common.utils.CommonUtil;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 
@@ -31,11 +31,11 @@ public class TransWrapper extends Trans {
     private boolean executeStatus; // 执行状态
 
     public TransWrapper() {
-        this.instanceId = UUID.randomUUID().toString().replaceAll("-", "");
+        this.instanceId = CommonUtil.getUUIDString();
     }
 
     public TransWrapper(TransMeta transMeta) {
         super(transMeta);
-        this.instanceId = UUID.randomUUID().toString().replaceAll("-", "");
+        this.instanceId = CommonUtil.getUUIDString();
     }
 }

@@ -23,7 +23,7 @@
 
     <dependencies>
 
-        <!-- domain -->
+        <!-- pufferfishscheduler-domain -->
         <dependency>
             <groupId>com.pufferfishscheduler.domain</groupId>
             <artifactId>pufferfishscheduler-domain</artifactId>

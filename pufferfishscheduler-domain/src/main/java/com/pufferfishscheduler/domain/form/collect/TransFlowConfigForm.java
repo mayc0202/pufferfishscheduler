@@ -22,7 +22,6 @@ public class TransFlowConfigForm {
     /**
      * 转换配置
      */
-    @NotBlank(message = "转换配置不能为空！")
     private String config;
 
     /**

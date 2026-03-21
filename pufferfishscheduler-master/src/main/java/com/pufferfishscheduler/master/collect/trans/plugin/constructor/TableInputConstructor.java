@@ -23,11 +23,14 @@ import com.pufferfishscheduler.master.collect.trans.plugin.AbstractStepMetaConst
 import com.pufferfishscheduler.master.collect.trans.plugin.StepContext;
 import com.pufferfishscheduler.master.database.editor.AbstractQueryEditor;
 import com.pufferfishscheduler.master.database.editor.DatabaseEditorFactory;
-import com.pufferfishscheduler.master.database.service.DbDatabaseService;
+import com.pufferfishscheduler.master.database.database.service.DbDatabaseService;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * 表输入组件构造器
  */
+@Slf4j
 public class TableInputConstructor extends AbstractStepMetaConstructor {
 
     /**
@@ -73,10 +76,7 @@ public class TableInputConstructor extends AbstractStepMetaConstructor {
         if (StringUtils.isBlank(dataSourceId)) {
             throw new BusinessException("数据源ID不能为空！");
         }
-        String rowLimit = data.getString("rowLimit"); // 行限制
-        if (StringUtils.isBlank(rowLimit)) {
-            rowLimit = "1000";
-        }
+        String rowLimit = data.getString("rowLimit"); // 行限制，如果为空则不限制
         String sql = data.getString("sql"); // SQL查询语句
         if (StringUtils.isBlank(sql)) {
             throw new BusinessException("SQL查询语句不能为空！");
@@ -95,7 +95,13 @@ public class TableInputConstructor extends AbstractStepMetaConstructor {
         transMeta.addDatabase(dataMeta);
 
         tableInput.setDatabaseMeta(dataMeta);
-        // tableInput.setRowLimit(rowLimit);
+        // 设置行限制：如果用户指定了rowLimit则使用用户指定的值，否则设置为0表示不限制
+        if (StringUtils.isNotBlank(rowLimit)) {
+            tableInput.setRowLimit(rowLimit);
+        } else {
+            // 显式设置为0，表示不限制读取行数
+            tableInput.setRowLimit("0");
+        }
 
         configureStepVariables(tableInput, stepInsertVariable, implementEveryOne, map);
         return createStepMeta(registryID, map, id, name, tableInput, data);
@@ -126,7 +132,7 @@ public class TableInputConstructor extends AbstractStepMetaConstructor {
                 throw new BusinessException("数据源不存在!");
             }
 
-            String kettleDbType = ListenDatabaseType.listenDatabseType(database.getType());
+            String kettleDbType = ListenDatabaseType.listenDatabaseType(database.getType());
             String connectType = getConnectType(database);
             String decodePassword = aesUtil.decrypt(database.getPassword());
 
@@ -209,7 +215,7 @@ public class TableInputConstructor extends AbstractStepMetaConstructor {
         }
 
         // 配置达梦数据库属性
-        if (Constants.DbType.dm.equals(database.getType())) {
+        if (Constants.DATABASE_TYPE.DM8.equals(database.getType())) {
             configureDMDatabaseProperties(dataMeta, database);
         }
 
@@ -231,6 +237,10 @@ public class TableInputConstructor extends AbstractStepMetaConstructor {
         dataMeta.addExtraOption(kettleDbType, "useSSL", "false");
         dataMeta.addExtraOption(kettleDbType, "serverTimezone", "Asia/Shanghai");
         dataMeta.addExtraOption(kettleDbType, "zeroDateTimeBehavior", "convertToNull");
+        // 设置MySQL的fetchSize为Integer.MIN_VALUE，表示不限制读取行数
+        // 这是MySQL JDBC驱动的特殊要求，必须配合useCursorFetch=true使用
+        dataMeta.addExtraOption(kettleDbType, "defaultFetchSize", String.valueOf(Integer.MIN_VALUE));
+        dataMeta.addExtraOption(kettleDbType, "useCursorFetch", "true");
     }
 
     /**
@@ -322,7 +332,6 @@ public class TableInputConstructor extends AbstractStepMetaConstructor {
     private StepMeta createStepMeta(PluginRegistry registryID, Map<String, StepMeta> map,
             String id, String name, TableInputMeta tableInput, JSONObject data) {
         String eiPluginId = registryID.getPluginId(StepPluginType.class, tableInput);
-
         StepMeta stepMeta = map.get(id);
         if (null == stepMeta) {
             stepMeta = new StepMeta(eiPluginId, name, tableInput);

@@ -4,7 +4,6 @@
     <resultMap id="BaseResultMap" type="com.pufferfishscheduler.dao.entity.MetadataTask">
         <id column="id" jdbcType="INTEGER" property="id"/>
         <result column="db_id" jdbcType="INTEGER" property="dbId"/>
-        <result column="worker_id" jdbcType="VARCHAR" property="workerId"/>
         <result column="cron" jdbcType="VARCHAR" property="cron"/>
         <result column="failure_policy" jdbcType="VARCHAR" property="failurePolicy"/>
         <result column="notify_policy" jdbcType="VARCHAR" property="notifyPolicy"/>
@@ -12,6 +11,7 @@
         <result column="status" jdbcType="VARCHAR" property="status"/>
         <result column="remark" jdbcType="VARCHAR" property="remark"/>
         <result column="execute_time" jdbcType="TIMESTAMP" property="executeTime"/>
+        <result column="reason" jdbcType="VARCHAR" property="reason"/>
         <result column="deleted" jdbcType="BOOLEAN" property="deleted"/>
         <result column="created_by" jdbcType="VARCHAR" property="createdBy"/>
         <result column="created_time" jdbcType="TIMESTAMP" property="createdTime"/>
@@ -21,8 +21,8 @@
 
     <select id="selectTaskList" resultType="com.pufferfishscheduler.domain.vo.metadata.MetadataTaskVo">
         SELECT
-        mt.id, mt.db_id, mt.worker_id, mt.cron, mt.failure_policy,
-        mt.notify_policy, mt.enable, mt.status, mt.remark,
+        mt.id, mt.db_id, mt.cron, mt.failure_policy,
+        mt.notify_policy, mt.enable, mt.status, mt.remark, mt.reason,
         mt.execute_time, mt.created_time,
         db.NAME AS db_name, dg.id AS db_group_id, dg.NAME AS db_group_name
         FROM metadata_task AS mt

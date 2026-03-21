@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.pufferfishscheduler.dao.mapper.RtTaskMapper">
+    <resultMap id="BaseResultMap" type="com.pufferfishscheduler.dao.entity.RtTask">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="group_id" jdbcType="VARCHAR" property="groupId"/>
+        <result column="source_db_id" jdbcType="INTEGER" property="sourceDbId"/>
+        <result column="target_db_id" jdbcType="INTEGER" property="targetDbId"/>
+        <result column="sync_type" jdbcType="VARCHAR" property="syncType"/>
+        <result column="engine_type" jdbcType="VARCHAR" property="engineType"/>
+        <result column="status" jdbcType="VARCHAR" property="status"/>
+        <result column="reason" jdbcType="LONGVARCHAR" property="reason"/>
+        <result column="deleted" jdbcType="BOOLEAN" property="deleted"/>
+        <result column="created_by" jdbcType="VARCHAR" property="createdBy"/>
+        <result column="created_time" jdbcType="TIMESTAMP" property="createdTime"/>
+        <result column="updated_by" jdbcType="VARCHAR" property="updatedBy"/>
+        <result column="updated_time" jdbcType="TIMESTAMP" property="updatedTime"/>
+        <result column="runtime_config" jdbcType="LONGVARCHAR" property="runtimeConfig"/>
+        <result column="stage" jdbcType="VARCHAR" property="stage"/>
+        <result column="heartbeat_enabled" jdbcType="BOOLEAN" property="heartbeatEnabled"/>
+        <result column="heartbeat_interval" jdbcType="INTEGER" property="heartbeatInterval"/>
+    </resultMap>
+
+    <!-- 根据源数据库ID和目标数据库ID查询任务 -->
+    <select id="selectBySourceAndTarget" resultMap="BaseResultMap">
+        SELECT * FROM rt_task 
+        WHERE source_db_id = #{sourceDbId} 
+        AND target_db_id = #{targetDbId} 
+        AND deleted = 0
+    </select>
+
+    <!-- 根据任务状态查询任务列表 -->
+    <select id="selectByStatus" resultMap="BaseResultMap">
+        SELECT * FROM rt_task 
+        WHERE status = #{status} 
+        AND deleted = 0
+        ORDER BY id DESC
+    </select>
+
+    <!-- 根据业务主题ID查询任务列表 -->
+    <select id="selectByGroupId" resultMap="BaseResultMap">
+        SELECT * FROM rt_task 
+        WHERE group_id = #{groupId} 
+        AND deleted = 0
+        ORDER BY id DESC
+    </select>
+
+    <!-- 更新任务状态 -->
+    <update id="updateTaskStatus">
+        UPDATE rt_task 
+        SET status = #{status},
+            reason = #{reason},
+            updated_time = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <!-- 更新运行时配置 -->
+    <update id="updateRuntimeConfig">
+        UPDATE rt_task 
+        SET runtime_config = #{runtimeConfig},
+            updated_time = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <!-- 批量更新任务状态 -->
+    <update id="batchUpdateStatus">
+        UPDATE rt_task 
+        SET status = #{status},
+            updated_time = NOW()
+        WHERE id IN
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
+    <!-- 获取运行中的任务列表 -->
+    <select id="selectRunningTasks" resultMap="BaseResultMap">
+        SELECT * FROM rt_task 
+        WHERE status = 'RUNNING' 
+        AND deleted = 0
+        ORDER BY id DESC
+    </select>
+
+    <!-- 获取需要心跳检查的任务列表 -->
+    <select id="selectHeartbeatTasks" resultMap="BaseResultMap">
+        SELECT * FROM rt_task 
+        WHERE heartbeat_enabled = 1 
+        AND status = 'RUNNING' 
+        AND deleted = 0
+        ORDER BY id DESC
+    </select>
+
+</mapper>

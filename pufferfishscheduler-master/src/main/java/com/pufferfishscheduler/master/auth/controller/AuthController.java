@@ -3,6 +3,7 @@ package com.pufferfishscheduler.master.auth.controller;
 import com.pufferfishscheduler.common.result.ApiResponse;
 import com.pufferfishscheduler.domain.form.auth.LoginForm;
 import com.pufferfishscheduler.master.auth.service.AuthService;
+import com.pufferfishscheduler.master.common.config.openapi.OpenApiTags;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -16,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
  * @author Mayc
  * @since 2025-09-22  00:52
  */
-@Tag(name = "认证管理")
+@Tag(name = OpenApiTags.AUTH, description = OpenApiTags.AUTH_DESC)
 @Validated
 @RestController
 @RequestMapping(value = "/auth", produces = {"application/json;charset=utf-8"})

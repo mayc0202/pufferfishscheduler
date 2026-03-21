@@ -7,6 +7,15 @@ server:
     context-path: /pufferfishscheduler
   port: 8081
 
+# 应用配置
+app:
+  #是否为开发模式，默认true
+  dev-mode:
+    enabled: false
+  # 是否发送预警邮件，默认false
+  send-alert-email:
+    enabled: true
+
 spring:
   messages:
     encoding: UTF-8
@@ -38,13 +47,15 @@ spring:
     password: fsfvylegjvaacaii # 授权码
     port: 587
     default-encoding: UTF-8 # 字符编码
-    properties: # 其他参数
+    properties:
       mail:
         smtp:
-          ssl: # 配置SSL 加密工厂
-            enable: false
-            required: false
-        debug: true  # 开启debug模式，这样邮件发送过程的日志会在控制台打印出来，方便排查错误
+          auth: true
+          # QQ 邮箱 587：必须先 STARTTLS 再认证，否则会 530（要求安全连接）
+          starttls:
+            enable: true
+            required: true
+        debug: true
   # 数据源
   datasource:
     # mysql
@@ -71,14 +82,14 @@ spring:
     port: 6379
     password: Etl2025
     database: 0 # 数据库默认索引为0
+    timeout: 30000ms            # 命令超时时间(30秒)
     lettuce:
+      shutdown-timeout: 200ms   # 关闭超时时间
       pool:
-        max-active: 50        # 增大连接池
-        max-idle: 20          # 最大空闲连接
-        min-idle: 5           # 最小空闲连接
-        max-wait: 3000ms      # 获取连接最大等待时间
-      shutdown-timeout: 200ms # 关闭超时时间
-    timeout: 30000ms          # 命令超时时间(30秒)
+        max-active: 100         # 连接池中允许的最大连接数，通常设置为 (CPU核心数 * 2) + 磁盘数 的倍数
+        max-idle: 10            # 连接池中保持的最大空闲连接数
+        min-idle: 2             # 连接池中保持的最小空闲连接数
+        max-wait: 3000ms        # 连接池耗尽时，获取连接的最大等待时间
 
   mvc:
     pathmatch:
@@ -108,17 +119,51 @@ dubbo:
     retries: 3 # 重试次数
   registry: # 注册中心配置
     check: false  # 注册中心启动时不检查
-    address: nacos://localhost:8848
-#    username: nacos
-#    password: nacos
-#    timeout: 5000
+    protocol: zookeeper  # 明确协议类型
+    address: 81.69.250.183:2181
+    parameters:
+      zookeeper.sasl.client: "false"
+
+# 实时数据同步引擎配置
+realtime:
+  topic:
+    # 主题数据复制数量
+    replication.factor: 1
+    # 主题分区数量(按照Kafka集群机器数量分配，提升并发写性能)
+    partitions: 1
+    # 主题压缩类型，可以节省网络带宽
+    compression.type: snappy
+    acks: 1
+  consumer:
+    # 每次拉取的记录数
+    max.poll.records: 10000
+    # 每次拉取的最大字节数(100MB)
+    max.partition.fetch.bytes: 104857600
+    # 每次最大获取的记录大小（50MB）
+    fetch.min.bytes: 52428800
+    # 消费端压缩算法
+    compression.type: snappy
+    fetch.max.wait.ms: 1000
+  config:
+    # 是否开启心跳
+    heartbeat.enabled: false
+    # 心跳间隔 默认3600000,也就是一小时
+    heartbeat.interval.ms: 3600000
+    # 时间精度 可选adaptive/connect，默认adaptive
+    time.precision.mode: connect
+    # 数值精度 可选adaptive/double/string，默认adaptive
+    decimal.handling.mode: double
+  stats:
+    sync:
+      fixed-delay-ms: 300000
 
 # mybatis-plus配置
 mybatis-plus:
   configuration:
     default-executor-type: REUSE  # 使用REUSE执行器
     cache-enabled: false          # 如果不是必须，关闭二级缓存
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl #mybatis-plus日志实现类
+    #    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl #mybatis-plus日志实现类
+    log-impl: org.apache.ibatis.logging.nologging.NoLoggingImpl # 完全禁用MyBatis日志
   global-config:
     db-config:
       id-type: auto #主键自增
@@ -175,5 +220,28 @@ security:
 # 资源根路径
 ftp:
   path: /data/ftp
+
+# Kafka 任务调度（方案B：Master->Kafka->Worker）
+kafka:
+  brokers: 101.34.66.45:9092
+  connector: 101.34.66.45:8083
+  #  brokers: kafka-node:9092
+  #  connector: kafka-node:8083
+  dispatch:
+    topic: pufferfishscheduler-task-dispatch # 任务派发主题
+    acks: 1 # 等待所有分区副本确认
+    retries: 3 # 重试次数，默认3
+
+# 元数据定时调度（由 Master 计算并投递）
+scheduler:
+  # 元数据定时调度
+  metadata:
+    scan-interval-ms: 10000      # Master 扫描频率
+    trigger-window-ms: 60000    # 触发窗口（<=1分钟内）
+    stuck-threshold-ms: 300000  # Worker 异常导致 RUNNING/STARTING 长时间不回落时，Master 允许抢占恢复
+
+# Worker Kafka 消费组（只影响 Worker）
+worker-dispatch-consumer:
+  group-id: pufferfishscheduler-worker-dispatch
 
 

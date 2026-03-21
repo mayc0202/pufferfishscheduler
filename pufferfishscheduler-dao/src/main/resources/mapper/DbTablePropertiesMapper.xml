@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.pufferfishscheduler.dao.mapper.DbTablePropertiesMapper">
+    <resultMap id="BaseResultMap" type="com.pufferfishscheduler.dao.entity.DbTableProperties">
+        <id column="id" jdbcType="VARCHAR" property="id"/>
+        <result column="table_id" jdbcType="INTEGER" property="tableId"/>
+        <result column="prop_type" jdbcType="VARCHAR" property="propType"/>
+        <result column="prop_values" jdbcType="VARCHAR" property="propValues"/>
+        <result column="created_by" jdbcType="VARCHAR" property="createdBy"/>
+        <result column="created_time" jdbcType="TIMESTAMP" property="createdTime"/>
+    </resultMap>
+
+    <!-- 批量插入 -->
+     <insert id="batchInsert" parameterType="list">
+        INSERT INTO db_table_properties (
+        id,
+        table_id,
+        prop_type,
+        `prop_values`,
+        created_by,
+        created_time
+        ) VALUES
+        <foreach collection="list" item="item" separator=",">
+            (
+            #{item.id},
+            #{item.tableId},
+            #{item.propType},
+            #{item.propValues},
+            #{item.createdBy},
+            #{item.createdTime}
+            )
+        </foreach>
+    </insert>
+
+</mapper>

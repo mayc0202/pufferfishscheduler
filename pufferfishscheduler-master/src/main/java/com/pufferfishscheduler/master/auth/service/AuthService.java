@@ -46,4 +46,9 @@ public interface AuthService {
      * @return
      */
     String refreshToken(String oldToken);
+
+    /**
+     * 使用户当前登录态失效（列入黑名单并清理 SSO），用于管理员注销用户等场景
+     */
+    void invalidateUserSessions(Integer userId);
 }

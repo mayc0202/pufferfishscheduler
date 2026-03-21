@@ -40,16 +40,22 @@ public class Role implements Serializable {
     private String name;
 
     /**
-     * 角色描述
+     * 角色说明
      */
-    @TableField(value = "dec")
-    private String dec;
+    @TableField(value = "`description`")
+    private String description;
 
     /**
      * 是否删除
      */
     @TableField(value = "deleted")
     private Boolean deleted;
+
+    /**
+     * 是否禁用
+     */
+    @TableField(value = "disabled")
+    private Boolean disabled;
 
     /**
      * 创建人

@@ -3,8 +3,8 @@ package com.pufferfishscheduler.master.collect.trans.engine;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 
+import com.pufferfishscheduler.common.utils.CommonUtil;
 import org.w3c.dom.Document;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -14,6 +14,7 @@ import org.pentaho.di.trans.TransMeta;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.annotation.Propagation;
 
 import com.pufferfishscheduler.common.enums.FlowType;
 import com.pufferfishscheduler.common.exception.BusinessException;
@@ -124,7 +125,7 @@ public class DataFlowRepository {
      * @param bizObjectId 业务对象ID
      * @param hostName    主机名
      */
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = Exception.class)
     public void updateHostName(String bizType, String bizObjectId, String hostName) {
         validateBizParams(bizType, bizObjectId);
         if (StringUtils.isBlank(hostName)) {
@@ -183,8 +184,8 @@ public class DataFlowRepository {
      * 
      * @param transFlowConfig 转换流程配置
      */
-    @Transactional(rollbackFor = Exception.class)
-    private void save(TransFlowConfig transFlowConfig) {
+    @Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = Exception.class)
+    protected void save(TransFlowConfig transFlowConfig) {
         validateTransFlowConfig(transFlowConfig);
         
         String currentUser = UserContext.getCurrentAccount();
@@ -194,9 +195,10 @@ public class DataFlowRepository {
         transFlowConfig.setUpdatedTime(new Date());
         transFlowConfig.setVersion(1);
         transFlowConfig.setFlowStatus(1);
-        transFlowConfig.setId(UUID.randomUUID().toString().replaceAll("-", ""));
-        kettleFlowRepositoryMapper.insertFlow(transFlowConfig);
-        log.info("Saved trans flow config: {}-{}", transFlowConfig.getBizType(), transFlowConfig.getBizObjectId());
+        transFlowConfig.setId(CommonUtil.getUUIDString());
+        // 使用自定义 XML 的 insertFlow，避免 BaseMapper 插入规则差异
+        int insert = kettleFlowRepositoryMapper.insertFlow(transFlowConfig);
+        log.info("Saved {} rows for trans flow config: {}-{}", insert, transFlowConfig.getBizType(), transFlowConfig.getBizObjectId());
     }
 
     /**
@@ -204,17 +206,18 @@ public class DataFlowRepository {
      * 
      * @param transFlowConfig 转换流程配置
      */
-    @Transactional(rollbackFor = Exception.class)
-    private void update(TransFlowConfig transFlowConfig) {
+    @Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = Exception.class)
+    protected void update(TransFlowConfig transFlowConfig) {
         validateTransFlowConfig(transFlowConfig);
         
         String currentUser = UserContext.getCurrentAccount();
-        transFlowConfig.setUpdatedBy(currentUser);
-        transFlowConfig.setUpdatedTime(new Date());
-        transFlowConfig.setId(UUID.randomUUID().toString().replaceAll("-", ""));
-        kettleFlowRepositoryMapper.updateFlow(transFlowConfig.getFlowType(), transFlowConfig.getBizType(),
-                transFlowConfig.getBizObjectId(), transFlowConfig.getFlowContent());
-        log.info("Updated trans flow config: {}-{}", transFlowConfig.getBizType(), transFlowConfig.getBizObjectId());
+        int update = kettleFlowRepositoryMapper.updateFlow(
+                transFlowConfig.getFlowType(),
+                transFlowConfig.getFlowContent(),
+                transFlowConfig.getBizType(),
+                transFlowConfig.getBizObjectId()
+        );
+        log.info("Updated {} rows for trans flow config: {}-{}", update, transFlowConfig.getBizType(), transFlowConfig.getBizObjectId());
     }
 
     /**
@@ -223,8 +226,8 @@ public class DataFlowRepository {
      * @param bizType     业务类型
      * @param bizObjectId 业务对象ID
      */
-    @Transactional(rollbackFor = Exception.class)
-    private void delete(String bizType, String bizObjectId) {
+    @Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = Exception.class)
+    protected void delete(String bizType, String bizObjectId) {
         validateBizParams(bizType, bizObjectId);
         
         kettleFlowRepositoryMapper.deleteFlow(bizType, bizObjectId);

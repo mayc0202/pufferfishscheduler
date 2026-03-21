@@ -28,6 +28,11 @@ public class DatabaseField {
     private String businessName;
 
     /**
+     * 是否为主键；优先逻辑主键其次物理主键
+     */
+    private Boolean primaryKey;
+
+    /**
      * 数据类型
      */
     private String dataType;

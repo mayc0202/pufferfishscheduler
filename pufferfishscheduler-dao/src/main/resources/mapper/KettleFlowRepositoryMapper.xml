@@ -32,9 +32,14 @@
         #{createdBy}, #{createdTime}, #{updatedBy}, #{updatedTime} ) </insert>
 
     <!-- 更新指定业务类型和业务对象ID的流程 -->
-    <update id="updateFlow"> UPDATE kettle_flow_repository SET flow_type = #{flowType}, flow_content
-        = #{flowContent}, updated_time = NOW() WHERE biz_type = #{bizType} AND biz_object_id =
-        #{bizObjectId} </update>
+    <update id="updateFlow"> 
+        UPDATE kettle_flow_repository 
+        SET flow_type = #{flowType}, 
+            flow_content = #{flowContent}, 
+            updated_time = NOW() 
+        WHERE biz_type = #{bizType} 
+          AND biz_object_id = #{bizObjectId} 
+    </update>
 
     <!-- 更新指定业务类型和业务对象ID的主机名 -->
     <update id="updateHostName"> UPDATE kettle_flow_repository SET executor_host = #{hostName},

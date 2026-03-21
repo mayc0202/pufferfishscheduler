@@ -23,11 +23,11 @@ public class SpatialConversionUtil {
     
     static {
         // 初始化空间转换函数模板
-        SPATIAL_FUNCTION_MAP.put(Constants.DbType.mysql, coord -> String.format("ST_GeomFromText(?, %s)", coord));
-        SPATIAL_FUNCTION_MAP.put(Constants.DbType.oracle, coord -> "SDO_UTIL.FROM_WKTGEOMETRY(?)");
-        SPATIAL_FUNCTION_MAP.put(Constants.DbType.sqlServer, coord -> String.format("geometry::STGeomFromText(?, %s)", coord));
-        SPATIAL_FUNCTION_MAP.put(Constants.DbType.postgresql, coord -> String.format("ST_GeomFromText(?, %s)", coord));
-        SPATIAL_FUNCTION_MAP.put(Constants.DbType.dm, coord -> String.format("dmgeo.ST_GeomFromText(?, %s)", coord));
+        SPATIAL_FUNCTION_MAP.put(Constants.DATABASE_TYPE.MYSQL, coord -> String.format("ST_GeomFromText(?, %s)", coord));
+        SPATIAL_FUNCTION_MAP.put(Constants.DATABASE_TYPE.ORACLE, coord -> "SDO_UTIL.FROM_WKTGEOMETRY(?)");
+        SPATIAL_FUNCTION_MAP.put(Constants.DATABASE_TYPE.SQL_SERVER, coord -> String.format("geometry::STGeomFromText(?, %s)", coord));
+        SPATIAL_FUNCTION_MAP.put(Constants.DATABASE_TYPE.POSTGRESQL, coord -> String.format("ST_GeomFromText(?, %s)", coord));
+        SPATIAL_FUNCTION_MAP.put(Constants.DATABASE_TYPE.DM8, coord -> String.format("dmgeo.ST_GeomFromText(?, %s)", coord));
     }
     
     /**

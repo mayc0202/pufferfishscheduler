@@ -3,6 +3,7 @@ package com.pufferfishscheduler.dao.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.pufferfishscheduler.dao.entity.Role;
 import com.pufferfishscheduler.domain.vo.user.RoleVo;
+import com.pufferfishscheduler.domain.vo.user.UserRoleRowVo;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -23,4 +24,9 @@ public interface RoleMapper extends BaseMapper<Role> {
      * @return
      */
     List<RoleVo> getRoleListByUserId(@Param("userId")Integer userId);
+
+    /**
+     * 批量查询用户角色
+     */
+    List<UserRoleRowVo> listRolesByUserIds(@Param("userIds") List<Integer> userIds);
 }

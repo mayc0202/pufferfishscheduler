@@ -30,7 +30,7 @@ public class ComponentNodeVo {
     private String label;
 
     /**
-     * 组件编码（仅插件类型有值）
+     * 组件编码
      */
     private String code;
 

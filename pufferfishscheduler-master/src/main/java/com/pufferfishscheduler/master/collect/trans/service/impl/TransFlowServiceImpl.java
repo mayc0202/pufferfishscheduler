@@ -1,54 +1,80 @@
 package com.pufferfishscheduler.master.collect.trans.service.impl;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleValueException;
+import org.pentaho.di.core.logging.KettleLogStore;
+import org.pentaho.di.core.parameters.DuplicateParamException;
+import org.pentaho.di.core.plugins.PluginRegistry;
+import org.pentaho.di.core.row.RowMeta;
+import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.variables.Variables;
+import org.pentaho.di.trans.TransHopMeta;
+import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.trans.TransPreviewFactory;
+import org.pentaho.di.trans.debug.BreakPointListener;
+import org.pentaho.di.trans.debug.StepDebugMeta;
+import org.pentaho.di.trans.debug.TransDebugMeta;
+import org.pentaho.di.trans.step.StepErrorMeta;
+import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.step.StepMetaInterface;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.google.common.collect.Lists;
 import com.pufferfishscheduler.common.bean.UserContext;
 import com.pufferfishscheduler.common.constants.Constants;
 import com.pufferfishscheduler.common.exception.BusinessException;
+import com.pufferfishscheduler.common.node.GenericTreeBuilder;
+import com.pufferfishscheduler.common.node.Tree;
+import com.pufferfishscheduler.common.node.TreeNode;
 import com.pufferfishscheduler.common.utils.DateUtil;
 import com.pufferfishscheduler.dao.entity.TransFlow;
+import com.pufferfishscheduler.dao.entity.TransGroup;
 import com.pufferfishscheduler.dao.mapper.TransFlowMapper;
+import com.pufferfishscheduler.domain.form.collect.PreviewForm;
 import com.pufferfishscheduler.domain.form.collect.TransFlowConfigForm;
 import com.pufferfishscheduler.domain.form.collect.TransFlowForm;
 import com.pufferfishscheduler.domain.vo.collect.PreviewVo;
 import com.pufferfishscheduler.domain.vo.collect.TransFlowVo;
-import com.pufferfishscheduler.master.collect.trans.engine.DataTransEngine.ResourceType;
+import com.pufferfishscheduler.master.collect.group.service.TransGroupService;
 import com.pufferfishscheduler.master.collect.trans.engine.DataFlowRepository;
 import com.pufferfishscheduler.master.collect.trans.engine.DataTransEngine;
-import com.pufferfishscheduler.master.collect.trans.engine.logchannel.LogChannel;
-import com.pufferfishscheduler.master.collect.trans.engine.logchannel.LogChannelManager;
+import com.pufferfishscheduler.master.collect.trans.engine.DataTransEngine.ResourceType;
 import com.pufferfishscheduler.master.collect.trans.engine.TransWrapper;
 import com.pufferfishscheduler.master.collect.trans.engine.entity.TransFlowConfig;
 import com.pufferfishscheduler.master.collect.trans.engine.entity.TransParam;
 import com.pufferfishscheduler.master.collect.trans.engine.listener.KettleStepLogListener;
 import com.pufferfishscheduler.master.collect.trans.engine.listener.KettleStepRowListener;
 import com.pufferfishscheduler.master.collect.trans.engine.listener.KettleTransListener;
+import com.pufferfishscheduler.master.collect.trans.engine.logchannel.LogChannel;
+import com.pufferfishscheduler.master.collect.trans.engine.logchannel.LogChannelManager;
 import com.pufferfishscheduler.master.collect.trans.plugin.AbstractStepMetaConstructor;
 import com.pufferfishscheduler.master.collect.trans.plugin.StepContext;
 import com.pufferfishscheduler.master.collect.trans.plugin.StepMetaConstructorFactory;
 import com.pufferfishscheduler.master.collect.trans.service.TransFlowService;
-import com.pufferfishscheduler.master.collect.trans.service.TransGroupService;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.pentaho.di.core.plugins.PluginRegistry;
-import org.pentaho.di.core.variables.Variables;
-import org.pentaho.di.trans.TransHopMeta;
-import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.trans.step.StepErrorMeta;
-import org.pentaho.di.trans.step.StepMeta;
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * 转换流实现类
@@ -65,6 +91,9 @@ public class TransFlowServiceImpl implements TransFlowService {
 
     @Autowired
     private TransGroupService transGroupService;
+
+    @Autowired
+    private GenericTreeBuilder treeBuilder;
 
     @Autowired
     DataTransEngine dataTransEngine;
@@ -117,6 +146,46 @@ public class TransFlowServiceImpl implements TransFlowService {
     }
 
     /**
+     * 转换分组（父子）+ 未删除的转换流程树
+     *
+     * @param name 分组名称模糊条件，与 {@link TransGroupService#getGroupList} 一致；可为空表示全部分组
+     */
+    @Override
+    public List<Tree> tree(String name) {
+        List<TransGroup> groups = transGroupService.getGroupList(name);
+        if (CollectionUtils.isEmpty(groups)) {
+            return Collections.emptyList();
+        }
+
+        Set<Integer> groupIds = groups.stream().map(TransGroup::getId).collect(Collectors.toSet());
+
+        LambdaQueryWrapper<TransFlow> flowQuery = new LambdaQueryWrapper<>();
+        flowQuery.eq(TransFlow::getDeleted, Constants.DELETE_FLAG.FALSE);
+        flowQuery.in(TransFlow::getGroupId, groupIds);
+        List<TransFlow> flows = transFlowMapper.selectList(flowQuery);
+
+        List<Tree> allNodes = new ArrayList<>();
+        for (TransGroup group : groups) {
+            Tree node = new Tree();
+            BeanUtils.copyProperties(group, node);
+            node.setType(Constants.TREE_TYPE.GROUP);
+            node.setOrderBy(group.getOrderBy());
+            allNodes.add(node);
+        }
+        for (TransFlow flow : flows) {
+            Tree node = new Tree();
+            node.setId(flow.getId());
+            node.setName(flow.getName());
+            node.setParentId(flow.getGroupId());
+            node.setType(Constants.TREE_TYPE.TRANS_FLOW);
+            node.setOrderBy(flow.getId());
+            allNodes.add(node);
+        }
+
+        return treeBuilder.buildTree(allNodes, Comparator.comparing(TreeNode::getOrder));
+    }
+
+    /**
      * 构建查询条件
      *
      * @param groupId
@@ -160,18 +229,20 @@ public class TransFlowServiceImpl implements TransFlowService {
     /**
      * 添加转换流
      *
-     * @param flow 转换流表单
+     * @param flow  转换流表单
+     * @param stage 数据处理阶段
      * @return 转换流id
      */
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public Integer addFlow(TransFlowForm flow) {
+    public Integer addFlow(TransFlowForm flow, String stage) {
 
         // 校验相同分组下转换流名称是否存在
         verifyTransFlowNameExisted(flow.getName(), flow.getGroupId(), null);
 
         // 转换流入库
         TransFlow transFlow = new TransFlow();
+        transFlow.setStage(stage);
         BeanUtils.copyProperties(flow, transFlow);
         transFlow.setDeleted(Constants.DELETE_FLAG.FALSE);
         transFlow.setCreatedBy(UserContext.getCurrentAccount());
@@ -212,7 +283,9 @@ public class TransFlowServiceImpl implements TransFlowService {
     @Override
     public void deleteFlow(Integer id) {
         // 校验转换流是否存在
-        verifyTransFlowExist(id);
+        TransFlow transFlow = getTransFlowById(id);
+
+        // TODO 后续校验转换流是否被引用
 
         // 使用 UpdateWrapper 进行更新
         UpdateWrapper<TransFlow> updateWrapper = new UpdateWrapper<>();
@@ -223,6 +296,10 @@ public class TransFlowServiceImpl implements TransFlowService {
                 .set("updated_time", new Date());
 
         transFlowMapper.update(null, updateWrapper);
+
+        // 删除转换流数据
+        DataFlowRepository repository = DataFlowRepository.getRepository();
+        repository.deleteTrans(transFlow.getStage() + "_" + Constants.TRANS, transFlow.getId().toString());
     }
 
     /**
@@ -273,6 +350,7 @@ public class TransFlowServiceImpl implements TransFlowService {
         ldq.eq(TransFlow::getId, id)
                 .eq(TransFlow::getDeleted, Constants.DELETE_FLAG.FALSE);
         TransFlow transFlow = transFlowMapper.selectOne(ldq);
+        // 校验转换流是否存在
         if (Objects.isNull(transFlow)) {
             throw new BusinessException("请校验转换流程是否存在!");
         }
@@ -312,6 +390,7 @@ public class TransFlowServiceImpl implements TransFlowService {
         if (form.getId() == null) {
             throw new BusinessException("转换流程ID不能为空");
         }
+        // 如果转换配置是空的，直接返回
         if (StringUtils.isBlank(form.getConfig())) {
             throw new BusinessException("转换流程配置不能为空");
         }
@@ -327,10 +406,10 @@ public class TransFlowServiceImpl implements TransFlowService {
             // 1. 生成设计器流程
             TransMeta transMeta = buildTransMeta(form.getId(), form.getConfig(), true);
             transMeta.setName(transFlow.getId().toString());
-            // 设置批处理大小，如果为null则使用默认值10000
+            // 设置批处理大小，如果为null则使用默认值1000
             Integer rowSize = transFlow.getRowSize();
             if (rowSize == null || rowSize <= 0) {
-                rowSize = 10000; // 设置更大的默认值
+                rowSize = 1000; // 设置更大的默认值
             }
             transMeta.setSizeRowset(rowSize);
 
@@ -612,182 +691,6 @@ public class TransFlowServiceImpl implements TransFlowService {
         return resultMap;
     }
 
-    // /**
-    // * 构建转换元数据
-    // *
-    // * @param flowId 流程ID
-    // * @param config 配置信息
-    // * @param validate 是否验证
-    // * @return 转换元数据
-    // */
-    // public TransMeta buildTransMeta(Integer flowId, String config, boolean
-    // validate) {
-    // // 参数验证
-    // if (flowId == null) {
-    // throw new BusinessException("流程ID不能为空");
-    // }
-    // if (StringUtils.isBlank(config)) {
-    // throw new BusinessException("配置信息不能为空");
-    // }
-
-    // // 1. 校验是否存在steps
-    // JSONObject jsonObject = JSONObject.parseObject(config);
-    // if (Objects.isNull(jsonObject)) {
-    // throw new BusinessException("转换流程配置格式错误!");
-    // }
-
-    // JSONArray steps = jsonObject.getJSONArray("steps");
-    // if (CollectionUtils.isEmpty(steps)) {
-    // throw new BusinessException("转换流程配置中不存在步骤!");
-    // }
-
-    // // 2. 解析配置生成kettle流程
-    // Map<String, StepMeta> stepMetaMap = new HashMap<>();
-    // Map<String, String> stepNames = new HashMap<>();
-    // for (int i = 0; i < steps.size(); i++) {
-    // JSONObject jo = steps.getJSONObject(i);
-    // String id = jo.getString("id");
-    // if (StringUtils.isBlank(id)) {
-    // throw new BusinessException("步骤ID不能为空");
-    // }
-
-    // // 第二层data的name为唯一值，第一层data的name为数据库配置的组件名
-    // try {
-    // String name =
-    // jo.getJSONObject("data").getJSONObject("data").getString("name");
-    // if (StringUtils.isBlank(name)) {
-    // throw new BusinessException("步骤名称不能为空");
-    // }
-    // stepNames.put(id, name);
-    // } catch (Exception e) {
-    // throw new BusinessException("步骤配置格式错误: " + e.getMessage());
-    // }
-    // }
-
-    // // 3. 构建转换流程元数据
-    // TransMeta transMeta = new TransMeta();
-
-    // // 解析config生成kettle流程
-    // PluginRegistry registryID = PluginRegistry.getInstance();
-
-    // Map<String, Map<String, String>> errorConfigMap = new HashMap<>();
-    // for (int i = 0; i < steps.size(); i++) {
-    // JSONObject jo = steps.getJSONObject(i);
-    // String id = jo.getString("id");
-    // String shape = jo.getString("shape");
-    // if (StringUtils.isBlank(shape)) {
-    // throw new BusinessException("步骤类型不能为空");
-    // }
-
-    // // 根据type生成对应的stepMeta
-    // AbstractStepMetaConstructor stepMetaConstructor =
-    // StepMetaConstructorFactory.getConstructor(shape);
-    // if (stepMetaConstructor == null) {
-    // throw new BusinessException("不支持的步骤类型: " + shape);
-    // }
-
-    // StepContext context = new StepContext();
-    // context.setRegistryID(registryID);
-    // context.setStepMetaMap(stepMetaMap);
-    // context.setId(id);
-    // context.setValidate(validate);
-    // context.setFlowId(flowId);
-    // context.setStepNames(stepNames);
-
-    // String data = jo.getString("data");
-    // StepMeta stepMeta = stepMetaConstructor.create(data, transMeta, context);
-    // stepMeta.setDraw(true);
-
-    // JSONObject position = jo.getJSONObject("position");
-    // Integer x = position.getInteger("x");
-    // Integer y = position.getInteger("y");
-    // stepMeta.setLocation(x, y);
-
-    // // 判断组件是否支持错误处理
-    // JSONObject dataRoot = JSONObject.parseObject(data);
-    // boolean supportError = dataRoot.getBooleanValue("supportError");
-    // if (supportError) {
-    // stepMeta.supportsErrorHandling();
-    // Map<String, String> resultMap = getErrorHandlerConfig(dataRoot);
-    // // 表示启用了错误处理
-    // if (!resultMap.isEmpty()) {
-    // errorConfigMap.put(id, resultMap);
-    // }
-    // }
-
-    // // 将各个步骤存入map，方便后面连线
-    // stepMetaMap.put(id, stepMeta);
-    // transMeta.addStep(stepMeta);
-    // }
-
-    // /**
-    // * 4. 解析步骤各条线（hop）
-    // */
-    // JSONArray hops = jsonObject.getJSONArray("hops");
-    // if (hops != null) {
-    // for (int i = 0; i < hops.size(); i++) {
-    // JSONObject jo = hops.getJSONObject(i);
-
-    // // 从map中获取线两端的步骤
-    // String source = jo.getJSONObject("source").getString("cell");
-    // StepMeta from = stepMetaMap.get(source);
-    // String target = jo.getJSONObject("target").getString("cell");
-    // StepMeta to = stepMetaMap.get(target);
-
-    // if (from == null || to == null) {
-    // throw new BusinessException("连线配置错误，找不到对应的步骤");
-    // }
-
-    // Boolean enabled = jo.getJSONObject("data").getBoolean("enabled");
-    // // 判断是错误步骤处理连线还是普通的连线
-    // Map<String, String> resultMap = errorConfigMap.get(source);
-    // if (resultMap != null && resultMap.get("targetStep") != null
-    // && resultMap.get("targetStep").equals(target)) {
-    // StepErrorMeta stepErrorMeta = new StepErrorMeta(new Variables(), from, to);
-    // stepErrorMeta.setEnabled(true);
-    // stepErrorMeta.setNrErrorsValuename(resultMap.get("nrErrorsValuename"));
-    // stepErrorMeta.setErrorDescriptionsValuename(resultMap.get("errorDescriptionsValuename"));
-    // from.setStepErrorMeta(stepErrorMeta);
-    // to.setStepErrorMeta(stepErrorMeta);
-    // TransHopMeta hop = new TransHopMeta(from, to);
-    // transMeta.addTransHop(hop);
-    // } else {
-    // TransHopMeta hop = new TransHopMeta(from, to, enabled);
-    // transMeta.addTransHop(hop);
-    // }
-    // }
-    // }
-
-    // return transMeta;
-    // }
-
-    // /**
-    // * 解析错误处理的配置数据
-    // *
-    // * @param dataRoot
-    // * @return
-    // */
-    // private Map<String, String> getErrorHandlerConfig(JSONObject dataRoot) {
-    // Map<String, String> resultMap = new HashMap<>();
-    // JSONObject data = JSONObject.parseObject(dataRoot.getString("data"));
-    // // 是否启用错误处理
-    // boolean supportErrorType = data.getBooleanValue("supportErrorType");
-    // // 错误数列名
-    // String nrErrorsValuename = data.getString("nrErrorsValuename");
-    // // 错误描述列名
-    // String errorDescriptionsValuename =
-    // data.getString("errorDescriptionsValuename");
-
-    // String targetStep = data.getString("targetStep");
-    // // 启用错误处理
-    // if (supportErrorType) {
-    // resultMap.put("nrErrorsValuename", nrErrorsValuename);
-    // resultMap.put("errorDescriptionsValuename", errorDescriptionsValuename);
-    // resultMap.put("targetStep", targetStep);
-    // }
-    // return resultMap;
-    // }
-
     /**
      * 执行转换流
      *
@@ -821,7 +724,7 @@ public class TransFlowServiceImpl implements TransFlowService {
         String config = transFlow.getConfig();
         TransWrapper trans = null;
         try {
-            List<TransParam> params = Lists.newArrayList();
+            List<TransParam> params = new ArrayList<>();
 
             // 执行前置方法
             beforeTrans(transFlow.getId(), config, params);
@@ -936,7 +839,8 @@ public class TransFlowServiceImpl implements TransFlowService {
                                 .getConstructor(shape);
                         if (stepMetaConstructor != null) {
                             try {
-                                stepMetaConstructor.beforeStep(flowId, jo.getString("id"), jo.getString("data"), params);
+                                stepMetaConstructor.beforeStep(flowId, jo.getString("id"), jo.getString("data"),
+                                        params);
                             } catch (Exception e) {
                                 log.warn("执行步骤前置方法失败，流程ID：{}, 步骤类型：{}", flowId, shape, e);
                             }
@@ -1019,7 +923,7 @@ public class TransFlowServiceImpl implements TransFlowService {
      * @return 转换流程图片base64编码
      */
     @Override
-    public String showImg(Integer id) {
+    public String showTransImg(Integer id) {
         // 参数验证
         if (id == null) {
             throw new BusinessException("转换流程ID不能为空");
@@ -1080,13 +984,249 @@ public class TransFlowServiceImpl implements TransFlowService {
     /**
      * 预览转换流程数据
      * 
-     * @param id       转换流程id
-     * @param stepName 步骤名称
+     * @param form 转换流程配置表单
      * @return 预览数据
      */
     @Override
-    public PreviewVo preview(Integer id, String stepName) {
-        return dataTransEngine.preview(id, stepName);
+    public PreviewVo preview(PreviewForm form) {
+
+        PreviewVo previewVo = new PreviewVo();
+
+        String config = form.getConfig();
+        JSONObject jsonObject = JSONObject.parseObject(config);
+        // 组件code
+        String code = jsonObject.getString("code");
+
+        TransMeta transMeta = new TransMeta();
+        transMeta.setName("转换");
+        PluginRegistry registryID = PluginRegistry.getInstance();
+
+        AbstractStepMetaConstructor constructor = StepMetaConstructorFactory.getConstructor(code);
+        List<TransParam> params = new ArrayList<>();
+        constructor.beforeStep(form.getId(), null, form.getConfig(), params);
+        setParams(form.getId(), transMeta, params);
+
+        StepContext context = new StepContext();
+        context.setRegistryID(registryID);
+        context.setStepMetaMap(new HashMap<>());
+        context.setFlowId(form.getId());
+        context.setValidate(true);
+        // context.setRootPath(rootPath);
+        StepMeta stepMeta = constructor.create(config, transMeta, context);
+        stepMeta.setDraw(false);
+        transMeta.addStep(stepMeta);
+        RowMetaInterface r;
+        try {
+            r = transMeta.getThisStepFields(stepMeta.getName(), new RowMeta());
+            previewVo.setFieldList(r.getFieldNames());
+            r.getFieldNamesAndTypes(1);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            throw new BusinessException(e.getMessage());
+        }
+        List<Object[]> previewData = getPreviewData(stepMeta, transMeta);
+        for (int i = 0; i < previewData.size(); i++) {
+            Object[] objects = previewData.get(i);
+            for (int j = 0; j < objects.length; j++) {
+                ValueMetaInterface valueMeta = r.getValueMeta(j);
+
+                String show;
+                try {
+                    if (null == valueMeta) {
+                        continue;
+                    } else if (objects[j] == null) {
+                        show = "";
+                    } else {
+                        show = valueMeta.getString(objects[j]);
+                    }
+                } catch (KettleValueException e) {
+                    log.error("", e);
+                    throw new BusinessException(objects[j] + "转换失败！");
+                }
+                objects[j] = show;
+            }
+        }
+        previewVo.setDataList(previewData);
+
+        return previewVo;
+
+    }
+
+    /**
+     * 设置转换流程参数
+     * 
+     * @param flowId    转换流程ID
+     * @param transMeta 转换流程元数据
+     * @param params    转换参数列表
+     */
+    public void setParams(Integer flowId, TransMeta transMeta, List<TransParam> params) {
+        if (null == flowId) {
+            return;
+        }
+        TransFlow transFlow = transFlowMapper.selectById(flowId);
+
+        if (CollectionUtils.isNotEmpty(params)) {
+            for (TransParam param : params) {
+                try {
+                    transMeta.addParameterDefinition(param.getName(), param.getValue(), "");
+                } catch (DuplicateParamException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        String paramConfig = transFlow.getParamConfig();
+        if (StringUtils.isNotBlank(paramConfig)) {
+            JSONArray objects = JSONArray.parseArray(paramConfig);
+            if (CollectionUtils.isNotEmpty(objects)) {
+                for (int i = 0; i < objects.size(); i++) {
+                    JSONObject o = objects.getJSONObject(i);
+                    try {
+                        transMeta.addParameterDefinition(o.getString("key"), o.getString("value"), "");
+                    } catch (DuplicateParamException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+        transMeta.activateParameters();
+    }
+
+    /**
+     * 获取预览数据
+     * 
+     * @param step
+     * @param transMeta
+     */
+    public List<Object[]> getPreviewData(StepMeta step, TransMeta transMeta) {
+        StepMetaInterface stepMetaInterface = step.getStepMetaInterface();
+        TransMeta previewMeta = TransPreviewFactory.generatePreviewTransformation(transMeta, stepMetaInterface,
+                step.getName());
+        int previewSize = 1000;// 默认预览1000条数据
+        TransWrapper trans = new TransWrapper(previewMeta);
+        trans.setPreview(true);
+
+        // 准备执行转换
+        try {
+            trans.prepareExecution(null);
+        } catch (final KettleException e) {
+            trans.stopAll();
+            KettleLogStore.discardLines(trans.getLogChannelId(), true);
+            log.error(e.getMessage(), e);
+            throw new BusinessException(e.getMessage());
+        }
+
+        // Add the preview / debugging information...
+        //
+        TransDebugMeta transDebugMeta = new TransDebugMeta(previewMeta);
+        String[] previewStepNames = new String[] { step.getName() };
+        for (int i = 0; i < previewStepNames.length; i++) {
+            StepMeta stepMeta = transMeta.findStep(previewStepNames[i]);
+            StepDebugMeta stepDebugMeta = new StepDebugMeta(stepMeta);
+            stepDebugMeta.setReadingFirstRows(true);
+            stepDebugMeta.setRowCount(previewSize);
+            transDebugMeta.getStepDebugMetaMap().put(stepMeta, stepDebugMeta);
+        }
+
+        final List<String> previewComplete = new ArrayList<String>();
+        // We add a break-point that is called every time we have a step with a full
+        // preview row buffer
+        // That makes it easy and fast to see if we have all the rows we need
+        //
+        transDebugMeta.addBreakPointListers(new BreakPointListener() {
+            @Override
+            public void breakPointHit(TransDebugMeta transDebugMeta, StepDebugMeta stepDebugMeta,
+                    RowMetaInterface rowBufferMeta, List<Object[]> rowBuffer) {
+                String stepName = stepDebugMeta.getStepMeta().getName();
+                previewComplete.add(stepName);
+            }
+        });
+
+        // set the appropriate listeners on the transformation...
+        //
+        transDebugMeta.addRowListenersToTransformation(trans);
+
+        // 执行转换
+        try {
+            trans.startThreads();
+        } catch (final KettleException e) {
+            trans.stopAll();
+            KettleLogStore.discardLines(trans.getLogChannelId(), true);
+            log.error(e.getMessage(), e);
+            throw new BusinessException(e.getMessage());
+        }
+
+        while (previewComplete.size() < previewStepNames.length
+                && !trans.isFinished()) {// 此处需要加上停止标志，否则可能一直死循环
+            // How many rows are done?
+            int nrDone = 0;
+            int nrTotal = 0;
+            for (StepDebugMeta stepDebugMeta : transDebugMeta.getStepDebugMetaMap().values()) {
+                nrDone += stepDebugMeta.getRowBuffer().size();
+                nrTotal += stepDebugMeta.getRowCount();
+            }
+
+            int pct = 100 * nrDone / nrTotal;
+            // System.out.println("处理进度：" + pct);
+
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                // Ignore errors
+            }
+
+        }
+        trans.stopAll();
+        KettleLogStore.discardLines(trans.getLogChannelId(), true);
+
+        // 获取数据
+        for (StepMeta stepMeta : transDebugMeta.getStepDebugMetaMap().keySet()) {
+            if (stepMeta.getName().equals(step.getName())) {
+                StepDebugMeta stepDebugMeta = transDebugMeta.getStepDebugMetaMap().get(stepMeta);
+                return stepDebugMeta.getRowBuffer();
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * 获取流字段，编辑字段，下拉框使用
+     *
+     * @param flowId
+     * @param config
+     * @param stepName
+     * @param type
+     * @return
+     */
+    @Override
+    public String[] getFieldStream(Integer flowId, String config, String stepName, Integer type) {
+        if (StringUtils.isBlank(config)) {
+            return null;
+        }
+        TransMeta transMeta = buildTransMeta(flowId, config, false);
+        List<TransParam> params = new ArrayList<>();
+        beforeTrans(flowId, config, params);
+        setParams(flowId, transMeta, params);
+        try {
+            RowMetaInterface r = transMeta.getPrevStepFields(stepName);
+            if (null == type) {
+                return r.getFieldNames();
+            } else {
+                List<ValueMetaInterface> valueMetaList = r.getValueMetaList();
+                List<String> fields = new ArrayList<>();
+                for (ValueMetaInterface valueMetaInterface : valueMetaList) {
+                    if (type == valueMetaInterface.getType()) {
+                        fields.add(valueMetaInterface.getName());
+                    }
+                }
+                return fields.toArray(new String[0]);
+            }
+
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        }
+        return new String[0];
     }
 
     /**
@@ -1134,5 +1274,67 @@ public class TransFlowServiceImpl implements TransFlowService {
         } catch (Exception e) {
             log.error("解析配置失败", e);
         }
+    }
+
+    /**
+     * 校验转换流程运行状态
+     * 
+     * @param id 转换流id
+     * @return 转换流程运行状态
+     */
+    @Override
+    public Boolean checkTransStatus(Integer id) {
+        return dataTransEngine.checkTransStatus(id);
+    }
+
+    /**
+     * 复制转换流
+     * 
+     * @param id 转换流id
+     */
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void copy(Integer id) {
+        // 获取转换流程
+        TransFlow transFlow = getTransFlowById(id);
+
+        TransFlow copyTrans = new TransFlow();
+        BeanUtils.copyProperties(transFlow, copyTrans, "id", "name", "path", "createdBy", "createdTime", "updatedBy",
+                "updatedTime");
+        copyTrans.setName(transFlow.getName() + "_副本");
+        copyTrans.setCreatedBy(UserContext.getCurrentAccount());
+        copyTrans.setCreatedTime(new Date());
+        transFlowMapper.insert(copyTrans);
+
+        // 复制配置
+        if (StringUtils.isNotBlank(copyTrans.getConfig())) {
+            TransFlowConfigForm form = new TransFlowConfigForm();
+            form.setId(copyTrans.getId());
+            form.setConfig(copyTrans.getConfig());
+            form.setImg(copyTrans.getImage());
+            // 复制配置
+            setConfig(form);
+        }
+    }
+
+    /**
+     * 获取转换流程运行日志
+     * 
+     * @param id 转换流id
+     * @return 转换流程运行日志
+     */
+    @Override
+    public LogChannel getProcessLog(Integer id) {
+        // 校验转换流程是否存在
+        verifyTransFlowExist(id);
+
+        // 获取日志通道
+        String key = LogChannelManager.getKey(ResourceType.TRANS.name(), String.valueOf(id));
+        LogChannel logChannel = LogChannelManager.get(key);
+        if (logChannel == null) {
+            throw new BusinessException("当前会话已超时，回放条件失效，请重新发起！");// todo
+        }
+
+        return logChannel.clone();
     }
 }

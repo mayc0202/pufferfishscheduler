@@ -5,7 +5,8 @@
     <resultMap type="com.pufferfishscheduler.dao.entity.Role" id="RoleMap">
         <result property="id" column="id" jdbcType="INTEGER"/>
         <result property="name" column="name" jdbcType="VARCHAR"/>
-        <result property="dec" column="dec" jdbcType="VARCHAR"/>
+        <result property="description" column="description" jdbcType="VARCHAR"/>
+        <result property="disabled" column="disabled" jdbcType="BOOLEAN"/>
         <result property="deleted" column="deleted" jdbcType="BOOLEAN"/>
         <result property="createdBy" column="created_by" jdbcType="VARCHAR"/>
         <result property="createdTime" column="created_time" jdbcType="TIMESTAMP"/>
@@ -14,14 +15,29 @@
     </resultMap>
 
     <select id="getRoleListByUserId" resultType="com.pufferfishscheduler.domain.vo.user.RoleVo">
-        SELECT r.id     AS roleId,
-               r.`name` AS roleName
+        SELECT r.id            AS roleId,
+               r.`name` AS roleName,
+               r.`description` AS roleDesc,
+               r.`disabled`    AS disabled
         FROM user_role_rel AS ur
-                 LEFT JOIN role AS r ON r.id = ur.role_id
-        WHERE 1 = 1
-          AND ur.user_id = #{userId}
+                 INNER JOIN role AS r ON r.id = ur.role_id
+        WHERE ur.user_id = #{userId}
           AND ur.deleted = 0
           AND r.deleted = 0
+    </select>
+
+    <select id="listRolesByUserIds" resultType="com.pufferfishscheduler.domain.vo.user.UserRoleRowVo">
+        SELECT ur.user_id AS userId,
+               r.id      AS roleId,
+               r.`name`  AS roleName
+        FROM user_role_rel ur
+                 INNER JOIN role r ON r.id = ur.role_id
+        WHERE ur.deleted = 0
+          AND r.deleted = 0
+          AND ur.user_id IN
+        <foreach collection="userIds" item="uid" open="(" separator="," close=")">
+            #{uid}
+        </foreach>
     </select>
 
 </mapper>

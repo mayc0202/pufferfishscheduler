@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.pufferfishscheduler.dao.mapper.RtSyncLogMapper">
+    <resultMap id="BaseResultMap" type="com.pufferfishscheduler.dao.entity.RtSyncLog">
+        <id column="id" jdbcType="VARCHAR" property="id"/>
+        <result column="task_id" jdbcType="INTEGER" property="taskId"/>
+        <result column="sync_date" jdbcType="INTEGER" property="syncDate"/>
+        <result column="sync_hour" jdbcType="INTEGER" property="syncHour"/>
+        <result column="table_mapper_id" jdbcType="INTEGER" property="tableMapperId"/>
+        <result column="insert_data_volume" jdbcType="BIGINT" property="insertDataVolume"/>
+        <result column="update_data_volume" jdbcType="BIGINT" property="updateDataVolume"/>
+        <result column="delete_data_volume" jdbcType="BIGINT" property="deleteDataVolume"/>
+        <result column="created_by" jdbcType="VARCHAR" property="createdBy"/>
+        <result column="created_time" jdbcType="TIMESTAMP" property="createdTime"/>
+    </resultMap>
+
+    <!-- 根据任务ID、同步日期和同步小时查询日志 -->
+    <select id="selectByTaskAndTime" resultMap="BaseResultMap">
+        SELECT * FROM rt_sync_log 
+        WHERE task_id = #{taskId} 
+        AND sync_date = #{syncDate} 
+        AND sync_hour = #{syncHour}
+    </select>
+
+    <!-- 根据任务ID和同步日期查询所有小时日志 -->
+    <select id="selectByTaskAndDate" resultMap="BaseResultMap">
+        SELECT * FROM rt_sync_log 
+        WHERE task_id = #{taskId} 
+        AND sync_date = #{syncDate}
+        ORDER BY sync_hour ASC
+    </select>
+
+    <!-- 根据任务ID查询所有日志 -->
+    <select id="selectByTaskId" resultMap="BaseResultMap">
+        SELECT * FROM rt_sync_log 
+        WHERE task_id = #{taskId}
+        ORDER BY sync_date DESC, sync_hour ASC
+    </select>
+
+    <!-- 根据表映射ID查询日志 -->
+    <select id="selectByTableMapperId" resultMap="BaseResultMap">
+        SELECT * FROM rt_sync_log 
+        WHERE table_mapper_id = #{tableMapperId}
+        ORDER BY sync_date DESC, sync_hour ASC
+    </select>
+
+    <!-- 统计某任务某天的总数据量 -->
+    <select id="countDailyVolume" resultType="java.util.HashMap">
+        SELECT 
+            SUM(insert_data_volume) as totalInsert,
+            SUM(update_data_volume) as totalUpdate,
+            SUM(delete_data_volume) as totalDelete,
+            SUM(insert_data_volume + update_data_volume + delete_data_volume) as totalVolume
+        FROM rt_sync_log 
+        WHERE task_id = #{taskId} 
+        AND sync_date = #{syncDate}
+    </select>
+
+</mapper>

@@ -75,12 +75,6 @@ public class User implements Serializable {
     private String wechat;
 
     /**
-     * 部门id
-     */
-    @TableField(value = "dept_id")
-    private Integer deptId;
-
-    /**
      * 过期日期
      */
     @TableField(value = "expire_date")

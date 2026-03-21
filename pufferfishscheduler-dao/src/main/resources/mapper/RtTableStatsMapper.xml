@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.pufferfishscheduler.dao.mapper.RtTableStatsMapper">
+    <resultMap id="BaseResultMap" type="com.pufferfishscheduler.dao.entity.RtTableStats">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="task_id" jdbcType="INTEGER" property="taskId"/>
+        <result column="last_idv" jdbcType="BIGINT" property="lastIdv"/>
+        <result column="last_udv" jdbcType="BIGINT" property="lastUdv"/>
+        <result column="last_ddv" jdbcType="BIGINT" property="lastDdv"/>
+        <result column="today_idv" jdbcType="BIGINT" property="todayIdv"/>
+        <result column="today_udv" jdbcType="BIGINT" property="todayUdv"/>
+        <result column="today_ddv" jdbcType="BIGINT" property="todayDdv"/>
+        <result column="updated_time" jdbcType="TIMESTAMP" property="updatedTime"/>
+    </resultMap>
+
+    <!-- 根据任务ID查询表统计列表 -->
+    <select id="selectByTaskId" resultMap="BaseResultMap">
+        SELECT * FROM rt_table_stats 
+        WHERE task_id = #{taskId}
+        ORDER BY id ASC
+    </select>
+
+    <!-- 根据表映射ID查询表统计 -->
+    <select id="selectByTableMapperId" resultMap="BaseResultMap">
+        SELECT * FROM rt_table_stats 
+        WHERE id = #{id}
+    </select>
+
+    <!-- 更新当天的统计数据 -->
+    <update id="updateTodayStats">
+        UPDATE rt_table_stats 
+        SET today_idv = today_idv + #{insertVolume},
+            today_udv = today_udv + #{updateVolume},
+            today_ddv = today_ddv + #{deleteVolume},
+            updated_time = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <!-- 结转数据（将today数据移到last，today清零） -->
+    <update id="carryOverStats">
+        UPDATE rt_table_stats 
+        SET last_idv = last_idv + today_idv,
+            last_udv = last_udv + today_udv,
+            last_ddv = last_ddv + today_ddv,
+            today_idv = 0,
+            today_udv = 0,
+            today_ddv = 0,
+            updated_time = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <!-- 批量结转数据（进入下一天时执行） -->
+    <update id="batchCarryOverStats">
+        UPDATE rt_table_stats 
+        SET last_idv = last_idv + today_idv,
+            last_udv = last_udv + today_udv,
+            last_ddv = last_ddv + today_ddv,
+            today_idv = 0,
+            today_udv = 0,
+            today_ddv = 0,
+            updated_time = NOW()
+    </update>
+
+    <!-- 获取总数据量（last + today） -->
+    <select id="getTotalVolume" resultType="java.util.HashMap">
+        SELECT 
+            (last_idv + today_idv) as totalInsert,
+            (last_udv + today_udv) as totalUpdate,
+            (last_ddv + today_ddv) as totalDelete,
+            (last_idv + today_idv + last_udv + today_udv + last_ddv + today_ddv) as totalVolume
+        FROM rt_table_stats 
+        WHERE id = #{id}
+    </select>
+
+</mapper>

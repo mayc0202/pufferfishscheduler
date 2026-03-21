@@ -95,8 +95,12 @@ dubbo:
   protocol:
     name: dubbo
     port: 20882
-  registry:
-    address: nacos://localhost:8848
+  registry: # 注册中心配置
+    check: false  # 注册中心启动时不检查
+    protocol: zookeeper  # 明确协议类型
+    address: 81.69.250.183:2181
+    parameters:
+      zookeeper.sasl.client: "false"
 
 # 安全配置
 security:
@@ -135,6 +139,5 @@ logging:
     org.springframework.ai: debug
     com.pufferfish.ai: debug
     org.apache.dubbo: DEBUG
-    com.alibaba.nacos: DEBUG
   pattern:
     console: "%d %clr(%5p) ---- [%t] %clr(%-40.40c){cyan} : %m %n"

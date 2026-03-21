@@ -18,13 +18,12 @@ public class DatabaseEditorFactory {
 
     static {
         // 初始化编辑器映射
-        EDITOR_MAP.put(Constants.DbType.mysql, MySQLQueryEditor::new);
-        EDITOR_MAP.put(Constants.DbType.starRocks, MySQLQueryEditor::new);
-        EDITOR_MAP.put(Constants.DbType.doris, MySQLQueryEditor::new);
-        EDITOR_MAP.put(Constants.DbType.oracle, OracleQueryEditor::new);
-        EDITOR_MAP.put(Constants.DbType.postgresql, PostgreSQLQueryEditor::new);
-        EDITOR_MAP.put(Constants.DbType.sqlServer, SQLServerQueryEditor::new);
-        EDITOR_MAP.put(Constants.DbType.dm, DM8QueryEditor::new);
+        EDITOR_MAP.put(Constants.DATABASE_TYPE.MYSQL, MySQLQueryEditor::new);
+        EDITOR_MAP.put(Constants.DATABASE_TYPE.DORIS, MySQLQueryEditor::new);
+        EDITOR_MAP.put(Constants.DATABASE_TYPE.ORACLE, OracleQueryEditor::new);
+        EDITOR_MAP.put(Constants.DATABASE_TYPE.POSTGRESQL, PostgreSQLQueryEditor::new);
+        EDITOR_MAP.put(Constants.DATABASE_TYPE.SQL_SERVER, SQLServerQueryEditor::new);
+        EDITOR_MAP.put(Constants.DATABASE_TYPE.DM8, DM8QueryEditor::new);
     }
 
     /**

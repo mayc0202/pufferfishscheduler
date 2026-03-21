@@ -36,12 +36,6 @@ public class MetadataTask implements Serializable {
     private Integer dbId;
 
     /**
-     * 工作组id
-     */
-    @TableField("worker_id")
-    private Integer workerId;
-
-    /**
      * cron执行表达式
      */
     @TableField("cron")
@@ -82,6 +76,12 @@ public class MetadataTask implements Serializable {
      */
     @TableField("execute_time")
     private Date executeTime;
+
+    /**
+     * 失败原因
+     */
+    @TableField("reason")
+    private String reason;
 
     /**
      * 是否解除：0-未解除；1-已解除，默认未删除

@@ -5,11 +5,11 @@ import com.alibaba.cloud.ai.graph.action.NodeAction;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.pufferfishscheduler.common.utils.JdbcUtils;
-import com.pufferfishscheduler.domain.domain.DatabaseMetadata;
+import com.pufferfishscheduler.common.utils.JdbcUtil;
 import com.pufferfishscheduler.domain.domain.QueryResult;
 import com.pufferfishscheduler.domain.domain.TableMetadata;
 import com.pufferfishscheduler.common.utils.JdbcUrlUtil;
+import com.pufferfishscheduler.domain.model.database.DatabaseConnectionInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.prompt.PromptTemplate;
@@ -130,17 +130,17 @@ public class DataQueryNode implements NodeAction {
             }
 
             // 3. 获取数据库连接
-            DatabaseMetadata dbMetadata = buildDatabaseMetadata(dataSourceInfo);
-            String driverName = JdbcUrlUtil.getDriver(dbMetadata.getType());
+            DatabaseConnectionInfo connectionInfo = buildDatabaseMetadata(dataSourceInfo);
+            String driverName = JdbcUrlUtil.getDriver(connectionInfo.getType());
             String url = JdbcUrlUtil.getUrl(
-                    dbMetadata.getType(),
-                    dbMetadata.getHost(),
-                    dbMetadata.getPort(),
-                    dbMetadata.getDbName(),
-                    dbMetadata.getExtConfig()
+                    connectionInfo.getType(),
+                    connectionInfo.getDbHost(),
+                    connectionInfo.getDbPort(),
+                    connectionInfo.getDbName(),
+                    connectionInfo.getExtConfig()
             );
 
-            connection = JdbcUtils.getConnection(driverName, url, dbMetadata);
+            connection = JdbcUtil.getConnection(driverName, url, connectionInfo);
 
             // 4. 从问题中提取要查询的表名 - 重要：不要使用 allowedTables
             List<String> tablesToQuery = extractTablesFromQuestion(question);
@@ -156,7 +156,7 @@ public class DataQueryNode implements NodeAction {
             log.info("要查询的表: {}", tablesToQuery);
 
             // 5. 获取表元数据
-            List<TableMetadata> metadataList = JdbcUtils.getTablesMetadata(connection, tablesToQuery);
+            List<TableMetadata> metadataList = JdbcUtil.getTablesMetadata(connection, tablesToQuery);
 
             if (metadataList.isEmpty()) {
                 return Map.of(
@@ -182,7 +182,7 @@ public class DataQueryNode implements NodeAction {
             }
 
             // 8. 执行SQL
-            QueryResult queryResult = JdbcUtils.executeQuery(connection, sql);
+            QueryResult queryResult = JdbcUtil.executeQuery(connection, sql);
             log.info("SQL执行结果：{}条记录，耗时：{}ms",
                     queryResult.getRowCount(), queryResult.getExecutionTime());
 
@@ -200,7 +200,7 @@ public class DataQueryNode implements NodeAction {
             log.error("数据查询失败", e);
             return buildErrorResponse("数据查询失败：" + e.getMessage());
         } finally {
-            JdbcUtils.closeQuietly(connection);
+            JdbcUtil.close(connection);
         }
     }
 
@@ -392,15 +392,15 @@ public class DataQueryNode implements NodeAction {
     /**
      * 构建DatabaseMetadata对象
      */
-    private DatabaseMetadata buildDatabaseMetadata(DataSourceInfo info) {
+    private DatabaseConnectionInfo buildDatabaseMetadata(DataSourceInfo info) {
         if (info.isIncomplete()) {
             throw new IllegalArgumentException("数据源信息不完整: " + info);
         }
 
-        return DatabaseMetadata.builder()
+        return DatabaseConnectionInfo.builder()
                 .type(info.getType())
-                .host(info.getHost())
-                .port(String.valueOf(info.getPort()))
+                .dbHost(info.getHost())
+                .dbPort(String.valueOf(info.getPort()))
                 .dbName(info.getDatabase())
                 .username(info.getUsername())
                 .password(info.getPassword())

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.pufferfishscheduler.dao.mapper.TransTaskLogMapper">
+
+    <resultMap id="BaseResultMap" type="com.pufferfishscheduler.dao.entity.TransTaskLog">
+        <id column="id" jdbcType="VARCHAR" property="id"/>
+        <result column="task_id" jdbcType="INTEGER" property="taskId"/>
+        <result column="status" jdbcType="VARCHAR" property="status"/>
+        <result column="executing_type" jdbcType="TINYINT" property="executingType"/>
+        <result column="data_volume" jdbcType="BIGINT" property="dataVolume"/>
+        <result column="lines_read" jdbcType="BIGINT" property="linesRead"/>
+        <result column="lines_written" jdbcType="BIGINT" property="linesWritten"/>
+        <result column="lines_updated" jdbcType="BIGINT" property="linesUpdated"/>
+        <result column="lines_input" jdbcType="BIGINT" property="linesInput"/>
+        <result column="lines_output" jdbcType="BIGINT" property="linesOutput"/>
+        <result column="lines_rejected" jdbcType="BIGINT" property="linesRejected"/>
+        <result column="lines_errors" jdbcType="BIGINT" property="linesErrors"/>
+        <result column="reason" jdbcType="LONGVARCHAR" property="reason"/>
+        <result column="flow_image" jdbcType="LONGVARCHAR" property="flowImage"/>
+        <result column="log_detail" jdbcType="LONGVARCHAR" property="logDetail"/>
+        <result column="start_time" jdbcType="TIMESTAMP" property="startTime"/>
+        <result column="end_time" jdbcType="TIMESTAMP" property="endTime"/>
+        <result column="duration_seconds" jdbcType="INTEGER" property="durationSeconds"/>
+        <result column="created_by" jdbcType="VARCHAR" property="createdBy"/>
+        <result column="created_time" jdbcType="TIMESTAMP" property="createdTime"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, task_id, status, executing_type, data_volume, lines_read, lines_written, lines_updated,
+        lines_input, lines_output, lines_rejected, lines_errors, reason, flow_image, log_detail,
+        start_time, end_time, duration_seconds, created_by, created_time
+    </sql>
+
+</mapper>
+
