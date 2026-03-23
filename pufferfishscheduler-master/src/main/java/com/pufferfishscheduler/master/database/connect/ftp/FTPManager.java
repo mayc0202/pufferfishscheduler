@@ -4,6 +4,7 @@ package com.pufferfishscheduler.master.database.connect.ftp;
 import com.pufferfishscheduler.common.constants.Constants;
 import com.pufferfishscheduler.common.exception.BusinessException;
 import lombok.Data;
+import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.net.ftp.*;
@@ -20,6 +21,7 @@ import java.util.stream.Collectors;
  * FTP管理器
  */
 @Data
+@ToString(exclude = {"ftpClient", "password"})
 @Slf4j
 public class FTPManager {
 
@@ -82,14 +84,37 @@ public class FTPManager {
             authenticate();
             configureTransferMode();
         } catch (IOException e) {
-            throw new BusinessException("FTP连接/登录失败: " + e.getMessage());
+            String detail = describeIOException(e);
+            log.error("FTP连接/登录失败 host={}:{} encoding={} mode={}: {}",
+                    host, port, controlEncoding, mode, detail, e);
+            throw new BusinessException("FTP连接/登录失败: " + detail);
         }
 
         return this.ftpClient;
     }
 
+    /**
+     * JDK 中部分 IOException（如 EOFException）message 为空，需补充可诊断信息
+     */
+    private static String describeIOException(IOException e) {
+        String msg = e.getMessage();
+        if (StringUtils.isNotBlank(msg)) {
+            return msg;
+        }
+        StringBuilder sb = new StringBuilder(e.getClass().getSimpleName());
+        for (Throwable c = e.getCause(); c != null; c = c.getCause()) {
+            sb.append(" | cause=").append(c.getClass().getSimpleName());
+            if (StringUtils.isNotBlank(c.getMessage())) {
+                sb.append(": ").append(c.getMessage());
+            }
+        }
+        sb.append("（常见于：FTP/FTPS 类型与端口不一致、服务器立即断开、或需被动模式却未开启）");
+        return sb.toString();
+    }
+
     private void configureFtpClient() {
-        this.ftpClient.setControlEncoding(controlEncoding);
+        String enc = StringUtils.isNotBlank(controlEncoding) ? controlEncoding : Constants.CONTROL_ENCODING;
+        this.ftpClient.setControlEncoding(enc);
         FTPClientConfig conf = new FTPClientConfig();
         conf.setServerLanguageCode("zh");
         conf.setServerTimeZoneId("Asia/Shanghai");
@@ -118,13 +143,37 @@ public class FTPManager {
     }
 
     private void configureTransferMode() throws IOException {
-        if (Constants.MODE_TYPE.PASSIVE.equals(mode)) {
+        String m = resolveTransferMode(mode);
+        if (Constants.MODE_TYPE.PASSIVE.equals(m)) {
             this.ftpClient.enterLocalPassiveMode();
-        } else if (Constants.MODE_TYPE.ACTIVE.equals(mode)) {
+        } else {
             this.ftpClient.enterLocalActiveMode();
         }
         this.ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
         this.ftpClient.setFileTransferMode(FTP.STREAM_TRANSFER_MODE);
+    }
+
+    /**
+     * 数据源扩展里 mode 应为 Constants.MODE_TYPE 的 "1"（主动）/ "2"（被动）；兼容 passive/active 等写法。
+     * 未识别或为空时默认被动（多数 NAT/防火墙环境必需）。
+     */
+    private static String resolveTransferMode(String raw) {
+        if (StringUtils.isBlank(raw)) {
+            return Constants.MODE_TYPE.PASSIVE;
+        }
+        String s = raw.trim();
+        if (Constants.MODE_TYPE.PASSIVE.equals(s) || Constants.MODE_TYPE.ACTIVE.equals(s)) {
+            return s;
+        }
+        String lower = s.toLowerCase();
+        if ("passive".equals(lower) || "pasv".equals(lower)) {
+            return Constants.MODE_TYPE.PASSIVE;
+        }
+        if ("active".equals(lower) || "port".equals(lower)) {
+            return Constants.MODE_TYPE.ACTIVE;
+        }
+        log.warn("无法识别的 FTP 传输模式 [{}]，已使用被动模式", raw);
+        return Constants.MODE_TYPE.PASSIVE;
     }
 
     private void validateConnectionResponse() throws IOException {

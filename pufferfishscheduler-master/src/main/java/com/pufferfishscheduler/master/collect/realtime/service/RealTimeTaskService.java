@@ -1,12 +1,13 @@
 package com.pufferfishscheduler.master.collect.realtime.service;
 
 import java.util.List;
+import java.util.Map;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.pufferfishscheduler.dao.entity.RtTask;
 import com.pufferfishscheduler.domain.form.collect.RealTimeTaskForm;
 import com.pufferfishscheduler.domain.vo.collect.RealTimeTaskVo;
-import com.pufferfishscheduler.master.collect.realtime.engine.kafka.entity.RealTimeSyncTaskStatus;
+import com.pufferfishscheduler.cdc.kafka.entity.RealTimeSyncTaskStatus;
 
 /**
  * 实时数据同步服务
@@ -104,16 +105,37 @@ public interface RealTimeTaskService {
     void markFailedFromScheduler(Integer taskId, String reason);
 
     /**
-     * 更新数据同步任务状态
+     * 更新任务状态（独立事务 REQUIRES_NEW）
      *
      * @param taskId        任务ID
      * @param newStatus     新状态
      * @param reason        失败原因
      * @param operator      操作人
      * @param runtimeConfig 运行时配置
+     * @return 受影响行数（0 表示未更新，例如记录不存在或条件不匹配）
      */
-    void updateTaskStatus(Integer taskId, String newStatus, String reason,
-                          String operator, String runtimeConfig);
+    int updateTaskStatus(Integer taskId, String newStatus, String reason,
+                         String operator, String runtimeConfig);
+
+    /**
+     * 查询实时累计统计：优先 Redis，无数据时读表 {@code rt_table_stats}（与 {@link com.pufferfishscheduler.cdc.kafka.RealtimeStatsRedisSyncJob} 同步目标一致）。
+     *
+     * @param taskId        任务ID
+     * @param tableMapperId 表映射ID（rt_table_mapper.id）
+     * @return last_idv/last_udv/last_ddv、today_*、updated_at 等键，与 Redis 结构一致
+     */
+    Map<String, Object> getCumulativeStats(Integer taskId, Integer tableMapperId);
+
+    /**
+     * 查询某小时实时统计：优先 Redis（key 存在时），否则读表 {@code rt_sync_log}。
+     *
+     * @param taskId        任务ID
+     * @param tableMapperId 表映射ID
+     * @param syncDate      日期 yyyyMMdd
+     * @param syncHour      小时 0~23
+     * @return insert_data_volume / update_data_volume / delete_data_volume
+     */
+    Map<String, Long> getHourlyStats(Integer taskId, Integer tableMapperId, int syncDate, int syncHour);
 
     /**
      * 获取数据同步任务真实状态

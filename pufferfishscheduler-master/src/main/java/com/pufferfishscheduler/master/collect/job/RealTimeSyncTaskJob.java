@@ -1,10 +1,12 @@
 package com.pufferfishscheduler.master.collect.job;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.pufferfishscheduler.cdc.kafka.config.AppProperties;
 import com.pufferfishscheduler.common.constants.Constants;
 import com.pufferfishscheduler.dao.entity.RtTask;
-import com.pufferfishscheduler.master.collect.realtime.engine.kafka.entity.RealTimeSyncTaskStatus;
+import com.pufferfishscheduler.dao.mapper.RtTaskMapper;
+import com.pufferfishscheduler.cdc.kafka.entity.RealTimeSyncTaskStatus;
 import com.pufferfishscheduler.master.collect.realtime.service.RealTimeTaskService;
-import com.pufferfishscheduler.master.common.config.properties.AppProperties;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +35,9 @@ public class RealTimeSyncTaskJob {
 
     @Autowired
     private RealTimeTaskService realTimeTaskService;
+
+    @Autowired
+    private RtTaskMapper rtTaskMapper;
 
     /**
      * 实时数据同步任务发送次数映射表
@@ -72,6 +77,9 @@ public class RealTimeSyncTaskJob {
             log.debug("开始执行实时数据同步任务调度...");
             scheduleTask(taskList);
             log.debug("完成实时数据同步任务调度。");
+
+            // scheduleTask 内 start/stop 会落库，但 taskList 仍是本轮查询时的内存对象；必须与 DB 对齐，避免用陈旧 STARTING 误判 Connect 状态并覆盖 FAILURE
+            syncTaskListStateFromDb(taskList);
 
             /**
              * 2. 监控任务运行状态。异常任务发送预警消息
@@ -116,6 +124,28 @@ public class RealTimeSyncTaskJob {
     }
 
     /**
+     * 用数据库最新状态覆盖本轮 taskList 中的内存字段，避免 start() 已写 FAILURE 后仍带着 STARTING 做 refresh。
+     */
+    private void syncTaskListStateFromDb(List<RtTask> taskList) {
+        if (CollectionUtils.isEmpty(taskList)) {
+            return;
+        }
+        for (RtTask rtTask : taskList) {
+            if (rtTask == null || rtTask.getId() == null) {
+                continue;
+            }
+            LambdaQueryWrapper<RtTask> w = new LambdaQueryWrapper<>();
+            w.eq(RtTask::getId, rtTask.getId()).eq(RtTask::getDeleted, Constants.DELETE_FLAG.FALSE);
+            RtTask fresh = rtTaskMapper.selectOne(w);
+            if (fresh != null) {
+                rtTask.setStatus(fresh.getStatus());
+                rtTask.setReason(fresh.getReason());
+                rtTask.setRuntimeConfig(fresh.getRuntimeConfig());
+            }
+        }
+    }
+
+    /**
      * 调度实时数据同步任务
      *
      * @param task
@@ -156,12 +186,19 @@ public class RealTimeSyncTaskJob {
             return;
         }
 
+        // 以库表为准，避免内存对象仍是 STARTING 时误判
+        LambdaQueryWrapper<RtTask> w = new LambdaQueryWrapper<>();
+        w.eq(RtTask::getId, rtTask.getId()).eq(RtTask::getDeleted, Constants.DELETE_FLAG.FALSE);
+        RtTask dbTask = rtTaskMapper.selectOne(w);
+        String dbStatus = dbTask != null ? dbTask.getStatus() : rtTask.getStatus();
+        String dbReason = dbTask != null ? dbTask.getReason() : rtTask.getReason();
+
         String real = realStatus.getStatus();
         String msg = realStatus.getMessage();
 
         // STOPPING 阶段下，连接器被 stop() 删除后通常会表现为 UNASSIGNED/404。
         // 这属于停止完成，不应误刷为 FAILED。
-        if (Constants.JOB_MANAGE_STATUS.STOPPING.equals(rtTask.getStatus())
+        if (Constants.JOB_MANAGE_STATUS.STOPPING.equals(dbStatus)
                 && RealTimeSyncTaskStatus.TASK_STATUS_UNASSIGNED.equals(real)) {
             realTimeTaskService.updateTaskStatus(rtTask.getId(),
                     Constants.JOB_MANAGE_STATUS.STOP,
@@ -171,9 +208,12 @@ public class RealTimeSyncTaskJob {
             return;
         }
 
-        // RUNNING -> RUNNING
+        // RUNNING -> RUNNING（已失败的任务不要被 Connect 瞬时 RUNNING 覆盖）
         if (RealTimeSyncTaskStatus.TASK_STATUS_RUNNING.equals(real)) {
-            if (!Constants.JOB_MANAGE_STATUS.RUNNING.equals(rtTask.getStatus())) {
+            if (Constants.JOB_MANAGE_STATUS.FAILURE.equals(dbStatus)) {
+                return;
+            }
+            if (!Constants.JOB_MANAGE_STATUS.RUNNING.equals(dbStatus)) {
                 realTimeTaskService.updateTaskStatus(rtTask.getId(),
                         Constants.JOB_MANAGE_STATUS.RUNNING,
                         "",
@@ -185,7 +225,7 @@ public class RealTimeSyncTaskJob {
 
         // STOP -> STOP（停止是正常状态，不应刷成 FAILED）
         if (RealTimeSyncTaskStatus.TASK_STATUS_STOP.equals(real)) {
-            if (!Constants.JOB_MANAGE_STATUS.STOP.equals(rtTask.getStatus())) {
+            if (!Constants.JOB_MANAGE_STATUS.STOP.equals(dbStatus)) {
                 realTimeTaskService.updateTaskStatus(rtTask.getId(),
                         Constants.JOB_MANAGE_STATUS.STOP,
                         "",
@@ -200,9 +240,9 @@ public class RealTimeSyncTaskJob {
                 || RealTimeSyncTaskStatus.TASK_STATUS_FAILURE.equals(real)) {
             String reason = (msg == null || msg.isBlank()) ? "连接器未分配或运行异常" : msg;
             // 只要状态不一致（或 reason 为空），就强制落到 FAILED 并写 reason
-            if (!Constants.JOB_MANAGE_STATUS.FAILURE.equals(rtTask.getStatus())
-                    || rtTask.getReason() == null
-                    || rtTask.getReason().isBlank()) {
+            if (!Constants.JOB_MANAGE_STATUS.FAILURE.equals(dbStatus)
+                    || dbReason == null
+                    || dbReason.isBlank()) {
                 realTimeTaskService.updateTaskStatus(rtTask.getId(),
                         Constants.JOB_MANAGE_STATUS.FAILURE,
                         reason,

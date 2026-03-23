@@ -64,7 +64,7 @@ import com.pufferfishscheduler.master.collect.trans.engine.DataTransEngine.Resou
 import com.pufferfishscheduler.master.collect.trans.engine.TransWrapper;
 import com.pufferfishscheduler.master.collect.trans.engine.entity.TransFlowConfig;
 import com.pufferfishscheduler.master.collect.trans.engine.entity.TransParam;
-import com.pufferfishscheduler.master.collect.trans.engine.listener.KettleStepLogListener;
+import com.pufferfishscheduler.master.collect.trans.engine.listener.KettleStepListener;
 import com.pufferfishscheduler.master.collect.trans.engine.listener.KettleStepRowListener;
 import com.pufferfishscheduler.master.collect.trans.engine.listener.KettleTransListener;
 import com.pufferfishscheduler.master.collect.trans.engine.logchannel.LogChannel;
@@ -739,7 +739,7 @@ public class TransFlowServiceImpl implements TransFlowService {
                     transFlow,
                     params,
                     new KettleTransListener(LogChannelManager.getKey(logChannel.getType(), logChannel.getId())),
-                    new KettleStepLogListener(LogChannelManager.getKey(logChannel.getType(), logChannel.getId())),
+                    new KettleStepListener(LogChannelManager.getKey(logChannel.getType(), logChannel.getId())),
                     new KettleStepRowListener(LogChannelManager.getKey(logChannel.getType(), logChannel.getId())));
 
             logChannel.addLog(Constants.EXECUTE_STATUS.SUCCESS, "开发流程初始化成功！");

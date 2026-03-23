@@ -13,18 +13,22 @@ import com.pufferfishscheduler.dao.entity.TransFlow;
 import com.pufferfishscheduler.dao.entity.TransTask;
 import com.pufferfishscheduler.dao.mapper.TransFlowMapper;
 import com.pufferfishscheduler.dao.mapper.TransTaskMapper;
+import com.pufferfishscheduler.api.dispatch.TaskDispatchMessage;
 import com.pufferfishscheduler.domain.form.collect.TransTaskForm;
 import com.pufferfishscheduler.domain.vo.collect.TransTaskVo;
 import com.pufferfishscheduler.master.collect.group.service.TransGroupService;
 import com.pufferfishscheduler.master.collect.task.service.TransTaskService;
 import com.pufferfishscheduler.master.common.dict.service.DictService;
+import com.pufferfishscheduler.master.dispatch.kafka.TaskDispatchKafkaProducer;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -51,6 +55,15 @@ public class TransTaskServiceImpl implements TransTaskService {
 
     @Autowired
     private DictService dictService;
+
+    @Autowired
+    private TaskDispatchKafkaProducer taskDispatchKafkaProducer;
+
+    /**
+     * 与 {@link com.pufferfishscheduler.master.dispatch.schedule.TransKafkaScheduleScanner}、元数据立即同步使用同一语义：卡住后才允许抢占
+     */
+    @Value("${scheduler.trans.stuck-threshold-ms:300000}")
+    private long stuckThresholdMs;
 
     /**
      * 分页查询转换任务
@@ -116,7 +129,7 @@ public class TransTaskServiceImpl implements TransTaskService {
         BeanUtils.copyProperties(taskForm, task);
         task.setDeleted(Constants.DELETE_FLAG.FALSE);
         task.setStatus(Constants.JOB_MANAGE_STATUS.INIT);
-        task.setEnable(Enable.ENABLE.getCode().equals(taskForm.getEnable()));
+        task.setEnable(taskForm.getEnable());
         task.setCreatedBy(UserContext.getCurrentAccount());
         task.setCreatedTime(new Date());
         transTaskMapper.insert(task);
@@ -139,7 +152,7 @@ public class TransTaskServiceImpl implements TransTaskService {
         verifyTaskNameExists(taskForm.getName(), taskForm.getId());
 
         BeanUtils.copyProperties(taskForm, exist);
-        exist.setEnable(Enable.ENABLE.getCode().equals(taskForm.getEnable()));
+        exist.setEnable(taskForm.getEnable());
         exist.setStatus(Constants.JOB_MANAGE_STATUS.INIT);
         exist.setReason("");
         exist.setUpdatedBy(UserContext.getCurrentAccount());
@@ -192,12 +205,117 @@ public class TransTaskServiceImpl implements TransTaskService {
     }
 
     /**
-     * 立即执行转换任务
+     * 立即执行转换任务：抢占为 STARTING、写入计划 execute_time（秒级），投递 Kafka，由 Worker 消费执行（与元数据立即同步一致）
      */
     @Override
     public void immediatelyExecute(Integer id) {
-        getTransTaskById(id);
-        log.info("转换任务立即执行（功能预留，待调度对接）, taskId={}", id);
+        TransTask task = getTransTaskById(id);
+        if (!Boolean.TRUE.equals(task.getEnable())) {
+            throw new BusinessException("任务未启用，无法立即执行!");
+        }
+        if (task.getStatus() == null) {
+            throw new BusinessException("任务状态异常，无法立即执行!");
+        }
+        if (Constants.JOB_MANAGE_STATUS.STOP.equals(task.getStatus())
+                || Constants.JOB_MANAGE_STATUS.STOPPING.equals(task.getStatus())) {
+            throw new BusinessException("任务已停止，无法立即执行!");
+        }
+        if (Constants.JOB_MANAGE_STATUS.FAILURE.equals(task.getStatus())
+                && "1".equals(task.getFailurePolicy())) {
+            throw new BusinessException("任务已失败且失败策略为停止，无法立即执行!");
+        }
+
+        Date now = new Date();
+        Date scheduledDate = new Date((now.getTime() / 1000) * 1000);
+
+        UpdateWrapper<TransTask> uw = new UpdateWrapper<>();
+        uw.eq("id", task.getId())
+                .eq("deleted", Constants.DELETE_FLAG.FALSE);
+
+        boolean inProgress = Constants.JOB_MANAGE_STATUS.STARTING.equals(task.getStatus())
+                || Constants.JOB_MANAGE_STATUS.RUNNING.equals(task.getStatus());
+        if (inProgress) {
+            if (task.getExecuteTime() == null) {
+                throw new BusinessException("任务正在执行中，请稍后重试!");
+            }
+            long diff = now.getTime() - task.getExecuteTime().getTime();
+            if (diff <= stuckThresholdMs) {
+                throw new BusinessException("任务正在执行中，请稍后再试!");
+            }
+            Date stuckThresholdDate = new Date(now.getTime() - stuckThresholdMs);
+            uw.in("status", Arrays.asList(
+                            Constants.JOB_MANAGE_STATUS.STARTING,
+                            Constants.JOB_MANAGE_STATUS.RUNNING
+                    ))
+                    .le("execute_time", stuckThresholdDate)
+                    .set("status", Constants.JOB_MANAGE_STATUS.STARTING)
+                    .set("execute_time", scheduledDate)
+                    .set("reason", "")
+                    .set("updated_time", now)
+                    .set("updated_by", Constants.SYS_OP_INFO.SYSTEM_ACCOUNT);
+        } else {
+            uw.notIn("status", Arrays.asList(
+                            Constants.JOB_MANAGE_STATUS.STARTING,
+                            Constants.JOB_MANAGE_STATUS.RUNNING
+                    ))
+                    .set("status", Constants.JOB_MANAGE_STATUS.STARTING)
+                    .set("execute_time", scheduledDate)
+                    .set("reason", "")
+                    .set("updated_time", now)
+                    .set("updated_by", Constants.SYS_OP_INFO.SYSTEM_ACCOUNT);
+        }
+
+        int updated = transTaskMapper.update(null, uw);
+        if (updated != 1) {
+            throw new BusinessException("立即执行失败，任务状态可能已变更，请刷新后重试!");
+        }
+
+        TaskDispatchMessage msg = new TaskDispatchMessage();
+        msg.setTaskType(Constants.TASK_TYPE.TRANS_TASK);
+        msg.setTaskId(task.getId());
+        msg.setScheduledTimeMillis(scheduledDate.getTime());
+        taskDispatchKafkaProducer.send(msg);
+        log.info("转换任务已投递立即执行, taskId={}, scheduledTimeMillis={}", id, scheduledDate.getTime());
+    }
+
+    /**
+     * 立即停止转换任务：抢占为 STOPPING、写入本次停止派发的 execute_time（秒级），投递 Kafka，由 Worker 消费并尝试中断 Kettle。
+     */
+    @Override
+    public void immediatelyStop(Integer id) {
+        TransTask task = getTransTaskById(id);
+        String status = task.getStatus();
+        if (!Constants.JOB_MANAGE_STATUS.STARTING.equals(status)
+                && !Constants.JOB_MANAGE_STATUS.RUNNING.equals(status)) {
+            throw new BusinessException("当前任务未在运行或启动中，无法停止!");
+        }
+
+        Date now = new Date();
+        Date scheduledDate = new Date((now.getTime() / 1000) * 1000);
+
+        UpdateWrapper<TransTask> uw = new UpdateWrapper<>();
+        uw.eq("id", task.getId())
+                .eq("deleted", Constants.DELETE_FLAG.FALSE)
+                .in("status", Arrays.asList(
+                        Constants.JOB_MANAGE_STATUS.STARTING,
+                        Constants.JOB_MANAGE_STATUS.RUNNING))
+                .set("status", Constants.JOB_MANAGE_STATUS.STOPPING)
+                .set("execute_time", scheduledDate)
+                .set("reason", "")
+                .set("updated_time", now)
+                .set("updated_by", UserContext.getCurrentAccount());
+
+        int updated = transTaskMapper.update(null, uw);
+        if (updated != 1) {
+            throw new BusinessException("立即停止失败，任务状态可能已变更，请刷新后重试!");
+        }
+
+        TaskDispatchMessage msg = new TaskDispatchMessage();
+        msg.setTaskType(Constants.TASK_TYPE.TRANS_TASK_STOP);
+        msg.setTaskId(task.getId());
+        msg.setScheduledTimeMillis(scheduledDate.getTime());
+        taskDispatchKafkaProducer.send(msg);
+        log.info("转换任务已投递立即停止, taskId={}, scheduledTimeMillis={}", id, scheduledDate.getTime());
     }
 
     /**
@@ -254,11 +372,11 @@ public class TransTaskServiceImpl implements TransTaskService {
      */
     private void fillDictText(TransTaskVo vo) {
         vo.setStatusTxt(dictService.getDictItemValue(Constants.DICT.JOB_MANAGE_STATUS, vo.getStatus()));
-        vo.setEnableTxt(dictService.getDictItemCode(Constants.DICT.ENABLE,
-                vo.getEnable() != null ? vo.getEnable().toString() : null));
-        vo.setNotifyPolicyTxt(dictService.getDictItemCode(Constants.DICT.NOTIFY_POLICY, vo.getNotifyPolicy()));
-        vo.setFailurePolicyTxt(dictService.getDictItemCode(Constants.DICT.FAILURE_POLICY, vo.getFailurePolicy()));
-        vo.setExecuteTypeTxt(dictService.getDictItemCode(Constants.DICT.SCHEDULE_TYPE, vo.getExecuteType()));
+        vo.setEnableTxt(dictService.getDictItemValue(Constants.DICT.ENABLE,
+                vo.getEnable() ? Constants.ENABLE_FLAG.TRUE : Constants.ENABLE_FLAG.FALSE));
+        vo.setNotifyPolicyTxt(dictService.getDictItemValue(Constants.DICT.NOTIFY_POLICY, vo.getNotifyPolicy()));
+        vo.setFailurePolicyTxt(dictService.getDictItemValue(Constants.DICT.FAILURE_POLICY, vo.getFailurePolicy()));
+        vo.setExecuteTypeTxt(dictService.getDictItemValue(Constants.DICT.SCHEDULE_TYPE, vo.getExecuteType()));
         vo.setExecuteTimeTxt(DateUtil.formatDateTime(vo.getExecuteTime()));
         vo.setCreatedTimeTxt(DateUtil.formatDateTime(vo.getCreatedTime()));
     }

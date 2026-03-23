@@ -51,7 +51,7 @@ public class TransTaskLog implements Serializable {
      * 执行方式：1-定时执行；2-手动执行
      */
     @TableField(value = "executing_type")
-    private Integer executingType;
+    private String executingType;
 
     @TableField(value = "data_volume")
     private Long dataVolume;
@@ -82,6 +82,9 @@ public class TransTaskLog implements Serializable {
 
     @TableField(value = "flow_image")
     private String flowImage;
+
+    @TableField(value = "parameters")
+    private String parameters;
 
     @TableField(value = "log_detail")
     private String logDetail;

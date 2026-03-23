@@ -12,21 +12,6 @@ spring:
     multipart: # 限制上传的文件最大值
       max-request-size: 512MB
       max-file-size: 512MB
-  # email
-  mail:
-    host: smtp.qq.com
-    username: 203373485@qq.com # 发件人
-    password: fsfvylegjvaacaii # 授权码
-    port: 587
-    default-encoding: UTF-8 # 字符编码
-    properties:
-      mail:
-        smtp:
-          auth: true
-          starttls:
-            enable: true
-            required: true
-        debug: true
   # 数据源
   datasource:
     # mysql
@@ -92,6 +77,16 @@ kafka:
   consumer:
     group-id: pufferfishscheduler-worker-dispatch
     auto-offset-reset: latest
+    # 单次 poll 间隔上限（毫秒）；转换任务在线程池执行，一般无需极大值，可按最长 Kettle 运行时间调大
+    max-poll-interval-ms: 900000
+
+# 转换任务线程池（Kafka 仅提交任务，实际跑 Kettle 在此池中）
+trans:
+  task:
+    pool:
+      core-size: 2
+      max-size: 8
+      queue-capacity: 100
 
 # mybatis-plus配置
 mybatis-plus:
@@ -119,4 +114,9 @@ logging:
   pattern:
     console: "%d %clr(%5p) ---- [%t] %clr(%-40.40c){cyan} : %m %n"
 
-
+#定时写入日志表配置，每小时执行1次
+log:
+  task:
+    hour: 0 0 */1 * * ?
+  number:
+    max: 1000

@@ -49,7 +49,13 @@ public interface TransTaskService {
     void disable(Integer id);
 
     /**
-     * 立即执行（预留，待调度对接）
+     * 立即执行：Master 抢占并投递 Kafka，由 Worker 执行转换
      */
     void immediatelyExecute(Integer id);
+
+    /**
+     * 立即停止：Master 停止并投递 Kafka，由 Worker 停止转换
+     */
+    void immediatelyStop(Integer id);
+
 }

@@ -2,6 +2,8 @@ package com.pufferfishscheduler.dao.mapper;
 
 import java.util.List;
 
+import org.apache.ibatis.annotations.Param;
+
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.pufferfishscheduler.dao.entity.RtTask;
 
@@ -17,7 +19,7 @@ public interface RtTaskMapper extends BaseMapper<RtTask> {
      * @param targetDbId 目标数据库ID
      * @return 任务信息
      */
-    RtTask selectBySourceAndTarget(Integer sourceDbId, Integer targetDbId);
+    RtTask selectBySourceAndTarget(@Param("sourceDbId") Integer sourceDbId, @Param("targetDbId") Integer targetDbId);
 
     /**
      * 根据任务状态查询任务列表
@@ -40,7 +42,7 @@ public interface RtTaskMapper extends BaseMapper<RtTask> {
      * @param reason 异常原因（可选）
      * @return 更新结果
      */
-    int updateTaskStatus(Integer id, String status, String reason);
+    int updateTaskStatus(@Param("id") Integer id, @Param("status") String status, @Param("reason") String reason);
 
     /**
      * 更新运行时配置
@@ -48,7 +50,7 @@ public interface RtTaskMapper extends BaseMapper<RtTask> {
      * @param runtimeConfig 运行时配置
      * @return 更新结果
      */
-    int updateRuntimeConfig(Integer id, String runtimeConfig);
+    int updateRuntimeConfig(@Param("id") Integer id, @Param("runtimeConfig") String runtimeConfig);
 
     /**
      * 批量更新任务状态
@@ -56,7 +58,7 @@ public interface RtTaskMapper extends BaseMapper<RtTask> {
      * @param ids 任务ID列表
      * @return 更新结果
      */
-    int batchUpdateStatus(String status, java.util.List<Integer> ids);
+    int batchUpdateStatus(@Param("status") String status, @Param("ids") java.util.List<Integer> ids);
 
     /**
      * 获取运行中的任务列表

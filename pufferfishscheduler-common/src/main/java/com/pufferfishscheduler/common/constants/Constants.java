@@ -85,14 +85,18 @@ public interface Constants {
     interface DICT {
         // dict.json
         String DATA_SOURCE_LAYERING = "data_source_layering"; // 数据源分层
+        // 控制编码
         String CONTROL_ENCODING = "control_encoding";
+        // 数据库分类
         String DATABASE_CATEGORY = "database_category";
+        // 失败策略
         String FAILURE_POLICY = "failure_policy";
+        // 通知策略
         String NOTIFY_POLICY = "notify_policy";
+        // 启用状态
         String ENABLE = "enable";
         // 任务状态s
         String TASK_STATUS = "task_status";
-
         // 业务字典
         String DB_GROUP = "db_group";
         // CDC引擎类型
@@ -101,6 +105,10 @@ public interface Constants {
         String JOB_MANAGE_STATUS = "job_manage_status";
         // 调度类型
         String SCHEDULE_TYPE = "schedule_type";
+        // 告警类型
+        String ALERT_METHOD = "alert_method";
+        // 执行状态
+        String EXECUTE_STATUS = "execute_status";
     }
 
     /**
@@ -109,6 +117,8 @@ public interface Constants {
     interface TASK_TYPE {
         String METADATA_TASK = "metadata_task";
         String TRANS_TASK = "trans_task";
+        /** Worker 侧停止正在执行的转换（与 TRANS_TASK 共用 trans_task.id） */
+        String TRANS_TASK_STOP = "trans_task_stop";
     }
 
     /**
@@ -338,6 +348,14 @@ public interface Constants {
     }
 
     /**
+     * 启用状态
+     */
+    interface ENABLE_FLAG {
+        String TRUE = "1";
+        String FALSE = "0";
+    }
+
+    /**
      * 树类型
      */
     interface TREE_TYPE {
@@ -399,10 +417,10 @@ public interface Constants {
      * 执行状态
      */
     interface EXECUTE_STATUS {
-        String BREAKPOINT = "B";
         String RUNNING = "R";
         String FAILURE = "F";
         String SUCCESS = "S";
+        String TERMINATE = "T";//终止
     }
 
     /**

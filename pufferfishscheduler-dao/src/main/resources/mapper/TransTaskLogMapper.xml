@@ -6,7 +6,7 @@
         <id column="id" jdbcType="VARCHAR" property="id"/>
         <result column="task_id" jdbcType="INTEGER" property="taskId"/>
         <result column="status" jdbcType="VARCHAR" property="status"/>
-        <result column="executing_type" jdbcType="TINYINT" property="executingType"/>
+        <result column="executing_type" jdbcType="VARCHAR" property="executingType"/>
         <result column="data_volume" jdbcType="BIGINT" property="dataVolume"/>
         <result column="lines_read" jdbcType="BIGINT" property="linesRead"/>
         <result column="lines_written" jdbcType="BIGINT" property="linesWritten"/>
@@ -17,6 +17,7 @@
         <result column="lines_errors" jdbcType="BIGINT" property="linesErrors"/>
         <result column="reason" jdbcType="LONGVARCHAR" property="reason"/>
         <result column="flow_image" jdbcType="LONGVARCHAR" property="flowImage"/>
+        <result column="parameters" jdbcType="LONGVARCHAR" property="parameters"/>
         <result column="log_detail" jdbcType="LONGVARCHAR" property="logDetail"/>
         <result column="start_time" jdbcType="TIMESTAMP" property="startTime"/>
         <result column="end_time" jdbcType="TIMESTAMP" property="endTime"/>
@@ -27,9 +28,46 @@
 
     <sql id="Base_Column_List">
         id, task_id, status, executing_type, data_volume, lines_read, lines_written, lines_updated,
-        lines_input, lines_output, lines_rejected, lines_errors, reason, flow_image, log_detail,
+        lines_input, lines_output, lines_rejected, lines_errors, reason, flow_image, parameters, log_detail,
         start_time, end_time, duration_seconds, created_by, created_time
     </sql>
+
+    <select id="selectTaskLogList" resultType="com.pufferfishscheduler.domain.vo.collect.TransTaskLogVo">
+        SELECT
+        lg.*,
+        ts.name AS taskName,
+        fl.name AS flowName,
+        fl.config AS flowConfig
+        FROM trans_task_log lg
+        INNER JOIN trans_task ts ON lg.task_id = ts.id AND ts.deleted = FALSE
+        INNER JOIN trans_flow fl ON fl.id = ts.flow_id AND fl.deleted = FALSE
+        <where>
+            <if test="params.taskName != null and params.taskName != ''">
+                AND ts.name LIKE CONCAT('%', #{params.taskName}, '%')
+            </if>
+            <if test="params.status != null and params.status != ''">
+                AND lg.status = #{params.status}
+            </if>
+            <if test="params.startTime != null and params.startTime != ''">
+                AND lg.start_time >= #{params.startTime}
+            </if>
+            <if test="params.endTime != null and params.endTime != ''">
+                AND lg.end_time &lt;= #{params.endTime}
+            </if>
+        </where>
+        ORDER BY lg.start_time DESC
+    </select>
+
+    <select id="detail" resultType="com.pufferfishscheduler.domain.vo.collect.TransTaskLogVo">
+        SELECT lg.*,
+               ts.name   AS taskName,
+               fl.name   AS flowName,
+               fl.config AS flowConfig
+        FROM trans_task_log lg
+                 INNER JOIN trans_task ts ON lg.task_id = ts.id AND ts.deleted = FALSE
+                 INNER JOIN trans_flow fl ON fl.id = ts.flow_id AND fl.deleted = FALSE
+        where lg.id = #{id}
+    </select>
 
 </mapper>
 

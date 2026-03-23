@@ -10,8 +10,11 @@ public class OpenApiTags {
     public static final String AUTH = "认证管理";
     public static final String AUTH_DESC = "提供认证管理相关接口";
 
-    public static final String USER_ADMIN = "用户管理";
+    public static final String USER_ADMIN = "用户权限管理";
     public static final String USER_ADMIN_DESC = "管理员维护用户、分配角色（管理员/操作员）";
+
+    public static final String USER_CONTACT = "用户联系人";
+    public static final String USER_CONTACT_DESC = "管理员维护预警联系人（姓名、手机、邮箱、预警方式等）";
 
     public static final String DICT = "字典管理";
     public static final String DICT_DESC = "提供字典管理相关接口";
@@ -34,8 +37,8 @@ public class OpenApiTags {
     public static final String REALTIME_TASK = "实时数据采集接口";
     public static final String REALTIME_TASK_DESC = "提供实时数据采集相关接口";
 
-    public static final String TRANS_FLOW_GROUP = "转换分组管理";
-    public static final String TRANS_FLOW_GROUP_DESC = "提供转换分组管理相关接口";
+    public static final String TRANS_TASK_LOG = "转换任务日志管理";
+    public static final String TRANS_TASK_LOG_DESC = "提供转换任务日志管理相关接口";
 
     public static final String TRANS_FLOW_PROCESS = "转换流程管理";
     public static final String TRANS_FLOW_PROCESS_DESC = "提供转换流程管理相关接口";

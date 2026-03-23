@@ -4,6 +4,7 @@ package com.pufferfishscheduler.master.database.connect.ftp;
 import com.pufferfishscheduler.common.constants.Constants;
 import com.pufferfishscheduler.common.exception.BusinessException;
 import lombok.Data;
+import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.net.ftp.*;
@@ -27,6 +28,7 @@ import java.util.stream.Collectors;
  * FTPS管理器
  */
 @Data
+@ToString(exclude = {"ftpClient", "password"})
 @Slf4j
 public class FTPSManager {
 
@@ -99,7 +101,12 @@ public class FTPSManager {
             configureTransferMode();
             configureDataProtection();
         } catch (Exception e) {
-            throw new BusinessException("FTPS连接失败: " + e.getMessage());
+            String detail = StringUtils.isNotBlank(e.getMessage())
+                    ? e.getMessage()
+                    : e.getClass().getSimpleName();
+            log.error("FTPS连接失败 host={}:{} encoding={} mode={}: {}",
+                    host, port, controlEncoding, mode, detail, e);
+            throw new BusinessException("FTPS连接失败: " + detail);
         }
 
         return ftpClient;
@@ -119,7 +126,8 @@ public class FTPSManager {
     }
 
     private void configureClientSettings() {
-        this.ftpClient.setControlEncoding(controlEncoding);
+        String enc = StringUtils.isNotBlank(controlEncoding) ? controlEncoding : Constants.CONTROL_ENCODING;
+        this.ftpClient.setControlEncoding(enc);
 
         FTPClientConfig conf = new FTPClientConfig();
         conf.setServerLanguageCode("zh");
@@ -148,13 +156,33 @@ public class FTPSManager {
     }
 
     private void configureTransferMode() throws IOException {
-        if (Constants.MODE_TYPE.PASSIVE.equals(mode)) {
+        String m = resolveTransferMode(mode);
+        if (Constants.MODE_TYPE.PASSIVE.equals(m)) {
             this.ftpClient.enterLocalPassiveMode();
-        } else if (Constants.MODE_TYPE.ACTIVE.equals(mode)) {
+        } else {
             this.ftpClient.enterLocalActiveMode();
         }
         this.ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
         this.ftpClient.setFileTransferMode(FTP.STREAM_TRANSFER_MODE);
+    }
+
+    private static String resolveTransferMode(String raw) {
+        if (StringUtils.isBlank(raw)) {
+            return Constants.MODE_TYPE.PASSIVE;
+        }
+        String s = raw.trim();
+        if (Constants.MODE_TYPE.PASSIVE.equals(s) || Constants.MODE_TYPE.ACTIVE.equals(s)) {
+            return s;
+        }
+        String lower = s.toLowerCase();
+        if ("passive".equals(lower) || "pasv".equals(lower)) {
+            return Constants.MODE_TYPE.PASSIVE;
+        }
+        if ("active".equals(lower) || "port".equals(lower)) {
+            return Constants.MODE_TYPE.ACTIVE;
+        }
+        log.warn("无法识别的 FTPS 传输模式 [{}]，已使用被动模式", raw);
+        return Constants.MODE_TYPE.PASSIVE;
     }
 
     private void configureDataProtection() throws IOException {

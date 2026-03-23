@@ -56,8 +56,8 @@ public class TransTaskForm {
     /**
      * 启用状态 0启用 1禁用（与元数据任务一致）
      */
-    @NotBlank(message = "启用状态不能为空!")
-    private String enable;
+    @NotNull(message = "启用状态不能为空!")
+    private Boolean enable;
 
     /**
      * 备注

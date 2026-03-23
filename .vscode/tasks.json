@@ -1,0 +1,44 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "java (build)",
+			"paths": [
+				"${workspace}"
+			],
+			"isFullBuild": true,
+			"group": "build",
+			"problemMatcher": [],
+			"label": "java (build): Build Workspace",
+			"detail": "$(tools) Build all the Java projects in workspace."
+		},
+		{
+			"type": "java (buildArtifact)",
+			"targetPath": "${workspaceFolder}/${workspaceFolderBasename}.jar",
+			"elements": [
+				"${compileOutput:pufferfishscheduler}",
+				"${dependencies:pufferfishscheduler}",
+				"${compileOutput:pufferfishscheduler-ai}",
+				"${dependencies:pufferfishscheduler-ai}",
+				"${compileOutput:pufferfishscheduler-aop}",
+				"${dependencies:pufferfishscheduler-aop}",
+				"${compileOutput:pufferfishscheduler-api}",
+				"${dependencies:pufferfishscheduler-api}",
+				"${compileOutput:pufferfishscheduler-cdc}",
+				"${dependencies:pufferfishscheduler-cdc}",
+				"${compileOutput:pufferfishscheduler-common}",
+				"${dependencies:pufferfishscheduler-common}",
+				"${compileOutput:pufferfishscheduler-dao}",
+				"${dependencies:pufferfishscheduler-dao}",
+				"${compileOutput:pufferfishscheduler-domain}",
+				"${dependencies:pufferfishscheduler-domain}",
+				"${compileOutput:pufferfishscheduler-master}",
+				"${dependencies:pufferfishscheduler-master}",
+				"${compileOutput:pufferfishscheduler-worker}",
+				"${dependencies:pufferfishscheduler-worker}"
+			],
+			"problemMatcher": [],
+			"label": "java (buildArtifact): pufferfishscheduler"
+		}
+	]
+}

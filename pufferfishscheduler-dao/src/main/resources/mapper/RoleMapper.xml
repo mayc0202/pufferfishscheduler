@@ -29,7 +29,8 @@
     <select id="listRolesByUserIds" resultType="com.pufferfishscheduler.domain.vo.user.UserRoleRowVo">
         SELECT ur.user_id AS userId,
                r.id      AS roleId,
-               r.`name`  AS roleName
+               r.`name`  AS roleName,
+               r.`description` AS roleDesc
         FROM user_role_rel ur
                  INNER JOIN role r ON r.id = ur.role_id
         WHERE ur.deleted = 0

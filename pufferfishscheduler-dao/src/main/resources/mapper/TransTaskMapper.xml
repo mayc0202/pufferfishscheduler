@@ -58,16 +58,25 @@
     </select>
 
     <select id="selectTaskById" resultType="com.pufferfishscheduler.domain.vo.collect.TransTaskVo">
-        SELECT
-        tt.id, tt.name, tt.remark, tt.flow_id, tt.execute_type, tt.cron,
-        tt.failure_policy, tt.notify_policy, tt.enable, tt.status, tt.reason,
-        tt.execute_time, tt.created_time,
-        tf.name AS flow_name,
-        tg.id AS group_id,
-        tg.name AS group_name
+        SELECT tt.id,
+               tt.name,
+               tt.remark,
+               tt.flow_id,
+               tt.execute_type,
+               tt.cron,
+               tt.failure_policy,
+               tt.notify_policy,
+               tt.enable,
+               tt.status,
+               tt.reason,
+               tt.execute_time,
+               tt.created_time,
+               tf.name AS flow_name,
+               tg.id   AS group_id,
+               tg.name AS group_name
         FROM trans_task AS tt
-        LEFT JOIN trans_flow AS tf ON tt.flow_id = tf.id AND tf.deleted = 0
-        LEFT JOIN trans_group AS tg ON tf.group_id = tg.id AND tg.deleted = 0
+                 LEFT JOIN trans_flow AS tf ON tt.flow_id = tf.id AND tf.deleted = 0
+                 LEFT JOIN trans_group AS tg ON tf.group_id = tg.id AND tg.deleted = 0
         WHERE tt.id = #{id}
           AND tt.deleted = 0
     </select>

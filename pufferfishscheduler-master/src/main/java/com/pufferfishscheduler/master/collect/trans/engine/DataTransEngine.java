@@ -8,20 +8,17 @@ import org.pentaho.di.core.gui.SwingGC;
 import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LoggingRegistry;
 import org.pentaho.di.core.logging.MetricsRegistry;
-import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.TransListener;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.TransPainter;
-import org.pentaho.di.trans.debug.StepDebugMeta;
-import org.pentaho.di.trans.debug.TransDebugMeta;
 import org.pentaho.di.trans.step.StepListener;
-import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaDataCombi;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.pufferfishscheduler.common.constants.Constants;
-import com.pufferfishscheduler.common.exception.BusinessException;
+import com.pufferfishscheduler.dao.entity.TransComponent;
+import com.pufferfishscheduler.dao.mapper.TransComponentMapper;
 import com.pufferfishscheduler.dao.entity.TransFlow;
-import com.pufferfishscheduler.domain.vo.collect.PreviewVo;
 import com.pufferfishscheduler.master.collect.trans.engine.entity.JobExecutingData;
 import com.pufferfishscheduler.master.collect.trans.engine.entity.JobExecutingInfo;
 import com.pufferfishscheduler.master.collect.trans.engine.entity.TransFlowConfig;
@@ -35,11 +32,16 @@ import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.imageio.ImageIO;
 
@@ -53,10 +55,8 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public class DataTransEngine {
-    /**
-     * 默认仓库名称
-     */
-    private static final String DEFAULT_REPOSITORY_NAME = "DTDesigner";
+    private static final Pattern MISSING_STEP_ICON_PATTERN = Pattern.compile(
+            "Unable to find file: (.+?) for plugin: ([^/\\{]+)");
     /**
      * 默认批次号
      */
@@ -77,6 +77,10 @@ public class DataTransEngine {
      * DTDesigner插件目录
      */
     private String dtDesignerPluginsDir;
+    /**
+     * 转换组件Mapper（用于在缺失图标时从DB回填）
+     */
+    private TransComponentMapper transComponentMapper;
     /**
      * 转换Map
      */
@@ -140,10 +144,14 @@ public class DataTransEngine {
      * @return 插件目录路径
      */
     private String getPluginsDir() {
-        if (StringUtils.isEmpty(dtDesignerPluginsDir)) {
-            return getDefaultPluginsDir();
+        if (StringUtils.isNotEmpty(dtDesignerPluginsDir)) {
+            return dtDesignerPluginsDir;
         }
-        return dtDesignerPluginsDir;
+        String configuredBaseFolders = System.getProperty("KETTLE_PLUGIN_BASE_FOLDERS");
+        if (StringUtils.isNotBlank(configuredBaseFolders)) {
+            return configuredBaseFolders;
+        }
+        return getDefaultPluginsDir();
     }
 
     /**
@@ -152,12 +160,35 @@ public class DataTransEngine {
      * @return 默认插件目录路径
      */
     private String getDefaultPluginsDir() {
+        File classpathPluginsDir = null;
         try {
             String parentPath = URLDecoder.decode(this.getClass().getClassLoader().getResource(".").getPath(), "utf-8");
-            return String.format("%s%s", parentPath, DEFAULT_PLUGIN_DIR);
+            classpathPluginsDir = new File(parentPath, DEFAULT_PLUGIN_DIR);
         } catch (UnsupportedEncodingException e) {
             throw new DataTransformationEngineException(String.format("获取默认插件目录失败！[错误:%s]", e.getMessage()));
         }
+
+        if (classpathPluginsDir != null && classpathPluginsDir.exists() && classpathPluginsDir.isDirectory()) {
+            return classpathPluginsDir.getAbsolutePath();
+        }
+
+        // 优先使用 KETTLE_HOME，避免加载到不完整的 classpath 插件目录导致步骤图标缺失
+        String kettleHome = System.getProperty("KETTLE_HOME");
+        if (StringUtils.isNotBlank(kettleHome)) {
+            File kettleHomePluginsDir = new File(kettleHome, DEFAULT_PLUGIN_DIR);
+            if (kettleHomePluginsDir.exists() && kettleHomePluginsDir.isDirectory()) {
+                return kettleHomePluginsDir.getAbsolutePath();
+            }
+        }
+
+        // 回退到工作目录 plugins
+        File userDirPluginsDir = new File(System.getProperty("user.dir"), DEFAULT_PLUGIN_DIR);
+        if (userDirPluginsDir.exists() && userDirPluginsDir.isDirectory()) {
+            return userDirPluginsDir.getAbsolutePath();
+        }
+
+        // 最后兜底返回 classpath 位置（可能不存在），由后续初始化日志提示
+        return classpathPluginsDir == null ? DEFAULT_PLUGIN_DIR : classpathPluginsDir.getAbsolutePath();
     }
 
     /**
@@ -503,6 +534,10 @@ public class DataTransEngine {
         return dtDesignerPluginsDir;
     }
 
+    public void setTransComponentMapper(TransComponentMapper transComponentMapper) {
+        this.transComponentMapper = transComponentMapper;
+    }
+
     /**
      * 获取转换的base64图片
      * html中使用时，需要在<img src="data:image/png;base64,{{put your base64 pic code
@@ -525,8 +560,17 @@ public class DataTransEngine {
             // 获取转换元数据
             TransMeta transMeta = loadTransMetaForImage(type, id);
 
-            // 生成转换图片
-            BufferedImage bufferedImage = generateTransformationImage(transMeta);
+            // 生成转换图片（若缺失步骤图标，则尝试从trans_component回填后重试一次）
+            BufferedImage bufferedImage;
+            try {
+                bufferedImage = generateTransformationImage(transMeta);
+            } catch (Exception ex) {
+                if (hydrateMissingStepIcon(ex)) {
+                    bufferedImage = generateTransformationImage(transMeta);
+                } else {
+                    throw ex;
+                }
+            }
 
             // 编码为base64
             Base64.Encoder encoder = Base64.getEncoder();
@@ -588,6 +632,94 @@ public class DataTransEngine {
         transPainter.buildTransformationImage();
 
         return (BufferedImage) gc.getImage();
+    }
+
+    private boolean hydrateMissingStepIcon(Exception ex) {
+        if (transComponentMapper == null || ex == null) {
+            return false;
+        }
+        Matcher matcher = MISSING_STEP_ICON_PATTERN.matcher(String.valueOf(ex.getMessage()));
+        if (!matcher.find()) {
+            return false;
+        }
+        String relativeIconPath = matcher.group(1).trim();
+        String pluginCode = matcher.group(2).trim();
+        if (StringUtils.isAnyBlank(relativeIconPath, pluginCode)) {
+            return false;
+        }
+
+        TransComponent component = findComponentByCode(pluginCode);
+        if (component == null || StringUtils.isBlank(component.getIcon())) {
+            return false;
+        }
+
+        byte[] iconBytes = decodeIconBytes(component.getIcon());
+        if (iconBytes.length == 0) {
+            return false;
+        }
+
+        Path iconFilePath = resolveStepIconFilePath(pluginCode, relativeIconPath);
+        if (iconFilePath == null) {
+            return false;
+        }
+
+        try {
+            Path parent = iconFilePath.getParent();
+            if (parent != null) {
+                Files.createDirectories(parent);
+            }
+            Files.write(iconFilePath, iconBytes);
+            log.info("Hydrated missing step icon from trans_component. pluginCode={}, iconPath={}", pluginCode, iconFilePath);
+            return true;
+        } catch (IOException ioEx) {
+            log.warn("Failed to write hydrated step icon. pluginCode={}, iconPath={}", pluginCode, iconFilePath, ioEx);
+            return false;
+        }
+    }
+
+    private TransComponent findComponentByCode(String pluginCode) {
+        LambdaQueryWrapper<TransComponent> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(TransComponent::getCode, pluginCode).last("limit 1");
+        return transComponentMapper.selectOne(wrapper);
+    }
+
+    private byte[] decodeIconBytes(String rawIcon) {
+        String icon = rawIcon.trim();
+        try {
+            if (icon.startsWith("data:image/svg+xml;base64,")) {
+                return Base64.getDecoder().decode(icon.substring("data:image/svg+xml;base64,".length()));
+            }
+            if (icon.startsWith("data:image/") && icon.contains(";base64,")) {
+                return Base64.getDecoder().decode(icon.substring(icon.indexOf(";base64,") + ";base64,".length()));
+            }
+            if (icon.startsWith("<svg")) {
+                return icon.getBytes(StandardCharsets.UTF_8);
+            }
+            return Base64.getDecoder().decode(icon);
+        } catch (Exception e) {
+            log.warn("Failed to decode step icon content from trans_component");
+            return new byte[0];
+        }
+    }
+
+    private Path resolveStepIconFilePath(String pluginCode, String relativeIconPath) {
+        String pluginsDir = getPluginsDir();
+        if (StringUtils.isBlank(pluginsDir)) {
+            return null;
+        }
+        String[] baseCandidates = pluginsDir.split("[;,]");
+        for (String candidate : baseCandidates) {
+            if (StringUtils.isBlank(candidate)) {
+                continue;
+            }
+            Path baseDir = Paths.get(candidate.trim());
+            if (!Files.exists(baseDir) || !Files.isDirectory(baseDir)) {
+                continue;
+            }
+            Path stepPluginDir = baseDir.resolve("steps").resolve(pluginCode);
+            return stepPluginDir.resolve(relativeIconPath.replace("/", File.separator));
+        }
+        return null;
     }
 
 }

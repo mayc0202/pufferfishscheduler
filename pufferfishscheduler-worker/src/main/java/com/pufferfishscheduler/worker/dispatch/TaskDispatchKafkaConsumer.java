@@ -4,8 +4,12 @@ import com.alibaba.fastjson2.JSON;
 import com.pufferfishscheduler.api.dispatch.TaskDispatchMessage;
 import com.pufferfishscheduler.common.constants.Constants;
 import com.pufferfishscheduler.dao.entity.MetadataTask;
+import com.pufferfishscheduler.dao.entity.TransTask;
 import com.pufferfishscheduler.dao.mapper.MetadataTaskMapper;
-import com.pufferfishscheduler.worker.metadata.service.DbSyncExecutor;
+import com.pufferfishscheduler.dao.mapper.TransTaskMapper;
+import com.pufferfishscheduler.worker.task.metadata.service.DbSyncExecutor;
+import com.pufferfishscheduler.worker.task.trans.service.TransTaskExecutor;
+import lombok.AllArgsConstructor;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
@@ -28,7 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Worker 消费 Kafka 派发消息，执行元数据同步（只写 DB；前端查询结果）
+ * Worker 消费 Kafka 派发消息：元数据同步、转换任务（只写 DB；前端查询结果）
  */
 @Component
 public class TaskDispatchKafkaConsumer implements InitializingBean, DisposableBean {
@@ -47,18 +51,39 @@ public class TaskDispatchKafkaConsumer implements InitializingBean, DisposableBe
     @Value("${kafka.consumer.auto-offset-reset:latest}")
     private String autoOffsetReset;
 
+    @Value("${kafka.consumer.max-poll-interval-ms:900000}")
+    private int maxPollIntervalMs;
+
+    /**
+     * 元数据任务映射器
+     */
     private final MetadataTaskMapper metadataTaskMapper;
+    /**
+     * 数据库同步执行器
+     */
     private final DbSyncExecutor dbSyncExecutor;
+    /**
+     * 转换任务映射器
+     */
+    private final TransTaskMapper transTaskMapper;
+    /**
+     * 转换任务执行器
+     */
+    private final TransTaskExecutor transTaskExecutor;
 
     private KafkaConsumer<String, String> consumer;
     private final AtomicBoolean running = new AtomicBoolean(false);
 
-    public TaskDispatchKafkaConsumer(MetadataTaskMapper metadataTaskMapper,
-                                       DbSyncExecutor dbSyncExecutor) {
+    public TaskDispatchKafkaConsumer(MetadataTaskMapper metadataTaskMapper, DbSyncExecutor dbSyncExecutor, TransTaskMapper transTaskMapper, TransTaskExecutor transTaskExecutor) {
         this.metadataTaskMapper = metadataTaskMapper;
         this.dbSyncExecutor = dbSyncExecutor;
+        this.transTaskMapper = transTaskMapper;
+        this.transTaskExecutor = transTaskExecutor;
     }
 
+    /**
+     * 初始化 Kafka 消费者
+     */
     @Override
     public void afterPropertiesSet() {
         Properties props = new Properties();
@@ -69,6 +94,8 @@ public class TaskDispatchKafkaConsumer implements InitializingBean, DisposableBe
         props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false");
         props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, autoOffsetReset);
         props.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, "50");
+        // 转换可能长时间运行，避免超过 max.poll.interval 被踢出消费组（可按需调大）
+        props.put(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG, maxPollIntervalMs);
 
         consumer = new KafkaConsumer<>(props);
         consumer.subscribe(Arrays.asList(topic));
@@ -81,6 +108,9 @@ public class TaskDispatchKafkaConsumer implements InitializingBean, DisposableBe
         log.info("Kafka dispatch consumer started: topic={}, groupId={}", topic, groupId);
     }
 
+    /**
+     * 消费循环
+     */
     private void loop() {
         while (running.get()) {
             ConsumerRecords<String, String> records;
@@ -106,6 +136,9 @@ public class TaskDispatchKafkaConsumer implements InitializingBean, DisposableBe
         }
     }
 
+    /**
+     * 处理 Kafka 消息
+     */
     private boolean process(String value) {
         if (value == null || value.isBlank()) return true;
 
@@ -118,35 +151,41 @@ public class TaskDispatchKafkaConsumer implements InitializingBean, DisposableBe
         }
 
         if (msg.getTaskType() == null) return true;
-        if (!Constants.TASK_TYPE.METADATA_TASK.equals(msg.getTaskType())) {
-            return true; // 先只实现元数据任务
-        }
 
+        // 元数据任务
+        if (Constants.TASK_TYPE.METADATA_TASK.equals(msg.getTaskType())) {
+            return processMetadataTask(msg);
+        }
+        // 转换任务
+        if (Constants.TASK_TYPE.TRANS_TASK.equals(msg.getTaskType())) {
+            return processTransTask(msg);
+        }
+        // 转换任务停止
+        if (Constants.TASK_TYPE.TRANS_TASK_STOP.equals(msg.getTaskType())) {
+            return processTransTaskStop(msg);
+        }
+        return true;
+    }
+
+    /**
+     * 处理元数据任务
+     */
+    private boolean processMetadataTask(TaskDispatchMessage msg) {
         if (msg.getTaskId() == null || msg.getDbId() == null || msg.getScheduledTimeMillis() == null) {
             return true;
         }
 
         Date scheduledDate = truncateToSecond(new Date(msg.getScheduledTimeMillis()));
-        // 实际开始执行时间：与实时任务类似，Worker 接管后写入真实执行时刻，供列表展示与下次 cron 参考
         Date runStart = new Date();
 
-        // STARTING -> RUNNING（防重入）
         UpdateWrapper<MetadataTask> toRunning = new UpdateWrapper<>();
-        toRunning.eq("id", msg.getTaskId())
-                .eq("execute_time", scheduledDate)
-                .eq("status", Constants.JOB_MANAGE_STATUS.STARTING)
-                .set("status", Constants.JOB_MANAGE_STATUS.RUNNING)
-                .set("execute_time", runStart)
-                .set("updated_time", runStart)
-                .set("updated_by", Constants.SYS_OP_INFO.SYSTEM_ACCOUNT);
+        toRunning.eq("id", msg.getTaskId()).eq("execute_time", scheduledDate).eq("status", Constants.JOB_MANAGE_STATUS.STARTING).set("status", Constants.JOB_MANAGE_STATUS.RUNNING).set("execute_time", runStart).set("updated_time", runStart).set("updated_by", Constants.SYS_OP_INFO.SYSTEM_ACCOUNT);
 
         int updated = metadataTaskMapper.update(null, toRunning);
         if (updated != 1) {
-            // 已被处理/不匹配的计划时间，忽略该消息
             return true;
         }
 
-        // 读取失败策略，用于失败后的状态落库
         MetadataTask currentTask = metadataTaskMapper.selectById(msg.getTaskId());
         String failurePolicy = currentTask != null ? currentTask.getFailurePolicy() : "1";
 
@@ -154,35 +193,71 @@ public class TaskDispatchKafkaConsumer implements InitializingBean, DisposableBe
             dbSyncExecutor.execute(msg.getDbId());
 
             Date finishedAt = new Date();
-            // RUNNING -> INIT（成功后回到可再次调度状态）；清空失败原因（对齐实时任务成功落库逻辑）
             UpdateWrapper<MetadataTask> toInit = new UpdateWrapper<>();
-            toInit.eq("id", msg.getTaskId())
-                    .eq("status", Constants.JOB_MANAGE_STATUS.RUNNING)
-                    .set("status", Constants.JOB_MANAGE_STATUS.INIT)
-                    .set("reason", "")
-                    .set("updated_time", finishedAt)
-                    .set("updated_by", Constants.SYS_OP_INFO.SYSTEM_ACCOUNT);
+            toInit.eq("id", msg.getTaskId()).eq("status", Constants.JOB_MANAGE_STATUS.RUNNING).set("status", Constants.JOB_MANAGE_STATUS.INIT).set("reason", "").set("updated_time", finishedAt).set("updated_by", Constants.SYS_OP_INFO.SYSTEM_ACCOUNT);
             metadataTaskMapper.update(null, toInit);
             return true;
         } catch (Exception e) {
             log.error("metadata sync execute failed, taskId={}, dbId={}", msg.getTaskId(), msg.getDbId(), e);
 
-            String finalStatus = "1".equals(failurePolicy)
-                    ? Constants.JOB_MANAGE_STATUS.STOP
-                    : Constants.JOB_MANAGE_STATUS.FAILURE;
+            String finalStatus = "1".equals(failurePolicy) ? Constants.JOB_MANAGE_STATUS.STOP : Constants.JOB_MANAGE_STATUS.FAILURE;
 
             String reason = buildFailureReason(e);
             Date finishedAt = new Date();
             UpdateWrapper<MetadataTask> toFail = new UpdateWrapper<>();
-            toFail.eq("id", msg.getTaskId())
-                    .eq("status", Constants.JOB_MANAGE_STATUS.RUNNING)
-                    .set("status", finalStatus)
-                    .set("reason", reason)
-                    .set("updated_time", finishedAt)
-                    .set("updated_by", Constants.SYS_OP_INFO.SYSTEM_ACCOUNT);
+            toFail.eq("id", msg.getTaskId()).eq("status", Constants.JOB_MANAGE_STATUS.RUNNING).set("status", finalStatus).set("reason", reason).set("updated_time", finishedAt).set("updated_by", Constants.SYS_OP_INFO.SYSTEM_ACCOUNT);
             metadataTaskMapper.update(null, toFail);
             return false;
         }
+    }
+
+    /**
+     * 转换任务：与元数据任务相同的状态机（STARTING → RUNNING → INIT / STOP|FAILURE），不要求 dbId。
+     */
+    private boolean processTransTask(TaskDispatchMessage msg) {
+        if (msg.getTaskId() == null || msg.getScheduledTimeMillis() == null) {
+            return true;
+        }
+
+        Date scheduledDate = truncateToSecond(new Date(msg.getScheduledTimeMillis()));
+        Date runStart = new Date();
+
+        UpdateWrapper<TransTask> toRunning = new UpdateWrapper<>();
+        toRunning.eq("id", msg.getTaskId()).eq("execute_time", scheduledDate).eq("status", Constants.JOB_MANAGE_STATUS.STARTING).eq("deleted", Constants.DELETE_FLAG.FALSE).set("status", Constants.JOB_MANAGE_STATUS.RUNNING).set("execute_time", runStart).set("updated_time", runStart).set("updated_by", Constants.SYS_OP_INFO.SYSTEM_ACCOUNT);
+
+        int updated = transTaskMapper.update(null, toRunning);
+        if (updated != 1) {
+            return true;
+        }
+
+        transTaskExecutor.submitExecute(msg.getTaskId());
+        return true;
+    }
+
+    /**
+     * 立即停止：Master 已将任务置为 STOPPING 并写入本次派发的 execute_time（秒级）。
+     * 通过抢占式更新 reason 避免同一条 Kafka 消息重复触发停止逻辑。
+     */
+    private static final String TRANS_STOP_DISPATCH_TAG = "__trans_stop_dispatch__";
+
+    private boolean processTransTaskStop(TaskDispatchMessage msg) {
+        if (msg.getTaskId() == null || msg.getScheduledTimeMillis() == null) {
+            return true;
+        }
+
+        Date scheduledDate = truncateToSecond(new Date(msg.getScheduledTimeMillis()));
+        Date now = new Date();
+
+        UpdateWrapper<TransTask> claim = new UpdateWrapper<>();
+        claim.eq("id", msg.getTaskId()).eq("status", Constants.JOB_MANAGE_STATUS.STOPPING).eq("execute_time", scheduledDate).eq("deleted", Constants.DELETE_FLAG.FALSE).and(w -> w.isNull("reason").or().eq("reason", "")).set("reason", TRANS_STOP_DISPATCH_TAG).set("updated_time", now).set("updated_by", Constants.SYS_OP_INFO.SYSTEM_ACCOUNT);
+
+        int updated = transTaskMapper.update(null, claim);
+        if (updated != 1) {
+            return true;
+        }
+
+        transTaskExecutor.stopExecute(msg.getTaskId());
+        return true;
     }
 
     /**
@@ -190,7 +265,7 @@ public class TaskDispatchKafkaConsumer implements InitializingBean, DisposableBe
      */
     private static String buildFailureReason(Throwable e) {
         if (e == null) {
-            return "元数据同步执行失败";
+            return "任务执行失败";
         }
         String msg = e.getMessage();
         if (StringUtils.isNotBlank(msg)) {
@@ -205,6 +280,9 @@ public class TaskDispatchKafkaConsumer implements InitializingBean, DisposableBe
         return new Date((ms / 1000) * 1000);
     }
 
+    /**
+     * 销毁 Kafka 消费者
+     */
     @Override
     public void destroy() {
         running.set(false);

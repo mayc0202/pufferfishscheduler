@@ -1,0 +1,84 @@
+server:
+  servlet:
+    context-path: /pufferfishscheduler-alert
+  port: 8088
+
+spring:
+  main:
+    allow-bean-definition-overriding: true # 开启循环依赖
+  application:
+    name: pufferfishscheduler-alert
+  # email
+  mail:
+    host: smtp.qq.com
+    username: 203373485@qq.com # 发件人
+    password: fsfvylegjvaacaii # 授权码
+    port: 587
+    default-encoding: UTF-8 # 字符编码
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+        debug: true
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher  # 兼容Swagger的路径匹配策略
+
+dubbo:
+  application:
+    name: pufferfishscheduler-alert
+    qos-enable: false
+  # 协议配置：推荐dubbo协议（性能优），端口默认20880
+  protocol:
+    name: dubbo
+    port: 20880
+  # 注册中心配置
+  registry:
+    # 统一改为 Zookeeper 注册中心
+    address: zookeeper://81.69.250.183:2181?zookeeper.sasl.client=false
+    check: false # 注册订阅失败时报错
+    timeout: 6000  # 注册中心超时时间（毫秒）
+    file: /data/dubbo-cache/pufferfishscheduler-alert-registry.cache  # 独立路径，需确保目录存在且有读写权限
+  config-center:
+    timeout: 25000 # 超时
+  # 服务配置：扫描Dubbo注解
+  scan:
+    base-packages: com.pufferfishscheduler.alert.service # 服务实现类所在包
+  # 消费者配置（服务端可省略，客户端需配置）
+  consumer:
+    check: false # 启动时不检查服务是否存在（避免服务未启动导致客户端启动失败）
+
+# Kafka配置
+kafka:
+  brokers: 101.34.66.45:9092
+  dispatch:
+    topic: pufferfishscheduler-task-dispatch
+  consumer:
+    group-id: pufferfishscheduler-alert-dispatch
+    auto-offset-reset: latest
+    # 单次 poll 间隔上限（毫秒）；转换任务在线程池执行，一般无需极大值，可按最长 Kettle 运行时间调大
+    max-poll-interval-ms: 900000
+
+#配置阿里云短信
+phoneconfig:
+  access-key: ${ALIBABA_CLOUD_ACCESS_KEY}
+  secret-key: ${ALIBABA_CLOUD_SECRET_KEY}
+  signName: 阿里云短信测试
+  templateCode: SMS_154950909
+  apiversion: 2017-05-25
+  domain: dysmsapi.aliyuncs.com
+  action: SendSms
+
+# log日志
+logging:
+  level:
+    web: debug #扫描web
+    com.pufferfishscheduler.common: debug
+    com.pufferfishscheduler.master: debug
+    com.zaxxer.hikari: debug
+    org.apache.dubbo.spring.extension.SpringExtensionFactory: WARN
+  pattern:
+    console: "%d %clr(%5p) ---- [%t] %clr(%-40.40c){cyan} : %m %n"

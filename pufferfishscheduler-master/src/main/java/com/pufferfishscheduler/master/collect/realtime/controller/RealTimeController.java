@@ -2,12 +2,7 @@ package com.pufferfishscheduler.master.collect.realtime.controller;
 
 import com.pufferfishscheduler.master.common.config.openapi.OpenApiTags;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.pufferfishscheduler.common.result.ApiResponse;
 import com.pufferfishscheduler.domain.form.collect.RealTimeTaskForm;
@@ -29,7 +24,7 @@ public class RealTimeController {
 
     /**
      * 查询实时数据同步任务列表
-     * 
+     *
      * @param taskName   任务名称
      * @param sourceDbId 源数据库ID
      * @param targetDbId 目标数据库ID
@@ -53,7 +48,7 @@ public class RealTimeController {
 
     /**
      * 创建实时数据同步任务
-     * 
+     *
      * @param taskForm 实时数据同步任务表单
      * @return 实时数据同步任务VO
      */
@@ -71,7 +66,7 @@ public class RealTimeController {
      * @return 操作结果
      */
     @Operation(summary = "更新实时数据同步任务")
-    @PostMapping("/update.do")
+    @PutMapping("/update.do")
     public ApiResponse update(@RequestBody RealTimeTaskForm taskForm) {
         realTimeTaskService.update(taskForm);
         return ApiResponse.success("实时数据同步任务更新成功！");
@@ -84,7 +79,7 @@ public class RealTimeController {
      * @return 操作结果
      */
     @Operation(summary = "删除实时数据同步任务")
-    @PostMapping("/delete.do")
+    @PutMapping("/delete.do")
     public ApiResponse delete(@RequestParam Integer taskId) {
         realTimeTaskService.delete(taskId);
         return ApiResponse.success("实时数据同步任务删除成功！");
@@ -126,5 +121,33 @@ public class RealTimeController {
     public ApiResponse stop(@RequestParam Integer taskId) {
         realTimeTaskService.immediatelyStop(taskId);
         return ApiResponse.success("实时数据同步任务停止成功！");
+    }
+
+    /**
+     * 查询实时统计数据
+     *
+     * @param taskId
+     * @param tableMapperId
+     * @return
+     */
+    @Operation(summary = "查询实时统计数据")
+    @GetMapping("/stats.do")
+    public ApiResponse stats(@RequestParam Integer taskId, @RequestParam Integer tableMapperId) {
+        return ApiResponse.success(realTimeTaskService.getCumulativeStats(taskId, tableMapperId));
+    }
+
+    /**
+     * 查询实时统计数据（小时）
+     *
+     * @param taskId
+     * @param tableMapperId
+     * @param syncDate
+     * @param syncHour
+     * @return
+     */
+    @Operation(summary = "查询实时统计数据（小时）")
+    @GetMapping("/hourly.do")
+    public ApiResponse getHourlyStats(@RequestParam Integer taskId, @RequestParam Integer tableMapperId, @RequestParam int syncDate, @RequestParam int syncHour) {
+        return ApiResponse.success(realTimeTaskService.getHourlyStats(taskId, tableMapperId, syncDate, syncHour));
     }
 }

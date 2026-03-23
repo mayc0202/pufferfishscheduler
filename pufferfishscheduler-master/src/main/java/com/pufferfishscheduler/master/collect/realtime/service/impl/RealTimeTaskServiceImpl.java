@@ -1,6 +1,9 @@
 package com.pufferfishscheduler.master.collect.realtime.service.impl;
 
 import java.util.*;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 
 import com.alibaba.fastjson2.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -12,8 +15,12 @@ import com.pufferfishscheduler.common.bean.UserContext;
 import com.pufferfishscheduler.common.constants.Constants;
 import com.pufferfishscheduler.common.exception.BusinessException;
 import com.pufferfishscheduler.dao.entity.RtFieldMapper;
+import com.pufferfishscheduler.dao.entity.RtSyncLog;
 import com.pufferfishscheduler.dao.entity.RtTableMapper;
+import com.pufferfishscheduler.dao.entity.RtTableStats;
 import com.pufferfishscheduler.dao.entity.RtTask;
+import com.pufferfishscheduler.dao.mapper.RtSyncLogMapper;
+import com.pufferfishscheduler.dao.mapper.RtTableStatsMapper;
 import com.pufferfishscheduler.dao.mapper.RtTaskMapper;
 import com.pufferfishscheduler.domain.form.collect.RealTimeFieldMapperForm;
 import com.pufferfishscheduler.domain.form.collect.RealTimeTableForm;
@@ -23,11 +30,13 @@ import com.pufferfishscheduler.domain.model.database.DatabaseField;
 import com.pufferfishscheduler.domain.vo.collect.RealTimeFieldMapperVo;
 import com.pufferfishscheduler.domain.vo.collect.RealTimeTableMapperVo;
 import com.pufferfishscheduler.domain.vo.collect.RealTimeTaskVo;
-import com.pufferfishscheduler.master.collect.realtime.engine.kafka.RealTimeDataSyncEngine;
-import com.pufferfishscheduler.master.collect.realtime.engine.kafka.config.KafkaDataProperties;
-import com.pufferfishscheduler.master.collect.realtime.engine.kafka.database.DataSourceAdapter;
-import com.pufferfishscheduler.master.collect.realtime.engine.kafka.database.DataSourceAdapterFactory;
-import com.pufferfishscheduler.master.collect.realtime.engine.kafka.entity.*;
+import com.pufferfishscheduler.cdc.kafka.RealTimeDataSyncEngine;
+import com.pufferfishscheduler.cdc.kafka.RealtimeStatsRedisReader;
+import com.pufferfishscheduler.cdc.kafka.RealtimeStatsRedisWriter;
+import com.pufferfishscheduler.cdc.kafka.config.KafkaDataProperties;
+import com.pufferfishscheduler.cdc.kafka.database.DataSourceAdapter;
+import com.pufferfishscheduler.cdc.kafka.database.DataSourceAdapterFactory;
+import com.pufferfishscheduler.cdc.kafka.entity.*;
 import com.pufferfishscheduler.master.collect.realtime.service.RealTimeTaskService;
 import com.pufferfishscheduler.master.collect.realtime.service.RtFieldMapperService;
 import com.pufferfishscheduler.master.collect.realtime.service.RtTableMapperService;
@@ -42,6 +51,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -63,6 +74,20 @@ import lombok.extern.slf4j.Slf4j;
 public class RealTimeTaskServiceImpl implements RealTimeTaskService {
     private static final long STOP_TIMEOUT_SECONDS = 30L;
 
+    /**
+     * 按任务 ID 串行化 start()，避免定时任务 10s 一轮与 start() 内 60s+ 轮询叠加导致同一任务并发启动、状态落库被覆盖或丢失。
+     */
+    private static final ConcurrentHashMap<Integer, Object> RT_START_LOCKS = new ConcurrentHashMap<>();
+
+    private static Object rtStartLock(Integer taskId) {
+        return RT_START_LOCKS.computeIfAbsent(taskId, k -> new Object());
+    }
+
+    /** 启动/调度失败落库最大重试次数（含首次） */
+    private static final int FAILURE_PERSIST_MAX_ATTEMPTS = 5;
+    /** 重试间隔（毫秒） */
+    private static final long FAILURE_PERSIST_RETRY_INTERVAL_MS = 200L;
+
     @Autowired
     private DictService dictService;
 
@@ -83,6 +108,25 @@ public class RealTimeTaskServiceImpl implements RealTimeTaskService {
 
     @Autowired
     private KafkaDataProperties kafkaDataProperties;
+
+    @Autowired
+    private RealtimeStatsRedisReader realtimeStatsRedisReader;
+
+    @Autowired
+    private StringRedisTemplate stringRedisTemplate;
+
+    @Autowired
+    private RtTableStatsMapper rtTableStatsMapper;
+
+    @Autowired
+    private RtSyncLogMapper rtSyncLogMapper;
+
+    /**
+     * 自注入：确保 {@link #updateTaskStatus} 的 REQUIRES_NEW 在同类调用中生效（避免 this 自调用导致事务切面失效）。
+     */
+    @Lazy
+    @Autowired
+    private RealTimeTaskService self;
 
     @Value("${realtime.config.heartbeat.enabled}")
     public Boolean heartbeatEnabled;
@@ -484,7 +528,7 @@ public class RealTimeTaskServiceImpl implements RealTimeTaskService {
         // 校验任务状态是否可启动
         ensureTaskStatusEditable(task.getStatus());
         // 仅更新为“启动中”，reason 由真正执行 start/stop 的结果来写入
-        updateTaskStatus(taskId, Constants.JOB_MANAGE_STATUS.STARTING, "", UserContext.getCurrentAccount(), "");
+        self.updateTaskStatus(taskId, Constants.JOB_MANAGE_STATUS.STARTING, "", UserContext.getCurrentAccount(), "");
     }
 
     /**
@@ -507,7 +551,7 @@ public class RealTimeTaskServiceImpl implements RealTimeTaskService {
             throw new BusinessException("当前任务状态无需停止!");
         }
         // 仅更新为“停止中”，reason 由真正执行 stop 的结果来写入
-        updateTaskStatus(taskId, Constants.JOB_MANAGE_STATUS.STOPPING, "", UserContext.getCurrentAccount(), "");
+        self.updateTaskStatus(taskId, Constants.JOB_MANAGE_STATUS.STOPPING, "", UserContext.getCurrentAccount(), "");
     }
 
     /**
@@ -517,31 +561,69 @@ public class RealTimeTaskServiceImpl implements RealTimeTaskService {
      */
     @Override
     public void start(Integer taskId) {
-        RtTask rtTask = getRtTaskByTaskId(taskId);
-        // 防止重复进入（双保险）
-        if (Constants.JOB_MANAGE_STATUS.RUNNING.equals(rtTask.getStatus())) return;
-
-        try {
-            // 长流程（Kafka Connect / 线程等）不应占用 Spring 事务连接
-            RealTimeDataSyncEngine syncEngine = new RealTimeDataSyncEngine(kafkaDataProperties.getBrokers(), kafkaDataProperties.getConnector());
-            DataSyncTask task = buildDataSyncTask(rtTask);
-
-            // 这里的 syncEngine.start 现在是阻塞的，直到真的运行成功或明确失败
-            RuntimeConfig runtimeConfig = syncEngine.start(task);
-            rtTask.setStatus(Constants.JOB_MANAGE_STATUS.RUNNING);
-            rtTask.setRuntimeConfig(JSONObject.toJSONString(runtimeConfig));
-        } catch (Exception e) {
-            log.error("", e);
-            rtTask.setStatus(Constants.JOB_MANAGE_STATUS.FAILURE);
-            String msg = e.getMessage();
-            if (StringUtils.isBlank(msg)) {
-                msg = e.toString();
+        if (taskId == null) {
+            return;
+        }
+        synchronized (rtStartLock(taskId)) {
+            RtTask rtTask = getRtTaskByTaskId(taskId);
+            // 仅处理「启动中」：调度器如此调用；持锁后再次读库，若上一轮已落库 FAILURE 则直接退出，避免并发 start 把状态冲掉
+            if (!Constants.JOB_MANAGE_STATUS.STARTING.equals(rtTask.getStatus())) {
+                log.debug("实时任务 start 跳过：库表状态非 STARTING，taskId={}, status={}", taskId, rtTask.getStatus());
+                return;
             }
-            rtTask.setReason("任务启动失败！原因：" + msg);
-        } finally {
-            rtTask.setUpdatedBy(Constants.SYS_OP_INFO.SYSTEM_ACCOUNT);
-            rtTask.setUpdatedTime(new Date());
-            updateTaskStatus(taskId, rtTask.getStatus(), rtTask.getReason(), Constants.SYS_OP_INFO.SYSTEM_ACCOUNT, rtTask.getRuntimeConfig());
+
+            try {
+                // 长流程（Kafka Connect / 线程等）不应占用 Spring 事务连接
+                RealTimeDataSyncEngine syncEngine = new RealTimeDataSyncEngine(kafkaDataProperties.getBrokers(), kafkaDataProperties.getConnector());
+                DataSyncTask task = buildDataSyncTask(rtTask);
+
+                // 这里的 syncEngine.start 现在是阻塞的，直到真的运行成功或明确失败
+                RuntimeConfig runtimeConfig = syncEngine.start(task);
+                rtTask.setStatus(Constants.JOB_MANAGE_STATUS.RUNNING);
+                rtTask.setRuntimeConfig(JSONObject.toJSONString(runtimeConfig));
+            } catch (Exception e) {
+                log.error("", e);
+                rtTask.setStatus(Constants.JOB_MANAGE_STATUS.FAILURE);
+                String msg = e.getMessage();
+                if (StringUtils.isBlank(msg)) {
+                    msg = e.toString();
+                }
+                rtTask.setReason("任务启动失败！原因：" + msg);
+            } finally {
+                try {
+                    rtTask.setUpdatedBy(Constants.SYS_OP_INFO.SYSTEM_ACCOUNT);
+                    rtTask.setUpdatedTime(new Date());
+                    if (Constants.JOB_MANAGE_STATUS.FAILURE.equals(rtTask.getStatus())) {
+                        // 先 XML 按主键更新（不校验 deleted），避免 MyBatis-Plus 条件更新 0 行导致长期卡在 STARTING
+                        try {
+                            int xmlRows = rtTaskMapper.updateTaskStatus(taskId, Constants.JOB_MANAGE_STATUS.FAILURE,
+                                    StringUtils.defaultString(rtTask.getReason()));
+                            log.info("实时任务启动失败，已 XML 直写 FAILURE，taskId={}, rows={}", taskId, xmlRows);
+                        } catch (Exception xmlEx) {
+                            log.error("实时任务启动失败 XML 直写异常，taskId={}", taskId, xmlEx);
+                        }
+                        persistFailureWithRetry(taskId, rtTask.getReason(), Constants.SYS_OP_INFO.SYSTEM_ACCOUNT,
+                                rtTask.getRuntimeConfig());
+                    } else {
+                        int rows = self.updateTaskStatus(taskId, rtTask.getStatus(),
+                                StringUtils.defaultString(rtTask.getReason()),
+                                Constants.SYS_OP_INFO.SYSTEM_ACCOUNT, rtTask.getRuntimeConfig());
+                        if (rows == 0) {
+                            log.error("实时任务启动成功但状态落库影响行数为0，taskId={}, status={}", taskId, rtTask.getStatus());
+                        }
+                    }
+                } catch (Exception finallyEx) {
+                    log.error("实时任务 start() finally 落库异常，taskId={}", taskId, finallyEx);
+                    if (Constants.JOB_MANAGE_STATUS.FAILURE.equals(rtTask.getStatus())) {
+                        try {
+                            rtTaskMapper.updateTaskStatus(taskId, Constants.JOB_MANAGE_STATUS.FAILURE,
+                                    StringUtils.defaultString(rtTask.getReason()));
+                        } catch (Exception ignore) {
+                            // ignore
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -583,7 +665,13 @@ public class RealTimeTaskServiceImpl implements RealTimeTaskService {
             rtTask.setReason("任务停止失败！原因：" + msg);
         } finally {
             // stop 可能由定时任务线程触发，此时 UserContext 为空；统一使用 SYSTEM 账户确保可落库
-            updateTaskStatus(taskId, rtTask.getStatus(), rtTask.getReason(), Constants.SYS_OP_INFO.SYSTEM_ACCOUNT, rtTask.getRuntimeConfig());
+            if (Constants.JOB_MANAGE_STATUS.FAILURE.equals(rtTask.getStatus())) {
+                persistFailureWithRetry(taskId, rtTask.getReason(), Constants.SYS_OP_INFO.SYSTEM_ACCOUNT,
+                        rtTask.getRuntimeConfig());
+            } else {
+                self.updateTaskStatus(taskId, rtTask.getStatus(), StringUtils.defaultString(rtTask.getReason()),
+                        Constants.SYS_OP_INFO.SYSTEM_ACCOUNT, rtTask.getRuntimeConfig());
+            }
             log.info("停止任务状态已落库，taskId={}, status={}", taskId, rtTask.getStatus());
         }
     }
@@ -594,7 +682,7 @@ public class RealTimeTaskServiceImpl implements RealTimeTaskService {
     @Override
     public void markFailedFromScheduler(Integer taskId, String reason) {
         String msg = StringUtils.defaultIfBlank(reason, "定时任务调度失败");
-        updateTaskStatus(taskId, Constants.JOB_MANAGE_STATUS.FAILURE, msg, Constants.SYS_OP_INFO.SYSTEM_ACCOUNT, null);
+        persistFailureWithRetry(taskId, msg, Constants.SYS_OP_INFO.SYSTEM_ACCOUNT, null);
     }
 
     /**
@@ -712,10 +800,10 @@ public class RealTimeTaskServiceImpl implements RealTimeTaskService {
      */
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = Exception.class)
-    public void updateTaskStatus(Integer taskId, String newStatus, String reason,
-                                 String operator, String runtimeConfig) {
+    public int updateTaskStatus(Integer taskId, String newStatus, String reason,
+                                String operator, String runtimeConfig) {
         if (taskId == null || StringUtils.isEmpty(newStatus)) {
-            return; // 或抛出异常
+            return 0;
         }
 
         RtTask rtTask = new RtTask();
@@ -741,7 +829,155 @@ public class RealTimeTaskServiceImpl implements RealTimeTaskService {
         updateWrapper.eq("id", taskId)
                 .eq("deleted", Constants.DELETE_FLAG.FALSE);
 
-        rtTaskMapper.update(rtTask, updateWrapper);
+        return rtTaskMapper.update(rtTask, updateWrapper);
+    }
+
+    /**
+     * 失败状态强制落库：通过代理调用 {@link #updateTaskStatus}（REQUIRES_NEW）并多次重试；仍失败则用 Mapper XML 按主键兜底更新（不校验 deleted）。
+     */
+    private void persistFailureWithRetry(Integer taskId, String reason, String operator, String runtimeConfig) {
+        String op = StringUtils.defaultIfBlank(operator, Constants.SYS_OP_INFO.SYSTEM_ACCOUNT);
+        String r = StringUtils.defaultString(reason);
+        for (int attempt = 1; attempt <= FAILURE_PERSIST_MAX_ATTEMPTS; attempt++) {
+            try {
+                int rows = self.updateTaskStatus(taskId, Constants.JOB_MANAGE_STATUS.FAILURE, r, op, runtimeConfig);
+                if (rows > 0) {
+                    log.info("实时任务失败状态已落库，taskId={}, attempt={}", taskId, attempt);
+                    return;
+                }
+                log.warn("实时任务失败状态落库影响行数为0，将重试，taskId={}, attempt={}", taskId, attempt);
+            } catch (Exception e) {
+                log.error("实时任务失败状态落库异常，将重试，taskId={}, attempt={}", taskId, attempt, e);
+            }
+            sleepQuietlyBeforeRetry(attempt);
+        }
+        fallbackXmlFailureUpdate(taskId, r);
+    }
+
+    private void sleepQuietlyBeforeRetry(int attemptSoFar) {
+        if (attemptSoFar >= FAILURE_PERSIST_MAX_ATTEMPTS) {
+            return;
+        }
+        try {
+            Thread.sleep(FAILURE_PERSIST_RETRY_INTERVAL_MS);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    }
+
+    private void fallbackXmlFailureUpdate(Integer taskId, String reason) {
+        try {
+            int rows = rtTaskMapper.updateTaskStatus(taskId, Constants.JOB_MANAGE_STATUS.FAILURE, reason);
+            if (rows > 0) {
+                log.warn("实时任务失败状态已通过 XML 兜底（按 id）落库，taskId={}", taskId);
+            } else {
+                log.error("实时任务失败状态兜底仍失败（无匹配行），taskId={}", taskId);
+            }
+        } catch (Exception e) {
+            log.error("实时任务失败状态兜底仍异常，taskId={}", taskId, e);
+        }
+    }
+
+    /**
+     * 获取实时数据同步任务累计统计
+     */
+    @Override
+    public Map<String, Object> getCumulativeStats(Integer taskId, Integer tableMapperId) {
+        Map<String, Object> fromRedis = realtimeStatsRedisReader.getCumulativeStats(taskId, tableMapperId);
+        if (fromRedis != null && !fromRedis.isEmpty()) {
+            return fromRedis;
+        }
+        return loadCumulativeStatsFromDb(taskId, tableMapperId);
+    }
+
+    /**
+     * 获取实时数据同步任务按小时统计
+     */
+    @Override
+    public Map<String, Long> getHourlyStats(Integer taskId, Integer tableMapperId, int syncDate, int syncHour) {
+        if (taskId == null || tableMapperId == null) {
+            return emptyHourlyStatsMap();
+        }
+        String key = RealtimeStatsRedisWriter.buildLogKey(taskId, tableMapperId, syncDate, syncHour);
+        try {
+            if (stringRedisTemplate.hasKey(key)) {
+                return realtimeStatsRedisReader.getHourlyStats(taskId, tableMapperId, syncDate, syncHour);
+            }
+        } catch (Exception e) {
+            log.warn("按小时统计读 Redis 失败，将尝试读库, taskId={}, tableMapperId={}", taskId, tableMapperId, e);
+        }
+        return loadHourlyStatsFromDb(taskId, tableMapperId, syncDate, syncHour);
+    }
+
+    /**
+     * 与 {@link com.pufferfishscheduler.cdc.kafka.RealtimeStatsRedisSyncJob} 写入的 rt_table_stats 对齐。
+     */
+    private Map<String, Object> loadCumulativeStatsFromDb(Integer taskId, Integer tableMapperId) {
+        Map<String, Object> out = new HashMap<>();
+        if (taskId == null || tableMapperId == null) {
+            return out;
+        }
+        try {
+            RtTableStats stats = rtTableStatsMapper.selectByTableMapperId(tableMapperId);
+            if (stats == null) {
+                return out;
+            }
+            if (stats.getTaskId() != null && !stats.getTaskId().equals(taskId)) {
+                log.warn("rt_table_stats.task_id 与请求 taskId 不一致，忽略库表记录, taskId={}, dbTaskId={}, tableMapperId={}",
+                        taskId, stats.getTaskId(), tableMapperId);
+                return out;
+            }
+            out.put("last_idv", defaultLong(stats.getLastIdv()));
+            out.put("last_udv", defaultLong(stats.getLastUdv()));
+            out.put("last_ddv", defaultLong(stats.getLastDdv()));
+            out.put("today_idv", defaultLong(stats.getTodayIdv()));
+            out.put("today_udv", defaultLong(stats.getTodayUdv()));
+            out.put("today_ddv", defaultLong(stats.getTodayDdv()));
+            if (stats.getUpdatedTime() != null) {
+                out.put("updated_at", DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(
+                        LocalDateTime.ofInstant(stats.getUpdatedTime().toInstant(), ZoneId.systemDefault())));
+            }
+        } catch (Exception e) {
+            log.warn("从 rt_table_stats 读取累计统计失败, taskId={}, tableMapperId={}", taskId, tableMapperId, e);
+        }
+        return out;
+    }
+
+    /**
+     * 与 {@link com.pufferfishscheduler.cdc.kafka.RealtimeStatsRedisSyncJob} 写入的 rt_sync_log 对齐。
+     */
+    private Map<String, Long> loadHourlyStatsFromDb(Integer taskId, Integer tableMapperId, int syncDate, int syncHour) {
+        Map<String, Long> out = emptyHourlyStatsMap();
+        try {
+            LambdaQueryWrapper<RtSyncLog> q = new LambdaQueryWrapper<>();
+            q.eq(RtSyncLog::getTaskId, taskId)
+                    .eq(RtSyncLog::getTableMapperId, tableMapperId)
+                    .eq(RtSyncLog::getSyncDate, syncDate)
+                    .eq(RtSyncLog::getSyncHour, syncHour);
+            RtSyncLog row = rtSyncLogMapper.selectOne(q);
+            if (row == null) {
+                return out;
+            }
+            out.put("insert_data_volume", defaultLong(row.getInsertDataVolume()));
+            out.put("update_data_volume", defaultLong(row.getUpdateDataVolume()));
+            out.put("delete_data_volume", defaultLong(row.getDeleteDataVolume()));
+        } catch (Exception e) {
+            log.warn("从 rt_sync_log 读取按小时统计失败, taskId={}, tableMapperId={}, date={}, hour={}",
+                    taskId, tableMapperId, syncDate, syncHour, e);
+        }
+        return out;
+    }
+
+    private static Map<String, Long> emptyHourlyStatsMap() {
+        Map<String, Long> m = new HashMap<>(3);
+        m.put("insert_data_volume", 0L);
+        m.put("update_data_volume", 0L);
+        m.put("delete_data_volume", 0L);
+        return m;
+    }
+
+    private static long defaultLong(Long v) {
+        return v == null ? 0L : v;
     }
 
     /**

@@ -236,7 +236,12 @@ kafka:
 scheduler:
   # 元数据定时调度
   metadata:
-    scan-interval-ms: 10000      # Master 扫描频率
+    scan-interval-ms: 10000     # Master 扫描频率
+    trigger-window-ms: 60000    # 触发窗口（<=1分钟内）
+    stuck-threshold-ms: 300000  # Worker 异常导致 RUNNING/STARTING 长时间不回落时，Master 允许抢占恢复
+  # 元数据定时调度
+  trans:
+    scan-interval-ms: 10000     # Master 扫描频率
     trigger-window-ms: 60000    # 触发窗口（<=1分钟内）
     stuck-threshold-ms: 300000  # Worker 异常导致 RUNNING/STARTING 长时间不回落时，Master 允许抢占恢复
 

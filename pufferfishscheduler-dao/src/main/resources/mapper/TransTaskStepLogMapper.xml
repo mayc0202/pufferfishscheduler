@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.pufferfishscheduler.dao.mapper.TransTaskStepLogMapper">
+
+    <resultMap id="BaseResultMap" type="com.pufferfishscheduler.dao.entity.TransTaskStepLog">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="task_log_id" jdbcType="VARCHAR" property="taskLogId"/>
+        <result column="step_name" jdbcType="VARCHAR" property="stepName"/>
+        <result column="status" jdbcType="CHAR" property="status"/>
+        <result column="reason" jdbcType="LONGVARCHAR" property="reason"/>
+        <result column="lines_read" jdbcType="BIGINT" property="linesRead"/>
+        <result column="lines_written" jdbcType="BIGINT" property="linesWritten"/>
+        <result column="lines_updated" jdbcType="BIGINT" property="linesUpdated"/>
+        <result column="lines_input" jdbcType="BIGINT" property="linesInput"/>
+        <result column="lines_output" jdbcType="BIGINT" property="linesOutput"/>
+        <result column="lines_rejected" jdbcType="BIGINT" property="linesRejected"/>
+        <result column="lines_errors" jdbcType="BIGINT" property="linesErrors"/>
+        <result column="start_time" jdbcType="TIMESTAMP" property="startTime"/>
+        <result column="end_time" jdbcType="TIMESTAMP" property="endTime"/>
+        <result column="created_by" jdbcType="VARCHAR" property="createdBy"/>
+        <result column="created_time" jdbcType="TIMESTAMP" property="createdTime"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id
+        , task_log_id, step_name, status, reason, lines_read, lines_written, lines_updated,
+        lines_input, lines_output, lines_rejected, lines_errors, start_time, end_time, created_by, created_time
+    </sql>
+
+    <insert id="insertBatch" parameterType="list" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO task_step_log (
+        task_log_id,
+        step_name,
+        status,
+        reason,
+        lines_read,
+        lines_written,
+        lines_updated,
+        lines_input,
+        lines_output,
+        lines_rejected,
+        lines_errors,
+        start_time,
+        end_time,
+        created_by,
+        created_time
+        ) VALUES
+        <foreach collection="list" item="item" separator=",">
+            (
+            #{item.taskLogId},
+            #{item.stepName},
+            #{item.status},
+            #{item.reason},
+            #{item.linesRead},
+            #{item.linesWritten},
+            #{item.linesUpdated},
+            #{item.linesInput},
+            #{item.linesOutput},
+            #{item.linesRejected},
+            #{item.linesErrors},
+            #{item.startTime},
+            #{item.endTime},
+            #{item.createdBy},
+            #{item.createdTime}
+            )
+        </foreach>
+    </insert>
+
+</mapper>

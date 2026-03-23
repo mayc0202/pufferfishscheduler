@@ -29,26 +29,6 @@
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
 
-        <!-- pufferfishscheduler-common -->
-        <dependency>
-            <groupId>com.pufferfishscheduler.common</groupId>
-            <artifactId>pufferfishscheduler-common</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.pufferfishscheduler.domain</groupId>
-                    <artifactId>pufferfishscheduler-domain</artifactId>
-                </exclusion>
-            </exclusions>
-            <version>1.0.0</version>
-        </dependency>
-
-        <!-- pufferfishscheduler-dao -->
-        <dependency>
-            <groupId>com.pufferfishscheduler.dao</groupId>
-            <artifactId>pufferfishscheduler-dao</artifactId>
-            <version>1.0.0</version>
-        </dependency>
-
         <!-- pufferfishscheduler-api -->
         <dependency>
             <groupId>com.pufferfishscheduler</groupId>
@@ -62,15 +42,17 @@
             <version>1.0-SNAPSHOT</version>
         </dependency>
 
+        <!-- pufferfishscheduler-cdc -->
+        <dependency>
+            <groupId>com.pufferfishscheduler.cdc</groupId>
+            <artifactId>pufferfishscheduler-cdc</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+
         <!-- springboot -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-mail</artifactId>
         </dependency>
 
         <dependency>
@@ -95,12 +77,6 @@
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
-        </dependency>
-
-        <!-- redis -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-redis</artifactId>
         </dependency>
 
         <!-- Dubbo -->
@@ -164,17 +140,6 @@
             <artifactId>kettle-dbdialog</artifactId>
         </dependency>
 
-        <!-- Kafka 客户端 -->
-        <dependency>
-            <groupId>org.apache.kafka</groupId>
-            <artifactId>kafka-clients</artifactId>
-        </dependency>
-
-        <!-- Kafka Connect 客户端 -->
-        <dependency>
-            <groupId>org.sourcelab</groupId>
-            <artifactId>kafka-connect-client</artifactId>
-        </dependency>
     </dependencies>
 
     <build>
@@ -184,6 +149,7 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
                     <mainClass>com.pufferfishscheduler.master.MasterApplication</mainClass>
+                    <jvmArguments>--add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.lang.reflect=ALL-UNNAMED</jvmArguments>
                 </configuration>
                 <executions>
                     <execution>

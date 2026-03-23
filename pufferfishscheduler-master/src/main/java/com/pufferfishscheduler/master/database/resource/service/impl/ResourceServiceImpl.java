@@ -86,7 +86,7 @@ public class ResourceServiceImpl implements ResourceService {
 
         try {
             // 指定FTP操作区域
-            path = ftpPath + Constants.FILE_SEPARATOR + handleBuiltInDirectory(path);
+            path = ftpPath + handleBuiltInDirectory(path);
 
             if (Constants.FTP_TYPE.FTP.equals(database.getType())) {
                 resultList = handleFtpList(database, path, name);
@@ -639,9 +639,13 @@ public class ResourceServiceImpl implements ResourceService {
 
             ftpManager.setMode(properties.containsKey(Constants.FTP_PROPERTIES.MODE) ?
                     properties.getString(Constants.FTP_PROPERTIES.MODE) : Constants.MODE_TYPE.PASSIVE);
-            ftpManager.setControlEncoding(properties.containsKey(Constants.FTP_PROPERTIES.CONTROL_ENCODING) ?
+            String enc = properties.containsKey(Constants.FTP_PROPERTIES.CONTROL_ENCODING) ?
                     dictService.getDictItemCode(Constants.DICT.CONTROL_ENCODING, properties.getString(Constants.FTP_PROPERTIES.CONTROL_ENCODING))
-                    : Constants.CONTROL_ENCODING);
+                    : Constants.CONTROL_ENCODING;
+            ftpManager.setControlEncoding(StringUtils.isNotBlank(enc) ? enc : Constants.CONTROL_ENCODING);
+        } else {
+            ftpManager.setMode(Constants.MODE_TYPE.PASSIVE);
+            ftpManager.setControlEncoding(Constants.CONTROL_ENCODING);
         }
 
         return ftpManager;
@@ -668,8 +672,12 @@ public class ResourceServiceImpl implements ResourceService {
 
             ftpsManager.setMode(properties.containsKey(Constants.FTP_PROPERTIES.MODE) ?
                     properties.getString(Constants.FTP_PROPERTIES.MODE) : Constants.MODE_TYPE.PASSIVE);
-            ftpsManager.setControlEncoding(properties.containsKey(Constants.FTP_PROPERTIES.CONTROL_ENCODING) ?
-                    properties.getString(Constants.FTP_PROPERTIES.CONTROL_ENCODING) : Constants.CONTROL_ENCODING);
+            String ftpsEnc = properties.containsKey(Constants.FTP_PROPERTIES.CONTROL_ENCODING) ?
+                    properties.getString(Constants.FTP_PROPERTIES.CONTROL_ENCODING) : Constants.CONTROL_ENCODING;
+            ftpsManager.setControlEncoding(StringUtils.isNotBlank(ftpsEnc) ? ftpsEnc : Constants.CONTROL_ENCODING);
+        } else {
+            ftpsManager.setMode(Constants.MODE_TYPE.PASSIVE);
+            ftpsManager.setControlEncoding(Constants.CONTROL_ENCODING);
         }
 
         return ftpsManager;

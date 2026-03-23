@@ -1,6 +1,8 @@
 package com.pufferfishscheduler.master.collect.trans.engine;
 
+import com.pufferfishscheduler.dao.mapper.TransComponentMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -14,10 +16,14 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class SprintDataTransEngineConfiguration {
 
+	@Autowired
+	private TransComponentMapper transComponentMapper;
+
 	@Bean
 	public DataTransEngine dataEngine() {
 
 		DataTransEngine dataEngine = new DataTransEngine();
+		dataEngine.setTransComponentMapper(transComponentMapper);
 
 		new Thread(new Runnable() {
 			@Override

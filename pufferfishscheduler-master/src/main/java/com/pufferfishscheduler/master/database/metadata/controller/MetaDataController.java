@@ -96,7 +96,7 @@ public class MetaDataController {
      * @return
      */
     @Operation(summary = "编辑元数据同步任务")
-    @PostMapping("/update.do")
+    @PutMapping("/update.do")
     public ApiResponse update(@RequestBody MetadataTaskUpdateForm taskForm) {
         metaDataService.update(taskForm);
         return ApiResponse.success("元数据任务编辑成功!");
@@ -109,7 +109,7 @@ public class MetaDataController {
      * @return
      */
     @Operation(summary = "切换启用状态")
-    @GetMapping("/toggleEnableStatus.do")
+    @PutMapping("/toggleEnableStatus.do")
     public ApiResponse toggleEnableStatus(@RequestParam Integer id) {
         metaDataService.toggleEnableStatus(id);
         return ApiResponse.success("元数据任务切换启用状态成功");
@@ -122,7 +122,7 @@ public class MetaDataController {
      * @return
      */
     @Operation(summary = "删除同步任务")
-    @GetMapping("/delete.do")
+    @PutMapping("/delete.do")
     public ApiResponse delete(@RequestParam Integer id) {
         metaDataService.delete(id);
         return ApiResponse.success("元数据任务删除成功");
