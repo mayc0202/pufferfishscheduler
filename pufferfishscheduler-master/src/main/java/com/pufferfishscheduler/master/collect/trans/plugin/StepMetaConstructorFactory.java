@@ -2,6 +2,8 @@ package com.pufferfishscheduler.master.collect.trans.plugin;
 
 import com.pufferfishscheduler.common.constants.Constants;
 import com.pufferfishscheduler.common.exception.BusinessException;
+import com.pufferfishscheduler.master.collect.trans.plugin.constructor.DataCleanConstructor;
+import com.pufferfishscheduler.master.collect.trans.plugin.constructor.JavaCodeConstructor;
 import com.pufferfishscheduler.master.collect.trans.plugin.constructor.TableInputConstructor;
 import com.pufferfishscheduler.master.collect.trans.plugin.constructor.TableOutputConstructor;
 
@@ -29,8 +31,8 @@ public class StepMetaConstructorFactory {
             //     return new GenerateTestDataConstructor();
             // case Constants.StepMetaType.EXECUTE_SQL_SCRIPT:
             //     return new ExecuteSqlConstructor();
-            // case Constants.StepMetaType.JAVA_CODE:
-            //     return new JavaCodeConstructor();
+             case Constants.StepMetaType.JAVA_CODE:
+                 return new JavaCodeConstructor();
             // case Constants.StepMetaType.GET_VARIABLES:
             //     return new GetVariablesConstructor();
             // case Constants.StepMetaType.SET_VARIABLES:
@@ -83,8 +85,8 @@ public class StepMetaConstructorFactory {
             //     return new GroupByConstructor();
             // case Constants.StepMetaType.FILTER:
             //     return new FilterConstructor();
-            // case Constants.StepMetaType.DATA_CLEAN:
-            //     return new DataCleanConstructor();
+             case Constants.StepMetaType.DATA_CLEAN:
+                 return new DataCleanConstructor();
             // case Constants.StepMetaType.STARROCKS_OUTPUT:
             //     return new StarRocksOutputConstructor();
             // case Constants.StepMetaType.DEBEZIUM_JSON:

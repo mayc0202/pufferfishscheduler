@@ -23,6 +23,18 @@ spring:
     allow-circular-references: true # 开启循环依赖
   application:
     name: pufferfishscheduler
+  autoconfigure:
+    # 排除所有Spring AI和阿里云灵积的自动配置类（即使依赖存在也不加载）
+    exclude:
+      - com.alibaba.cloud.ai.autoconfigure.dashscope.DashScopeAutoConfiguration
+      - com.alibaba.cloud.ai.autoconfigure.dashscope.DashScopeAgentAutoConfiguration
+      - com.alibaba.cloud.ai.autoconfigure.dashscope.DashScopeAudioSpeechAutoConfiguration
+      - com.alibaba.cloud.ai.autoconfigure.dashscope.DashScopeAudioTranscriptionAutoConfiguration
+      - com.alibaba.cloud.ai.autoconfigure.dashscope.DashScopeChatAutoConfiguration
+      - com.alibaba.cloud.ai.autoconfigure.dashscope.DashScopeEmbeddingAutoConfiguration
+      - com.alibaba.cloud.ai.autoconfigure.dashscope.DashScopeImageAutoConfiguration
+      - com.alibaba.cloud.ai.autoconfigure.dashscope.DashScopeRerankAutoConfiguration
+      - com.alibaba.cloud.ai.autoconfigure.dashscope.DashScopeVideoAutoConfiguration
   # Springdoc OpenAPI 配置
   doc:
     api-docs:
@@ -203,7 +215,7 @@ security:
   interceptor:
     # 开启拦截
     enabled: true
-    # 拦截路径
+    # 排除拦截路径
     exclude-paths:
       - /auth/login.do
       - /auth/getAuth.do
@@ -216,10 +228,18 @@ security:
       - /swagger-resources
       - /webjars/**
       - /doc.html
+      - /api/**
 
 # 资源根路径
 ftp:
   path: /data/ftp
+
+# 插件配置
+plugin:
+  # master服务的API地址
+  apiUrl: http://localhost:8081/pufferfishscheduler/api
+  # 获取规则信息
+  getRuleInformation: /rule/getRuleInformation.do
 
 # Kafka 任务调度（方案B：Master->Kafka->Worker）
 kafka:
@@ -248,5 +268,9 @@ scheduler:
 # Worker Kafka 消费组（只影响 Worker）
 worker-dispatch-consumer:
   group-id: pufferfishscheduler-worker-dispatch
+
+# 清晰转换规则固定分类ID，逗号分隔
+regular:
+  groupId: 1,2,3,4,5,6
 
 

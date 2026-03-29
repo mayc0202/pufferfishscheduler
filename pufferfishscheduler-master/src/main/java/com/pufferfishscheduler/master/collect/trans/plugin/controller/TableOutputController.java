@@ -21,7 +21,7 @@ import jakarta.validation.Valid;
  * 
  * @author mayc
  */
-@Tag(name = OpenApiTags.TABLE_OUTPUT_PLUGIN, description = OpenApiTags.TABLE_OUTPUT_PLUGIN_DESC)
+@Tag(name = OpenApiTags.TRANS_FLOW_COMPONENT, description = OpenApiTags.TRANS_FLOW_COMPONENT_DESC)
 @Validated
 @RestController
 @RequestMapping("/plugin/tableOutput")

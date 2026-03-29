@@ -66,7 +66,10 @@ public class DataTransEngine {
      */
     public static final String DEFAULT_BATCHID_NAME = "执行转换批次号。【系统内置参数】";
     /**
-     * 默认插件目录
+     * 默认插件目录（Kettle KETTLE_PLUGIN_BASE_FOLDERS 的基础目录）
+     * StepPluginType 内部调用 populateFolders("steps")，会在此基础上追加 "/steps" 后扫描 plugin.xml。
+     * 因此这里填 "plugins"，Kettle 实际扫描的是 classpath:plugins/steps/，
+     * antrun 也正是把插件解压到 plugins/steps/pfs-dataclean-plugin-1.0.0/ 下。
      */
     public static final String DEFAULT_PLUGIN_DIR = "plugins";
     /**
@@ -147,10 +150,8 @@ public class DataTransEngine {
         if (StringUtils.isNotEmpty(dtDesignerPluginsDir)) {
             return dtDesignerPluginsDir;
         }
-        String configuredBaseFolders = System.getProperty("KETTLE_PLUGIN_BASE_FOLDERS");
-        if (StringUtils.isNotBlank(configuredBaseFolders)) {
-            return configuredBaseFolders;
-        }
+        // 关键：不要复用外部注入的 KETTLE_PLUGIN_BASE_FOLDERS，否则可能指向一个不包含自研插件的目录，
+        // 最终运行期表现为 plugin missing。这里统一走应用自带的 classpath plugins 目录。
         return getDefaultPluginsDir();
     }
 
@@ -320,12 +321,13 @@ public class DataTransEngine {
         String stage = transFlow.getStage();
         Integer id = transFlow.getId();
 
+        TransWrapper trans = null;
         try {
             // 加载转换元数据
             TransMeta transMeta = loadTransMeta(stage, id);
 
             // 创建转换
-            TransWrapper trans = createTransWrapper(transMeta);
+            trans = createTransWrapper(transMeta);
 
             // 设置转换执行参数
             params = setParamsOfTrans(trans, params);
@@ -342,8 +344,29 @@ public class DataTransEngine {
 
             return trans;
         } catch (Exception e) {
-            throw new DataTransformationEngineException(
-                    e.getMessage().replaceAll("(\r\n|\r|\n|\n\r)", "<br/>"));
+            // 关键：保留原始 cause，否则只能看到“无法初始化至少一个步骤”而无法定位具体步骤/原因
+            String rawMessage = e.getMessage();
+            if (StringUtils.isBlank(rawMessage)) {
+                rawMessage = e.toString();
+            }
+
+            StringBuilder sb = new StringBuilder();
+            sb.append(rawMessage);
+            sb.append("<br/><br/>[exception]=").append(e.getClass().getName());
+            if (e.getCause() != null) {
+                sb.append("<br/>[cause]=").append(e.getCause().getClass().getName())
+                  .append(" : ").append(e.getCause().getMessage());
+            }
+
+            // 尝试附带转换名称与日志通道，方便直接去 Kettle 日志里定位
+            if (trans != null) {
+                sb.append("<br/>[trans]=").append(trans.getName());
+                sb.append("<br/>[logChannelId]=").append(trans.getLogChannelId());
+            }
+
+            String htmlMessage = sb.toString().replaceAll("(\r\n|\r|\n|\n\r)", "<br/>");
+            log.error("执行转换失败：stage={}, id={}", stage, id, e);
+            throw new DataTransformationEngineException(htmlMessage, e);
         }
     }
 

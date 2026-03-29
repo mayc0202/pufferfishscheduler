@@ -25,8 +25,6 @@ public class StepContext {
 
     private String url;
 
-    private String apiKey;
-
     private String rootPath;
 
     private String workDir;

@@ -1,7 +1,7 @@
 package com.pufferfishscheduler.ai.agent.api;
 
 import com.pufferfishscheduler.ai.agent.service.AgentService;
-import com.pufferfishscheduler.ai.agent.service.KnowledgeBaseService;
+import com.pufferfishscheduler.ai.knowledge.KnowledgeBaseService;
 import com.pufferfishscheduler.api.ai.AgentServiceApi;
 import com.pufferfishscheduler.domain.wrapper.SerializableFluxWrapper;
 import lombok.AllArgsConstructor;

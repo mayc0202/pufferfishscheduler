@@ -233,10 +233,10 @@ public class MetadataServiceImpl implements MetadataService {
      */
     private void fillDictText(MetadataTaskVo vo) {
         vo.setStatusTxt(dictService.getDictItemValue(Constants.DICT.JOB_MANAGE_STATUS, vo.getStatus()));
-        vo.setEnableTxt(dictService.getDictItemCode(Constants.DICT.ENABLE,
+        vo.setEnableTxt(dictService.getDictItemValue(Constants.DICT.ENABLE,
                 vo.getEnable() != null ? vo.getEnable().toString() : null));
-        vo.setNotifyPolicyTxt(dictService.getDictItemCode(Constants.DICT.NOTIFY_POLICY, vo.getNotifyPolicy()));
-        vo.setFailurePolicyTxt(dictService.getDictItemCode(Constants.DICT.FAILURE_POLICY, vo.getFailurePolicy()));
+        vo.setNotifyPolicyTxt(dictService.getDictItemValue(Constants.DICT.NOTIFY_POLICY, vo.getNotifyPolicy()));
+        vo.setFailurePolicyTxt(dictService.getDictItemValue(Constants.DICT.FAILURE_POLICY, vo.getFailurePolicy()));
         vo.setExecuteTimeTxt(DateUtil.formatDateTime(vo.getExecuteTime()));
         vo.setCreatedTimeTxt(DateUtil.formatDateTime(vo.getCreatedTime()));
     }

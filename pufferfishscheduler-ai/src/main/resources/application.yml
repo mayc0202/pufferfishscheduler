@@ -57,7 +57,6 @@ spring:
     dashscope:
       # 读取超时（毫秒）
       read-timeout: 60000
-      #      api-key: ${AI_DASHSCOPE_API_KEY} # 环境变量里配置的app-key
       api-key: sk-e8657a7c1ff84c80b3080735858c2621
       chat:
         enabled: true # 如果不使用聊天功能可以关闭
@@ -141,3 +140,14 @@ logging:
     org.apache.dubbo: DEBUG
   pattern:
     console: "%d %clr(%5p) ---- [%t] %clr(%-40.40c){cyan} : %m %n"
+
+# 知识库附件FTP配置
+knowledge:
+  ftp:
+    host: 81.69.250.183
+    port: 6677
+    username: ftpuser
+    password: Etl2025
+    base-path: /data/ftp/knowledge
+    passive-mode: true
+    control-encoding: UTF-8

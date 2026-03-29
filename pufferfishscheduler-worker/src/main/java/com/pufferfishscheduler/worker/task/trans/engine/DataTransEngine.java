@@ -220,10 +220,11 @@ public class DataTransEngine {
      * @return 插件目录路径
      */
     private String getPluginsDir() {
-        if (StringUtils.isEmpty(dtDesignerPluginsDir)) {
-            return getDefaultPluginsDir();
+        if (StringUtils.isNotEmpty(dtDesignerPluginsDir)) {
+            return dtDesignerPluginsDir;
         }
-        return dtDesignerPluginsDir;
+        // 与 master 保持一致：强制使用应用自带 classpath plugins，避免外部目录缺插件导致 plugin missing
+        return getDefaultPluginsDir();
     }
 
     /**

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.pufferfishscheduler.dao.mapper.KbDocumentMapper">
+    <resultMap id="BaseResultMap" type="com.pufferfishscheduler.dao.entity.KbDocument">
+        <id column="id" jdbcType="VARCHAR" property="id"/>
+        <result column="title" jdbcType="VARCHAR" property="title"/>
+        <result column="category_id" jdbcType="INTEGER" property="categoryId"/>
+        <result column="status" jdbcType="TINYINT" property="status"/>
+        <result column="content" jdbcType="LONGVARCHAR" property="content"/>
+        <result column="tags_json" jdbcType="VARCHAR" property="tagsJson"/>
+        <result column="has_attachment" jdbcType="TINYINT" property="hasAttachment"/>
+        <result column="chunk_status" jdbcType="TINYINT" property="chunkStatus"/>
+        <result column="chunk_count" jdbcType="INTEGER" property="chunkCount"/>
+        <result column="vector_namespace" jdbcType="VARCHAR" property="vectorNamespace"/>
+        <result column="deleted" jdbcType="BOOLEAN" property="deleted"/>
+        <result column="created_by" jdbcType="VARCHAR" property="createdBy"/>
+        <result column="created_time" jdbcType="TIMESTAMP" property="createdTime"/>
+        <result column="updated_by" jdbcType="VARCHAR" property="updatedBy"/>
+        <result column="updated_time" jdbcType="TIMESTAMP" property="updatedTime"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, title, category_id, `status`, content, tags_json, has_attachment, chunk_status,
+        chunk_count, vector_namespace, deleted, created_by, created_time, updated_by, updated_time
+    </sql>
+</mapper>

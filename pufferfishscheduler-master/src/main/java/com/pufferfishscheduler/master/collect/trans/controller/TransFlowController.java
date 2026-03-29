@@ -1,5 +1,6 @@
 package com.pufferfishscheduler.master.collect.trans.controller;
 
+import com.pufferfishscheduler.domain.form.collect.FieldStreamForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -148,19 +149,13 @@ public class TransFlowController {
     /**
      * 获取转换流字段流
      *
-     * @param flowId 转换流id
-     * @param config 转换流配置
-     * @param stepName 转换流步骤名称
-     * @param type 字段类型
+     * @param form
      * @return 字段流
      */
     @Operation(summary = "获取转换流字段流")
-    @GetMapping(value = "/getFieldStream.do")
-    public ApiResponse getFieldStream(@RequestParam Integer flowId,
-            @RequestParam String config,
-            @RequestParam String stepName,
-            @RequestParam Integer type) {
-        return ApiResponse.success(flowService.getFieldStream(flowId, config, stepName, type));
+    @PostMapping(value = "/getFieldStream.do")
+    public ApiResponse getFieldStream(@RequestBody @Valid FieldStreamForm form) {
+        return ApiResponse.success(flowService.getFieldStream(form.getFlowId(), form.getConfig(), form.getStepName(), null));
     }
 
     /**

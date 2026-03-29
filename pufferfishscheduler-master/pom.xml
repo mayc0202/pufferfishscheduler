@@ -128,28 +128,133 @@
         <dependency>
             <groupId>pentaho-kettle</groupId>
             <artifactId>kettle-core</artifactId>
+            <exclusions>
+                <!-- 避免 Kettle 传递较老 POI/XMLBeans 与 EasyExcel/POI 版本混用 -->
+                <exclusion>
+                    <groupId>org.apache.poi</groupId>
+                    <artifactId>poi</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.poi</groupId>
+                    <artifactId>poi-ooxml</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.poi</groupId>
+                    <artifactId>poi-ooxml-schemas</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.xmlbeans</groupId>
+                    <artifactId>xmlbeans</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
             <groupId>pentaho-kettle</groupId>
             <artifactId>kettle-engine</artifactId>
+            <exclusions>
+                <!-- 避免 Kettle 传递较老 POI/XMLBeans 与 EasyExcel/POI 版本混用 -->
+                <exclusion>
+                    <groupId>org.apache.poi</groupId>
+                    <artifactId>poi</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.poi</groupId>
+                    <artifactId>poi-ooxml</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.poi</groupId>
+                    <artifactId>poi-ooxml-schemas</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.xmlbeans</groupId>
+                    <artifactId>xmlbeans</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
             <groupId>pentaho-kettle</groupId>
             <artifactId>kettle-dbdialog</artifactId>
+            <exclusions>
+                <!-- 避免 Kettle 传递较老 POI/XMLBeans 与 EasyExcel/POI 版本混用 -->
+                <exclusion>
+                    <groupId>org.apache.poi</groupId>
+                    <artifactId>poi</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.poi</groupId>
+                    <artifactId>poi-ooxml</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.poi</groupId>
+                    <artifactId>poi-ooxml-schemas</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.xmlbeans</groupId>
+                    <artifactId>xmlbeans</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <!-- 数据清洗插件：
+             1) 作为 master 依赖用于构建流程配置时实例化 StepMeta
+             2) 运行时仍通过解压分发包到 plugins/steps 供 Kettle 扫描 -->
+        <dependency>
+            <groupId>com.pufferfishscheduler.plugin</groupId>
+            <artifactId>pfs-dataclean-plugin</artifactId>
+            <version>1.0.0</version>
         </dependency>
 
     </dependencies>
 
     <build>
+        <!-- plugins/pfs-dataclean-plugin-1.0.0/** 由下方 antrun 在 process-resources 阶段
+             直接从源码目录复制到 plugins/steps/，不走标准 resources 阶段，
+             避免这些 JAR 被打进 Spring Boot fat-WAR 的 WEB-INF/classes -->
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <excludes>
+                    <exclude>plugins/pfs-dataclean-plugin-1.0.0/**</exclude>
+                </excludes>
+            </resource>
+        </resources>
         <plugins>
+            <!-- 将数据清洗插件从源码目录直接复制到 classpath 的 plugins/steps/ 供 Kettle 扫描
+                 阶段：process-resources（早于 compile），mvn compile 即可触发 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-dataclean-plugin</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <mkdir dir="${project.build.outputDirectory}/plugins/steps/pfs-dataclean-plugin-1.0.0"/>
+                                <!-- 清理可能残留的根部游离 jar（会触发 Kettle jar-plugin 注册，与 plugin.xml 冲突） -->
+                                <delete file="${project.build.outputDirectory}/plugins/pfs-dataclean-plugin-1.0.0.jar" quiet="true"/>
+                                <!-- 直接从源码目录复制，不依赖插件子工程的 ZIP 分发包 -->
+                                <copy todir="${project.build.outputDirectory}/plugins/steps/pfs-dataclean-plugin-1.0.0"
+                                      overwrite="true">
+                                    <fileset dir="${project.basedir}/src/main/resources/plugins/pfs-dataclean-plugin-1.0.0"/>
+                                </copy>
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
                     <mainClass>com.pufferfishscheduler.master.MasterApplication</mainClass>
-                    <jvmArguments>--add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.lang.reflect=ALL-UNNAMED</jvmArguments>
+                    <jvmArguments>--add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.lang.reflect=ALL-UNNAMED --add-opens java.base/sun.net.www.protocol.jar=ALL-UNNAMED</jvmArguments>
                 </configuration>
                 <executions>
                     <execution>

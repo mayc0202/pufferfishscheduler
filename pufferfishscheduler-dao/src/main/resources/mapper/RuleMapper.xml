@@ -8,9 +8,8 @@
         <result column="rule_name" jdbcType="VARCHAR" property="ruleName"/>
         <result column="rule_description" jdbcType="VARCHAR" property="ruleDescription"/>
         <result column="rule_processor_id" jdbcType="INTEGER" property="ruleProcessorId"/>
-        <result column="status" jdbcType="INTEGER" property="status"/>
-        <result column="draft_config" jdbcType="VARCHAR" property="draftConfig"/>
-        <result column="released_config" jdbcType="VARCHAR" property="releasedConfig"/>
+        <result column="status" jdbcType="BOOLEAN" property="status"/>
+        <result column="config" jdbcType="VARCHAR" property="config"/>
         <result column="deleted" jdbcType="BOOLEAN" property="deleted"/>
         <result column="created_by" jdbcType="VARCHAR" property="createdBy"/>
         <result column="created_time" jdbcType="TIMESTAMP" property="createdTime"/>
@@ -22,8 +21,22 @@
     <sql id="Base_Column_List">
         id
         , group_id, rule_code, rule_name, rule_description, rule_processor_id, `status`,
-    draft_config, released_config, deleted, created_by, created_time, updated_by, updated_time, 
+    config, deleted, created_by, created_time, updated_by, updated_time, 
     rule_type, first_group_Id
     </sql>
+
+    <!-- 获取规则信息(已发布) -->
+    <select id="getRuleInformation" resultType="com.pufferfishscheduler.domain.vo.collect.RuleInformationVo">
+        select r.id,r.rule_name,r.config,p.id as processor_id,p.processor_class from rule as r
+        join rule_processor as p
+        on r.rule_processor_id = p.id
+        where r.deleted = false
+        and r.id in
+        <foreach collection="ruleIds" item="item" open="(" close=")" separator="," index="index">
+            #{item}
+        </foreach>
+        and r.status = true
+        order by updated_time desc
+    </select>
 
 </mapper>

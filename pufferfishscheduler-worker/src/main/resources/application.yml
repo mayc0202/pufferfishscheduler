@@ -1,7 +1,7 @@
 server:
   servlet:
     context-path: /pufferfishscheduler-worker
-  port: 8082
+  port: 8089
 
 spring:
   main:
@@ -12,6 +12,18 @@ spring:
     multipart: # 限制上传的文件最大值
       max-request-size: 512MB
       max-file-size: 512MB
+  autoconfigure:
+    # 排除所有Spring AI和阿里云灵积的自动配置类（即使依赖存在也不加载）
+    exclude:
+      - com.alibaba.cloud.ai.autoconfigure.dashscope.DashScopeAutoConfiguration
+      - com.alibaba.cloud.ai.autoconfigure.dashscope.DashScopeAgentAutoConfiguration
+      - com.alibaba.cloud.ai.autoconfigure.dashscope.DashScopeAudioTranscriptionAutoConfiguration
+      - com.alibaba.cloud.ai.autoconfigure.dashscope.DashScopeAudioSpeechAutoConfiguration
+      - com.alibaba.cloud.ai.autoconfigure.dashscope.DashScopeChatAutoConfiguration
+      - com.alibaba.cloud.ai.autoconfigure.dashscope.DashScopeEmbeddingAutoConfiguration
+      - com.alibaba.cloud.ai.autoconfigure.dashscope.DashScopeImageAutoConfiguration
+      - com.alibaba.cloud.ai.autoconfigure.dashscope.DashScopeRerankAutoConfiguration
+      - com.alibaba.cloud.ai.autoconfigure.dashscope.DashScopeVideoAutoConfiguration
   # 数据源
   datasource:
     # mysql

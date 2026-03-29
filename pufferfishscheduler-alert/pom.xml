@@ -38,6 +38,12 @@
             <version>1.0.0</version>
         </dependency>
 
+        <!-- mysql -->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+        </dependency>
+
         <!-- Dubbo -->
         <dependency>
             <groupId>org.apache.dubbo</groupId>

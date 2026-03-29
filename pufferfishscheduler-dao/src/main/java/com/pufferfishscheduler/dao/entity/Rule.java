@@ -69,22 +69,16 @@ public class Rule implements Serializable {
     private Integer ruleType;
 
     /**
-     * 状态 0-草稿 1-发布
+     * 状态 false-发布 true-草稿
      */
     @TableField(value = "status")
-    private Integer status;
+    private Boolean status;
 
     /**
-     * 草稿配置
+     * 规则配置（单版本）
      */
-    @TableField(value = "draft_config")
-    private String draftConfig;
-
-    /**
-     * 发布后配置
-     */
-    @TableField(value = "released_config")
-    private String releasedConfig;
+    @TableField(value = "config")
+    private String config;
 
     /**
      * 分类最高级的id

@@ -37,9 +37,6 @@ public class OpenApiTags {
     public static final String REALTIME_TASK = "实时数据采集接口";
     public static final String REALTIME_TASK_DESC = "提供实时数据采集相关接口";
 
-    public static final String TRANS_TASK_LOG = "转换任务日志管理";
-    public static final String TRANS_TASK_LOG_DESC = "提供转换任务日志管理相关接口";
-
     public static final String TRANS_FLOW_PROCESS = "转换流程管理";
     public static final String TRANS_FLOW_PROCESS_DESC = "提供转换流程管理相关接口";
 
@@ -49,14 +46,8 @@ public class OpenApiTags {
     public static final String TRANS_FLOW_COMPONENT = "转换组件管理";
     public static final String TRANS_FLOW_COMPONENT_DESC = "提供转换组件管理相关接口";
 
-    public static final String TABLE_OUTPUT_PLUGIN = "表输出插件组件管理";
-    public static final String TABLE_OUTPUT_PLUGIN_DESC = "提供表输出插件组件管理相关接口";
-
     public static final String AGENT = "智能体管理";
     public static final String AGENT_DESC = "提供智能体管理相关接口";
-
-    public static final String RULE_GROUP = "规则组管理";
-    public static final String RULE_GROUP_DESC = "提供规则组管理相关接口";
 
     public static final String RULE = "规则管理";
     public static final String RULE_DESC = "提供规则管理相关接口";

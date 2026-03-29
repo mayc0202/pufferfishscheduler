@@ -19,6 +19,7 @@
         <module>pufferfishscheduler-ai</module>
         <module>pufferfishscheduler-api</module>
         <module>pufferfishscheduler-alert</module>
+        <module>pufferfishscheduler-plugin</module>
     </modules>
 
     <!-- version -->
@@ -84,6 +85,8 @@
         <pdfbox.version>2.0.30</pdfbox.version>
         <!-- poi-ooxml -->
         <poi-ooxml.version>5.2.5</poi-ooxml.version>
+        <!-- xmlbeans：POI 5.2.5 依赖 5.2.0，否则会出现 NoSuchFieldError/NoSuchMethodError -->
+        <xmlbeans.version>5.2.0</xmlbeans.version>
         <!-- tika-core -->
         <tika-core.version>2.9.2</tika-core.version>
         <!--lombok-->
@@ -92,10 +95,12 @@
         <fastjson.version>2.0.53</fastjson.version>
         <!--commons-net-->
         <commons-net.version>3.6</commons-net.version>
-        <!--commons-io-->
-        <commons-io.version>2.10.0</commons-io.version>
+        <!--commons-io：须 ≥2.11（含 UnsynchronizedByteArrayOutputStream.builder），否则 POI 5.2.x 写 xlsx 会 NoSuchMethodError -->
+        <commons-io.version>2.15.1</commons-io.version>
         <!--commons-lang3-->
         <commons-lang3.version>3.12.0</commons-lang3.version>
+        <!-- commons-compress：POI 写 xlsx 依赖，需避免被旧版本覆盖导致 NoSuchMethodError -->
+        <commons-compress.version>1.25.0</commons-compress.version>
         <!-- commons-pool2 -->
         <commons-pool2.version>2.11.1</commons-pool2.version>
         <!--Ase&Rsa-->
@@ -106,21 +111,26 @@
         <jwt.version>3.10.3</jwt.version>
         <!-- jjwt -->
         <jjwt.version>0.12.5</jjwt.version>
-        <!-- easyexcel -->
-        <easyexcel.version>2.2.11</easyexcel.version>
+        <!-- easyexcel：4.x 基于 POI 5.2.5（与本工程统一版本保持一致） -->
+        <easyexcel.version>4.0.3</easyexcel.version>
         <!-- c3p0 -->
         <c3p0.version>0.9.5.5</c3p0.version>
+        <!-- Janino 核心编译器依赖 -->
+        <janino.version>3.1.12</janino.version>
+        <!--poi-tl-->
+        <poi-tl.version>1.12.1</poi-tl.version>
 
         <!-- 阿里云手机验证码依赖版本号 -->
         <aliyun-phone.version>4.6.2</aliyun-phone.version>
         <gson.version>2.8.6</gson.version>
 
-        <!--poi-tl-->
-        <poi-tl.version>1.12.1</poi-tl.version>
         <!-- eclipse swt -->
         <swt.version>3.114.0</swt.version>
         <!-- expiringmap -->
         <expiringmap.version>0.5.13</expiringmap.version>
+
+        <!-- pentaho-metadata -->
+        <pentaho-metadata.version>9.2.0.0-290</pentaho-metadata.version>
         <!-- kettle -->
         <pentaho-kettle.version>9.2.0.0-290</pentaho-kettle.version>
         <!-- kettle 加密 -->
@@ -314,6 +324,13 @@
                 <version>${commons-io.version}</version>
             </dependency>
 
+            <!-- commons-compress：POI/OOXML 打包依赖（统一版本，防止运行时混入旧包） -->
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-compress</artifactId>
+                <version>${commons-compress.version}</version>
+            </dependency>
+
             <!-- commons-lang3 -->
             <dependency>
                 <groupId>org.apache.commons</groupId>
@@ -356,6 +373,13 @@
                 <version>${c3p0.version}</version>
             </dependency>
 
+            <!-- Janino 核心编译器依赖 -->
+            <dependency>
+                <groupId>org.codehaus.janino</groupId>
+                <artifactId>janino</artifactId>
+                <version>${janino.version}</version>
+            </dependency>
+
             <!-- caffeine -->
             <dependency>
                 <groupId>com.github.ben-manes.caffeine</groupId>
@@ -377,11 +401,36 @@
                 <version>${pdfbox.version}</version>
             </dependency>
 
-            <!-- Word 处理 -->
+            <!-- Apache POI：须与 poi-ooxml 同版本；否则 Kettle 等会就近解析到旧 poi-core，与 5.x ooxml 混用会 NoSuchMethodError -->
+            <dependency>
+                <groupId>org.apache.poi</groupId>
+                <artifactId>poi</artifactId>
+                <version>${poi-ooxml.version}</version>
+            </dependency>
+
+            <!-- Word / Excel (OOXML) -->
             <dependency>
                 <groupId>org.apache.poi</groupId>
                 <artifactId>poi-ooxml</artifactId>
                 <version>${poi-ooxml.version}</version>
+            </dependency>
+
+            <!--
+              POI 5.x 默认依赖的精简 schemas 包不包含全部 OOXML 生成类。
+              EasyExcel 2.x 在解析 xlsx 时会用到 org.openxmlformats.schemas.*（如 WorkbookDocument$Factory），
+              需要引入 poi-ooxml-full 提供完整 schemas 实现。
+            -->
+            <dependency>
+                <groupId>org.apache.poi</groupId>
+                <artifactId>poi-ooxml-full</artifactId>
+                <version>${poi-ooxml.version}</version>
+            </dependency>
+
+            <!-- 强制统一 xmlbeans 版本，避免 POI 运行时与 XMLBeans 不兼容 -->
+            <dependency>
+                <groupId>org.apache.xmlbeans</groupId>
+                <artifactId>xmlbeans</artifactId>
+                <version>${xmlbeans.version}</version>
             </dependency>
 
             <!-- 文本提取工具 -->
@@ -431,6 +480,21 @@
                 <groupId>com.deepoove</groupId>
                 <artifactId>poi-tl</artifactId>
                 <version>${poi-tl.version}</version>
+            </dependency>
+
+            <!-- swt -->
+<!--            <dependency>-->
+<!--                <groupId>org.eclipse.platform</groupId>-->
+<!--                <artifactId>org.eclipse.swt</artifactId>-->
+<!--                <version>${swt.version}</version>-->
+<!--            </dependency>-->
+
+            <!-- pentaho-metadata -->
+            <dependency>
+                <groupId>org.pentaho</groupId>
+                <artifactId>pentaho-metadata</artifactId>
+                <version>${pentaho-metadata.version}</version>
+                <scope>provided</scope>
             </dependency>
 
             <!-- Kettle核心依赖 -->

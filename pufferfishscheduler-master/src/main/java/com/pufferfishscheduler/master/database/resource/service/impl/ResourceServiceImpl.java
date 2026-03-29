@@ -640,7 +640,7 @@ public class ResourceServiceImpl implements ResourceService {
             ftpManager.setMode(properties.containsKey(Constants.FTP_PROPERTIES.MODE) ?
                     properties.getString(Constants.FTP_PROPERTIES.MODE) : Constants.MODE_TYPE.PASSIVE);
             String enc = properties.containsKey(Constants.FTP_PROPERTIES.CONTROL_ENCODING) ?
-                    dictService.getDictItemCode(Constants.DICT.CONTROL_ENCODING, properties.getString(Constants.FTP_PROPERTIES.CONTROL_ENCODING))
+                    dictService.getDictItemValue(Constants.DICT.CONTROL_ENCODING, properties.getString(Constants.FTP_PROPERTIES.CONTROL_ENCODING))
                     : Constants.CONTROL_ENCODING;
             ftpManager.setControlEncoding(StringUtils.isNotBlank(enc) ? enc : Constants.CONTROL_ENCODING);
         } else {

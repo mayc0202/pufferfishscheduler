@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin id="DataClean" type="Step">
+  <name>数据清洗</name>
+  <description>用于数据清洗。</description>
+  <category>转换</category>
+  <classname>com.pufferfishscheduler.plugin.DataCleanStepMeta</classname>
+  <image>dataclean.svg</image>
+  <libraries>
+    <library name="lib/pfs-dataclean-plugin-1.0.0.jar"/>
+  </libraries>
+</plugin>

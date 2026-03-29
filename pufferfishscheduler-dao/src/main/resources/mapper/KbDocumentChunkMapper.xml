@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.pufferfishscheduler.dao.mapper.KbDocumentChunkMapper">
+    <resultMap id="BaseResultMap" type="com.pufferfishscheduler.dao.entity.KbDocumentChunk">
+        <id column="id" jdbcType="VARCHAR" property="id"/>
+        <result column="document_id" jdbcType="VARCHAR" property="documentId"/>
+        <result column="attachment_id" jdbcType="VARCHAR" property="attachmentId"/>
+        <result column="chunk_no" jdbcType="INTEGER" property="chunkNo"/>
+        <result column="vector_id" jdbcType="VARCHAR" property="vectorId"/>
+        <result column="metadata_json" jdbcType="VARCHAR" property="metadataJson"/>
+        <result column="deleted" jdbcType="BOOLEAN" property="deleted"/>
+        <result column="created_by" jdbcType="VARCHAR" property="createdBy"/>
+        <result column="created_time" jdbcType="TIMESTAMP" property="createdTime"/>
+        <result column="updated_by" jdbcType="VARCHAR" property="updatedBy"/>
+        <result column="updated_time" jdbcType="TIMESTAMP" property="updatedTime"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, document_id, attachment_id, chunk_no, vector_id, metadata_json, deleted,
+        created_by, created_time, updated_by, updated_time
+    </sql>
+</mapper>

@@ -32,4 +32,9 @@ public interface UserAdminService {
      * 注销用户（逻辑删除）并使其登录态失效
      */
     void deactivate(Integer id);
+
+    /**
+     * 验证当前用户是否为管理员
+     */
+    Boolean validateIsAdmin();
 }

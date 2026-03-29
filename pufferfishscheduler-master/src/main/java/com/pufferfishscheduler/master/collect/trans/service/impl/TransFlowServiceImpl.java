@@ -33,6 +33,7 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -85,6 +86,13 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Service
 public class TransFlowServiceImpl implements TransFlowService {
+
+    @Value("${plugin.apiUrl}")
+    private String apiUrl;
+
+    @Value("${plugin.getRuleInformation}")
+    private String getRuleInformation;
+
 
     @Autowired
     private TransFlowMapper transFlowMapper;
@@ -316,6 +324,164 @@ public class TransFlowServiceImpl implements TransFlowService {
         return transFlowVo;
     }
 
+//    private String updateDataCleanRuleConfig(String ruleConfig) {
+//        JSONObject config = JSONObject.parseObject(ruleConfig);
+//        JSONArray steps = config.getJSONArray("steps");
+//        JSONArray stepsArrayJson = new JSONArray();
+//        steps.forEach(step -> {
+//            JSONObject object = JSONObject.parseObject(step.toString());
+//            JSONObject stepJson = new JSONObject(object);
+//            JSONObject data = object.getJSONObject("data");
+//            JSONObject outData = new JSONObject(data);
+//            String code = data.getString("code");
+//            // 组件标识存在为空的情况
+//            if (StringUtil.isNotEmpty(code) && code.equals(Constants.StepMetaType.DATA_CLEAN)) {
+//                JSONObject obj = data.getJSONObject("data");
+//                JSONObject dataJosn = new JSONObject(obj);
+//                JSONArray fieldList = obj.getJSONArray("fieldList");
+//                JSONArray fieldListJosn = new JSONArray();
+//                if (fieldList != null) {
+//                    fieldList.forEach(f -> {
+//                        JSONObject fieldObj = JSONObject.parseObject(f.toString());
+//                        JSONArray ruleList = fieldObj.getJSONArray("ruleList");
+//                        if (ruleList != null) {
+//                            JSONArray ruleListJson = new JSONArray();
+//                            ruleList.forEach(r -> {
+//                                JSONObject ruleVo = JSONObject.parseObject(r.toString());
+//                                // 判断当前规则的分类是否是通用之外的
+//                                Integer groupId = ruleVo.getInteger("groupId");
+//                                if (groupId != null) {
+//                                    if (!groupId.equals(Constants.RULE_MANAGER.GENERIC_TYPE)) {
+//                                        RuleJson ruleJson = updateRule(ruleVo);
+//                                        ruleListJson.add(ruleJson);
+//                                    } else {
+//                                        ruleListJson.add(r);
+//                                    }
+//                                }
+//                            });
+//                            JSONObject jsonObj1 = new JSONObject(fieldObj);
+//                            jsonObj1.put("ruleList", ruleListJson);
+//                            fieldListJosn.add(jsonObj1);
+//                        }
+//                    });
+//                }
+//                dataJosn.put("fieldList", fieldListJosn);
+//                outData.put("data", dataJosn);
+//                stepJson.put("data", outData);
+//                stepsArrayJson.add(stepJson);
+//            } else {
+//                stepsArrayJson.add(step);
+//            }
+//        });
+//        JSONObject configJson = new JSONObject(config);
+//        configJson.put("steps", stepsArrayJson);
+//        return configJson.toString();
+//    }
+//
+//    /**
+//     * 更新清洗规则
+//     *
+//     * @param ruleVo
+//     * @return
+//     */
+//    private RuleJson updateRule(JSONObject ruleVo) {
+//        RuleJson ruleJson = JSONObject.parseObject(ruleVo.toString(), RuleJson.class);
+//        String ruleId = ruleVo.getString("ruleId");
+//        // 获取数据库平台规则查询接口
+//        String url = kettleApiAddress + getRule;
+//        Map<String, String> header = new HashMap<>();
+//        header.put("apiKey", kettleApiKey);
+//        Map<String, Object> params = new HashMap<>();
+//        params.put("id", ruleId);
+//        String response = HttpClientUtils.getWithParams(url, header, params);
+//        JSONObject rule = JSONObject.parseObject(response);
+//        if (rule == null) {
+//            ruleJson.setRuleId(ruleVo.getString("ruleId"));
+//            ruleJson.setRuleName(ruleVo.getString("ruleName"));
+//            ruleJson.setRuleCode(ruleVo.getString("ruleCode"));
+//            ruleJson.setGroupId(ruleVo.getInteger("groupId"));
+//            ruleJson.setRuleDescription(ruleVo.getString("ruleDescription"));
+//            ruleJson.setRuleProcessorId(ruleVo.getInteger("ruleProcessorId"));
+//            wrapperRuleJson(ruleVo, ruleJson);
+//        } else {
+//            ruleJson.setRuleId(rule.getString("id"));
+//            ruleJson.setRuleName(rule.getString("ruleName"));
+//            ruleJson.setRuleCode(rule.getString("ruleCode"));
+//            ruleJson.setGroupId(rule.getInteger("groupId"));
+//            ruleJson.setRuleDescription(rule.getString("ruleDescription"));
+//            ruleJson.setRuleProcessorId(rule.getInteger("ruleProcessorId"));
+//            // 解析发布后配置项JSON数据
+//            JSONObject releasedConfig = JSONObject.parseObject(rule.getString("releasedConfig"));
+//            if (releasedConfig != null) {
+//                Object data = releasedConfig.get("data");
+//                if (data != null) {
+//                    JSONObject dataJson = JSONObject.parseObject(data.toString());
+//                    wrapperRuleJson(dataJson, ruleJson);
+//                }
+//            }
+//        }
+//        return ruleJson;
+//    }
+//
+//    /**
+//     * 包装ruleJson
+//     *
+//     * @param dataJson
+//     * @param ruleJson
+//     */
+//    private void wrapperRuleJson(JSONObject dataJson, RuleJson ruleJson) {
+//        if (dataJson.containsKey("fieldList")) {
+//            JSONArray fieldListJson = dataJson.getJSONArray("fieldList");
+//            ruleJson.setFieldList(fieldListJson);
+//        }
+//        if (dataJson.containsKey("mappingType")) {
+//            ruleJson.setMappingType(dataJson.getString("mappingType"));
+//        }
+//        if (dataJson.containsKey("dataSourceId")) {
+//            ruleJson.setDataSourceId(dataJson.getInteger("dataSourceId"));
+//        }
+//        if (dataJson.containsKey("tableName")) {
+//            ruleJson.setTableName(dataJson.getString("tableName"));
+//        }
+//        if (dataJson.containsKey("beforefieldName")) {
+//            ruleJson.setBeforefieldName(dataJson.getString("beforefieldName"));
+//        }
+//        if (dataJson.containsKey("afterfieldName")) {
+//            ruleJson.setAfterfieldName(dataJson.getString("afterfieldName"));
+//        }
+//        if (dataJson.containsKey("condition")) {
+//            ruleJson.setOuterQueryParams(dataJson.getJSONObject("condition"));
+//        }
+//        if (dataJson.containsKey("sqlCode")) {
+//            ruleJson.setSqlCode(dataJson.getString("sqlContext"));
+//        }
+//        if (dataJson.containsKey("resultSetting")) {
+//            ruleJson.setResultSetting(dataJson.getString("resultSetting"));
+//        }
+//        if (dataJson.containsKey("stdCode")) {
+//            ruleJson.setStdCode(dataJson.getString("stdCode"));
+//        }
+//        if (dataJson.containsKey("stdName")) {
+//            ruleJson.setStdName(dataJson.getString("stdName"));
+//        }
+//        if (dataJson.containsKey("stdType")) {
+//            ruleJson.setStdType(dataJson.getString("stdType"));
+//        }
+//        if (dataJson.containsKey("csCodeId")) {
+//            ruleJson.setCsCodeId(dataJson.getInteger("csCodeId"));
+//        }
+//        if (dataJson.containsKey("identifier")) {
+//            ruleJson.setIdentifier(dataJson.getString("identifier"));
+//        }
+//        if (dataJson.containsKey("csCodeName")) {
+//            ruleJson.setCsCodeName(dataJson.getString("csCodeName"));
+//        }
+//        if (dataJson.containsKey("javaCode")) {
+//            ruleJson.setJavaCode(dataJson.getString("javaCode"));
+//        }
+//    }
+
+
     /**
      * 校验相同分组下转换流名称是否存在
      *
@@ -446,7 +612,7 @@ public class TransFlowServiceImpl implements TransFlowService {
 
     /**
      * 构建转换元数据
-     * 
+     *
      * @param flowId   流程ID
      * @param config   配置信息
      * @param validate 是否验证
@@ -555,6 +721,10 @@ public class TransFlowServiceImpl implements TransFlowService {
             context.setValidate(validate);
             context.setFlowId(flowId);
             context.setStepNames(stepNames);
+
+            if (type.equals(Constants.StepMetaType.DATA_CLEAN)) {
+                context.setUrl(apiUrl + getRuleInformation);
+            }
 
             // 将data转换为JSON字符串传递给构造函数
             String dataStr = data.toJSONString();
@@ -724,6 +894,9 @@ public class TransFlowServiceImpl implements TransFlowService {
         String config = transFlow.getConfig();
         TransWrapper trans = null;
         try {
+            // 执行前强制用最新构造逻辑重建一次运行态 ktr，避免历史缓存的 stepId 导致 plugin missing
+            refreshRuntimeKtr(transFlow);
+
             List<TransParam> params = new ArrayList<>();
 
             // 执行前置方法
@@ -776,8 +949,46 @@ public class TransFlowServiceImpl implements TransFlowService {
     }
 
     /**
+     * 强制刷新运行态 KTR（kettle_flow_repository.flow_content）
+     * 目的：避免历史流程XML中的步骤ID与当前插件ID不一致，执行时报 plugin missing。
+     */
+    private void refreshRuntimeKtr(TransFlow transFlow) {
+        if (transFlow == null) {
+            throw new BusinessException("转换流程不能为空");
+        }
+        if (StringUtils.isBlank(transFlow.getConfig())) {
+            throw new BusinessException("转换流程配置为空，请先保存流程配置");
+        }
+        try {
+            TransMeta transMeta = buildTransMeta(transFlow.getId(), transFlow.getConfig(), false);
+            transMeta.setName(transFlow.getId().toString());
+            Integer rowSize = transFlow.getRowSize();
+            if (rowSize == null || rowSize <= 0) {
+                rowSize = 1000;
+            }
+            transMeta.setSizeRowset(rowSize);
+
+            String bizType = transFlow.getStage() + "_" + Constants.TRANS;
+            DataFlowRepository repository = DataFlowRepository.getRepository();
+            TransFlowConfig runtimeConfig = new TransFlowConfig(
+                    bizType,
+                    transFlow.getId().toString(),
+                    transMeta.getXML());
+
+            TransFlowConfig exists = repository.getTrans(bizType, transFlow.getId().toString());
+            if (exists == null) {
+                repository.saveTrans(runtimeConfig);
+            } else {
+                repository.updateTrans(runtimeConfig);
+            }
+        } catch (Exception e) {
+            throw new BusinessException("刷新运行态KTR失败：" + e.getMessage());
+        }
+    }
+
+    /**
      * 解析参数配置
-     * 
+     *
      * @param paramConfig 参数配置
      * @param params      参数列表
      */
@@ -804,7 +1015,7 @@ public class TransFlowServiceImpl implements TransFlowService {
 
     /**
      * 执行转换前置方法
-     * 
+     *
      * @param flowId 流程ID
      * @param config 配置信息
      * @param params 参数列表
@@ -857,7 +1068,7 @@ public class TransFlowServiceImpl implements TransFlowService {
 
     /**
      * 执行转换后置方法
-     * 
+     *
      * @param flowId 流程ID
      * @param config 配置信息
      */
@@ -904,7 +1115,7 @@ public class TransFlowServiceImpl implements TransFlowService {
 
     /**
      * 停止转换流程
-     * 
+     *
      * @param id 转换流程id
      */
     @Override
@@ -918,7 +1129,7 @@ public class TransFlowServiceImpl implements TransFlowService {
 
     /**
      * 展示转换流程图片
-     * 
+     *
      * @param id 转换流程id
      * @return 转换流程图片base64编码
      */
@@ -944,7 +1155,7 @@ public class TransFlowServiceImpl implements TransFlowService {
 
     /**
      * 复制转换流程
-     * 
+     *
      * @param id 转换流程id
      */
     @Transactional(rollbackFor = Exception.class)
@@ -983,7 +1194,7 @@ public class TransFlowServiceImpl implements TransFlowService {
 
     /**
      * 预览转换流程数据
-     * 
+     *
      * @param form 转换流程配置表单
      * @return 预览数据
      */
@@ -1054,7 +1265,7 @@ public class TransFlowServiceImpl implements TransFlowService {
 
     /**
      * 设置转换流程参数
-     * 
+     *
      * @param flowId    转换流程ID
      * @param transMeta 转换流程元数据
      * @param params    转换参数列表
@@ -1094,7 +1305,7 @@ public class TransFlowServiceImpl implements TransFlowService {
 
     /**
      * 获取预览数据
-     * 
+     *
      * @param step
      * @param transMeta
      */
@@ -1119,7 +1330,7 @@ public class TransFlowServiceImpl implements TransFlowService {
         // Add the preview / debugging information...
         //
         TransDebugMeta transDebugMeta = new TransDebugMeta(previewMeta);
-        String[] previewStepNames = new String[] { step.getName() };
+        String[] previewStepNames = new String[]{step.getName()};
         for (int i = 0; i < previewStepNames.length; i++) {
             StepMeta stepMeta = transMeta.findStep(previewStepNames[i]);
             StepDebugMeta stepDebugMeta = new StepDebugMeta(stepMeta);
@@ -1136,7 +1347,7 @@ public class TransFlowServiceImpl implements TransFlowService {
         transDebugMeta.addBreakPointListers(new BreakPointListener() {
             @Override
             public void breakPointHit(TransDebugMeta transDebugMeta, StepDebugMeta stepDebugMeta,
-                    RowMetaInterface rowBufferMeta, List<Object[]> rowBuffer) {
+                                      RowMetaInterface rowBufferMeta, List<Object[]> rowBuffer) {
                 String stepName = stepDebugMeta.getStepMeta().getName();
                 previewComplete.add(stepName);
             }
@@ -1278,7 +1489,7 @@ public class TransFlowServiceImpl implements TransFlowService {
 
     /**
      * 校验转换流程运行状态
-     * 
+     *
      * @param id 转换流id
      * @return 转换流程运行状态
      */
@@ -1289,7 +1500,7 @@ public class TransFlowServiceImpl implements TransFlowService {
 
     /**
      * 复制转换流
-     * 
+     *
      * @param id 转换流id
      */
     @Transactional(rollbackFor = Exception.class)
@@ -1319,7 +1530,7 @@ public class TransFlowServiceImpl implements TransFlowService {
 
     /**
      * 获取转换流程运行日志
-     * 
+     *
      * @param id 转换流id
      * @return 转换流程运行日志
      */

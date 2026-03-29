@@ -19,6 +19,7 @@ public class JdbcUrlUtil {
 
     // DRIVER
     private static final String MYSQL_DRIVER = "com.mysql.jdbc.Driver";
+    private static final String MYSQL_DRIVER_8 = "com.mysql.cj.jdbc.Driver";
     private static final String ORACLE_DRIVER = "oracle.jdbc.driver.OracleDriver";
     private static final String POSTGRESQL_DRIVER = "org.postgresql.Driver";
     private static final String SQLSERVER_DRIVER = "com.microsoft.sqlserver.jdbc.SQLServerDriver";

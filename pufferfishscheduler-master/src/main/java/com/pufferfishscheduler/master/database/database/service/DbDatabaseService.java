@@ -99,7 +99,15 @@ public interface DbDatabaseService extends IService<DbDatabase> {
      * @param id
      * @return
      */
-    DbDatabase getDatabaseById(int id);
+    DbDatabase getDatabaseById(Integer id);
+
+    /**
+     * 获取数据源连接信息
+     *
+     * @param id
+     * @return
+     */
+    DatabaseConnectionInfo getDatabaseConnectionInfo(Integer id);
 
     /**
      * 构建数据源连接器

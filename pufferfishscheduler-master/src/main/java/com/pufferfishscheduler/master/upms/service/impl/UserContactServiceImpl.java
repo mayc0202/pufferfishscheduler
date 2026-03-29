@@ -231,7 +231,7 @@ public class UserContactServiceImpl extends ServiceImpl<UserContactMapper, UserC
 
         Set<String> normalized = methods.stream()
                 .filter(StringUtils::isNotBlank)
-                .map(raw -> dictService.getDictItemValue(Constants.DICT.ALERT_METHOD, raw))
+                .map(raw -> dictService.getDictItemCode(Constants.DICT.ALERT_METHOD, raw))
                 .peek(code -> {
                     if (StringUtils.isBlank(code)) {
                         throw new BusinessException("不支持的预警方式!");

@@ -154,8 +154,8 @@ public class DbDatabaseServiceImpl extends ServiceImpl<DbDatabaseMapper, DbDatab
         DatabaseVo vo = new DatabaseVo();
         BeanUtils.copyProperties(dbDatabase, vo);
         vo.setGroupName(groupMap.getOrDefault(vo.getGroupId(), ""));
-        vo.setLabelName(dictService.getDictItemCode(Constants.DICT.DATA_SOURCE_LAYERING, dbDatabase.getLabel()));
-        vo.setCategoryName(dictService.getDictItemCode(Constants.DICT.DATABASE_CATEGORY, dbDatabase.getLabel()));
+        vo.setLabelName(dictService.getDictItemValue(Constants.DICT.DATA_SOURCE_LAYERING, dbDatabase.getLabel()));
+        vo.setCategoryName(dictService.getDictItemValue(Constants.DICT.DATABASE_CATEGORY, dbDatabase.getLabel()));
         vo.setCreatedTimeTxt(DateUtil.formatDateTime(vo.getCreatedTime()));
 
         if (StringUtils.isNotBlank(dbDatabase.getProperties()) && "{}".equals(dbDatabase.getProperties())) {
@@ -447,7 +447,7 @@ public class DbDatabaseServiceImpl extends ServiceImpl<DbDatabaseMapper, DbDatab
      * @return
      */
     @Override
-    public DbDatabase getDatabaseById(int id) {
+    public DbDatabase getDatabaseById(Integer id) {
         LambdaQueryWrapper<DbDatabase> ldq = new LambdaQueryWrapper<>();
         ldq.eq(DbDatabase::getId, id).eq(DbDatabase::getDeleted, Constants.DELETE_FLAG.FALSE);
 
@@ -457,6 +457,26 @@ public class DbDatabaseServiceImpl extends ServiceImpl<DbDatabaseMapper, DbDatab
         }
 
         return database;
+    }
+
+    /**
+     * 获取数据源连接信息
+     *
+     * @param id 数据源id
+     * @return 数据源连接信息
+     */
+    @Override
+    public DatabaseConnectionInfo getDatabaseConnectionInfo(Integer id) {
+        DbDatabase info = getDatabaseById(id);
+        return DatabaseConnectionInfo.builder()
+                .type(info.getType())
+                .dbHost(info.getDbHost())
+                .dbPort(String.valueOf(info.getDbPort()))
+                .dbName(info.getDbName())
+                .username(info.getUsername())
+                .password(info.getPassword())
+                .dbSchema(info.getDbSchema())
+                .build();
     }
 
     /**

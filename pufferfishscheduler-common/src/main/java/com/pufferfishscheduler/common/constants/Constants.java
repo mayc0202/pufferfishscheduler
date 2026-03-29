@@ -83,8 +83,10 @@ public interface Constants {
      * 字典标识
      */
     interface DICT {
-        // dict.json
-        String DATA_SOURCE_LAYERING = "data_source_layering"; // 数据源分层
+        // 数据类型
+        String DATA_TYPE = "data_type";
+        // 数据源分层
+        String DATA_SOURCE_LAYERING = "data_source_layering";
         // 控制编码
         String CONTROL_ENCODING = "control_encoding";
         // 数据库分类
@@ -109,6 +111,10 @@ public interface Constants {
         String ALERT_METHOD = "alert_method";
         // 执行状态
         String EXECUTE_STATUS = "execute_status";
+        // 映射类型
+        String MAPPING_TYPE = "mapping_type";
+        // 知识类型
+        String KNOWLEDGE_TYPE = "knowledge_type";
     }
 
     /**
@@ -315,6 +321,30 @@ public interface Constants {
     }
 
     /**
+     * 条件运算符
+     */
+    interface CONDITION {
+        String ALL = "ALL";
+        String AND = " AND ";
+        String OR = " OR ";
+    }
+
+    /**
+     * 操作符常量接口（基础版）
+     */
+    interface OperatorType {
+        String less = "<";
+        String lessEqual = "<=";
+        String great = ">";
+        String greatEqual = ">=";
+        String equal = "=";
+        String notEqual = "!=";
+        String startWith = "START_WITH";
+        String endWith = "END_WITH";
+        String like = "CONTAINS";
+    }
+
+    /**
      * 系统内置角色名（与 role.name 一致）
      */
     interface ROLE_NAME {
@@ -360,6 +390,7 @@ public interface Constants {
      */
     interface TREE_TYPE {
         String GROUP = "GROUP";
+        String RULE = "RULE";
         String DATABASE = "DATABASE";
         String TRANS_FLOW = "TRANS_FLOW";
     }
@@ -492,6 +523,39 @@ public interface Constants {
         String STREAM = "3";
     }
 
+
+    /**
+     * 模板标识
+     */
+    interface TEMPLATE {
+        String VALUE_MAPPING = "value-mapping-template.xlsx";
+    }
+
+    /**
+     * 规则处理器ID
+     */
+    interface PROCESSOR_ID {
+        /**
+         * Java自定义规则处理器ID
+         */
+        Integer JAVA_CUSTOM = 18;
+
+        /**
+         * 值映射规则处理器ID
+         */
+        Integer VALUE_MAPPING = 19;
+    }
+
+    /**
+     * 值映射类型
+     */
+    interface MAPPING_TYPE {
+        Integer MANUAL = 0; // 手工
+        Integer DATABASE_DICT_TABLE = 1; // 字典表
+        Integer CUSTOM_SQL = 2; // 自定义sql
+    }
+
+
     /**
      * 组件类型
      */
@@ -537,8 +601,8 @@ public interface Constants {
         String SPLITFIELDTOROWS3 = "SplitFieldToRows3"; // 字段拆分为多行
         String FIELDSPLITTER = "FieldSplitter"; // 字段拆分为多列
         String GROUPBY = "GroupBy"; // 分组
-        String FILTER = "filter"; // 过滤
-        String DATA_CLEAN = "dataclean"; // 清洗
+        String FILTER = "Filter"; // 过滤
+        String DATA_CLEAN = "DataClean"; // 清洗
         String DEBEZIUM_JSON = "DebeziumJson"; // Debezium格式JSON
 
         String FTP_UPLOAD = "FTPUpload"; // FTP上传

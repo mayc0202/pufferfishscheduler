@@ -248,17 +248,39 @@ public class UserAdminServiceImpl implements UserAdminService {
     /**
      * 验证当前用户是否为管理员
      */
+    @Override
+    public Boolean validateIsAdmin() {
+        Integer uid = getCurrentUserIdNonNull();
+        return hasAdminRole(uid);
+    }
+
+    /**
+     * 校验当前用户必须为管理员，否则抛出异常
+     */
     private void requireAdmin() {
+        if (!validateIsAdmin()) {
+            throw new BusinessException("仅管理员可操作!");
+        }
+    }
+
+    /**
+     * 获取当前登录用户ID，未登录则直接抛异常
+     */
+    private Integer getCurrentUserIdNonNull() {
         Integer uid = UserContext.getCurrentUserId();
         if (uid == null) {
             throw new BusinessException("用户未登录!");
         }
-        List<RoleVo> roles = roleService.getRoleListByUserId(uid);
-        boolean admin = roles.stream()
+        return uid;
+    }
+
+    /**
+     * 判断用户是否拥有管理员角色
+     */
+    private boolean hasAdminRole(Integer userId) {
+        List<RoleVo> roles = roleService.getRoleListByUserId(userId);
+        return roles.stream()
                 .anyMatch(r -> Constants.ROLE_NAME.ADMIN.equals(r.getRoleName()));
-        if (!admin) {
-            throw new BusinessException("仅管理员可操作!");
-        }
     }
 
     /**

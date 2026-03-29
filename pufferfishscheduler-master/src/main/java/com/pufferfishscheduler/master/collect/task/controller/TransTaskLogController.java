@@ -20,7 +20,7 @@ import java.util.Date;
  * @author Mayc
  * @since 2026-03-23  16:03
  */
-@Tag(name = OpenApiTags.TRANS_TASK_LOG, description = OpenApiTags.TRANS_TASK_LOG_DESC)
+@Tag(name = OpenApiTags.TRANS_TASK, description = OpenApiTags.TRANS_TASK_DESC)
 @Validated
 @RestController
 @RequestMapping(value = "/trans/task/log", produces = {"application/json;charset=utf-8"})

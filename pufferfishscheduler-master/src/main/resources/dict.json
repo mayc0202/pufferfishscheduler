@@ -1,5 +1,59 @@
 [
   {
+    "dictCode": "data_type",
+    "name": "数据类型",
+    "list": [
+      {
+        "code": "1",
+        "value": "Number",
+        "order": 1,
+        "description": ""
+      },
+      {
+        "code": "2",
+        "value": "String",
+        "order": 2,
+        "description": ""
+      },
+      {
+        "code": "3",
+        "value": "Date",
+        "order": 3,
+        "description": ""
+      },
+      {
+        "code": "4",
+        "value": "Boolean",
+        "order": 4,
+        "description": ""
+      },
+      {
+        "code": "5",
+        "value": "Int",
+        "order": 5,
+        "description": ""
+      },
+      {
+        "code": "6",
+        "value": "BigNumber",
+        "order": 6,
+        "description": ""
+      },
+      {
+        "code": "8",
+        "value": "Binary",
+        "order": 7,
+        "description": ""
+      },
+      {
+        "code": "9",
+        "value": "Timestamp",
+        "order": 8,
+        "description": ""
+      }
+    ]
+  },
+  {
     "dictCode": "data_source_layering",
     "name": "数据源分层",
     "list": [
@@ -37,7 +91,7 @@
   },
   {
     "dictCode": "database_category",
-    "name": "数据源分层",
+    "name": "数据库分类",
     "list": [
       {
         "code": "1",
@@ -276,24 +330,6 @@
     ]
   },
   {
-    "dictCode": "failure_policy",
-    "name": "失败策略",
-    "list": [
-      {
-        "code": "0",
-        "value": "继续",
-        "order": 1,
-        "description": ""
-      },
-      {
-        "code": "1",
-        "value": "停止",
-        "order": 2,
-        "description": ""
-      }
-    ]
-  },
-  {
     "dictCode": "notify_policy",
     "name": "通知策略",
     "list": [
@@ -337,6 +373,60 @@
         "code": "1",
         "value": "邮件",
         "order": 2,
+        "description": ""
+      }
+    ]
+  },
+  {
+    "dictCode": "mapping_type",
+    "name": "映射类型",
+    "list": [
+      {
+        "code": "0",
+        "description": "",
+        "order": 1,
+        "value": "手工配置"
+      },
+      {
+        "code": "1",
+        "description": "",
+        "order": 2,
+        "value": "数据库字典表"
+      },
+      {
+        "code": "2",
+        "description": "",
+        "order": 3,
+        "value": "自定义sql"
+      }
+    ]
+  },
+  {
+    "dictCode": "knowledge_type",
+    "name": "知识类型",
+    "list": [
+      {
+        "code": "0",
+        "value": "技术文档",
+        "order": 1,
+        "description": ""
+      },
+      {
+        "code": "1",
+        "value": "操作指南",
+        "order": 2,
+        "description": ""
+      },
+      {
+        "code": "2",
+        "value": "常见问题",
+        "order": 3,
+        "description": ""
+      },
+      {
+        "code": "3",
+        "value": "其他",
+        "order": 4,
         "description": ""
       }
     ]
