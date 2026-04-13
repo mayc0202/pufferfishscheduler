@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin id="FTPUpload" type="Step">
+  <name>FTP上传组件</name>
+  <description>用于FTP上传文件。</description>
+  <category>转换</category>
+  <classname>com.pufferfishscheduler.plugin.FtpUploadStepMeta</classname>
+  <image>ftp-upload.svg</image>
+  <libraries>
+    <library name="lib/pfs-ftpupload-plugin-1.0.0.jar"/>
+  </libraries>
+</plugin>

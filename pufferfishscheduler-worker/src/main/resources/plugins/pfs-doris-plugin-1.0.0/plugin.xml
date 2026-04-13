@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin id="DorisOutput" type="Step">
+  <name>Doris输出组件</name>
+  <description>用于Doris输出数据。</description>
+  <category>转换</category>
+  <classname>com.pufferfishscheduler.plugin.DorisStreamLoader</classname>
+  <image>doris.svg</image>
+  <libraries>
+    <library name="lib/pfs-doris-plugin-1.0.0.jar"/>
+  </libraries>
+</plugin>
+

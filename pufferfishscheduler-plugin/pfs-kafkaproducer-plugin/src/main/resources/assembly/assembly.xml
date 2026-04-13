@@ -1,0 +1,52 @@
+<assembly
+  xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0 http://maven.apache.org/xsd/assembly-1.1.0.xsd">
+  <id>bin</id>
+  <formats>
+    <format>zip</format>
+  </formats>
+   <files>
+    <file>
+      <source>${project.basedir}/src/main/resources/version.xml</source>
+      <outputDirectory>.</outputDirectory>
+      <filtered>true</filtered>
+    </file>
+    <file>
+      <source>${project.basedir}/src/main/resources/plugin.xml</source>
+      <outputDirectory>.</outputDirectory>
+      <filtered>false</filtered>
+    </file>
+    <file>
+      <source>${project.basedir}/src/main/resources/kafka-output.svg</source>
+      <outputDirectory>.</outputDirectory>
+      <filtered>false</filtered>
+    </file>
+  </files>
+  <fileSets>
+    <fileSet>
+      <directory>${project.build.directory}</directory>
+      <!-- 不要把项目 jar 放在插件目录根部，否则 Kettle 会按 “jar plugin” 方式注册，触发注解扫描 NPE -->
+      <outputDirectory>lib/</outputDirectory>
+      <includes>
+        <include>${project.build.finalName}.jar</include>
+      </includes>
+    </fileSet>
+  </fileSets>
+  <dependencySets>
+    <dependencySet>
+      <outputDirectory>lib/</outputDirectory>
+      <useProjectArtifact>false</useProjectArtifact>
+      <scope>runtime</scope>
+      <!-- 插件必须避免自带 Kettle 核心包，否则会出现注解类型不一致导致 Step 扫描 NPE -->
+      <excludes>
+        <exclude>pentaho-kettle:kettle-core</exclude>
+        <exclude>pentaho-kettle:kettle-engine</exclude>
+        <exclude>pentaho-kettle:kettle-dbdialog</exclude>
+        <exclude>pentaho-kettle:kettle-ui-swt</exclude>
+        <exclude>org.pentaho:pentaho-metadata</exclude>
+      </excludes>
+    </dependencySet>
+  </dependencySets>
+</assembly>
+

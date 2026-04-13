@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin id="DebeziumJson" type="Step">
+  <name>Debezium报文解析</name>
+  <description>用于解析Debezium JSON报文。</description>
+  <category>转换</category>
+  <classname>com.pufferfishscheduler.plugin.DebeziumJsonStepMeta</classname>
+  <image>debezium.svg</image>
+  <libraries>
+    <library name="lib/pfs-debeziumjson-plugin-1.0.0.jar"/>
+  </libraries>
+</plugin>

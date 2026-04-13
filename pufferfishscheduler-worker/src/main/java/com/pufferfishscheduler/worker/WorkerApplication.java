@@ -1,5 +1,6 @@
 package com.pufferfishscheduler.worker;
 
+import com.pufferfishscheduler.common.utils.PoiJvmBootstrap;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -15,6 +16,7 @@ import org.springframework.context.annotation.ComponentScan;
 @MapperScan("com.pufferfishscheduler.dao.mapper") // 扫描所有Mapper接口
 public class WorkerApplication {
     public static void main(String[] args) {
+        PoiJvmBootstrap.ensureLargeOoxmlReadLimits();
         SpringApplication.run(WorkerApplication.class, args);
     }
 }

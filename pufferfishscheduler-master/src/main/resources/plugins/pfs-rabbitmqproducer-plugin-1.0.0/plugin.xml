@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin id="RabbitMqProducerOutput" type="Step">
+  <name>RabbitMQ输出</name>
+  <description>向 RabbitMQ 发布消息。</description>
+  <category>输出</category>
+  <classname>com.pufferfishscheduler.plugin.RabbitMqProducerOutputMeta</classname>
+  <image>rabbitmq-output.svg</image>
+  <libraries>
+    <library name="lib/pfs-rabbitmqproducer-plugin-1.0.0.jar"/>
+  </libraries>
+</plugin>

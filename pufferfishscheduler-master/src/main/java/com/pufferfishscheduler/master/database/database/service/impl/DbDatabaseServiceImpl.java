@@ -18,10 +18,14 @@ import com.pufferfishscheduler.dao.entity.DbDatabase;
 import com.pufferfishscheduler.dao.entity.DbGroup;
 import com.pufferfishscheduler.dao.mapper.DbDatabaseMapper;
 import com.pufferfishscheduler.domain.form.database.DbDatabaseForm;
-import com.pufferfishscheduler.domain.model.database.DatabaseConnectionInfo;
+import com.pufferfishscheduler.domain.model.database.DBConnectionInfo;
 import com.pufferfishscheduler.domain.vo.database.DatabaseVo;
 import com.pufferfishscheduler.master.database.connect.ftp.AbstractFTPConnector;
 import com.pufferfishscheduler.master.database.connect.ftp.FTPConnectorFactory;
+import com.pufferfishscheduler.master.database.connect.mq.AbstractMQConnector;
+import com.pufferfishscheduler.master.database.connect.mq.MQConnectorFactory;
+import com.pufferfishscheduler.master.database.connect.nosql.AbstractNoSqlConnector;
+import com.pufferfishscheduler.master.database.connect.nosql.NoSqlConnectorFactory;
 import com.pufferfishscheduler.master.database.connect.relationdb.AbstractDatabaseConnector;
 import com.pufferfishscheduler.master.database.connect.relationdb.DatabaseConnectorFactory;
 import com.pufferfishscheduler.master.database.database.service.DbDatabaseService;
@@ -40,7 +44,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * (DbDatabase) ServiceImpl
+ * 数据源服务实现类
  *
  * @author mayc
  * @since 2025-06-03 21:22:29
@@ -48,6 +52,51 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 public class DbDatabaseServiceImpl extends ServiceImpl<DbDatabaseMapper, DbDatabase> implements DbDatabaseService {
+
+    /**
+     * 需要校验Schema的数据库类型
+     */
+    private static final Set<String> SCHEMA_REQUIRED_TYPES = Set.of(
+            Constants.DATABASE_TYPE.ORACLE,
+            Constants.DATABASE_TYPE.DM8
+    );
+
+    /**
+     * 关系型数据库类型集合
+     */
+    private static final Set<String> RELATIONAL_DB_TYPES = Set.of(
+            Constants.DATABASE_TYPE.MYSQL,
+            Constants.DATABASE_TYPE.ORACLE,
+            Constants.DATABASE_TYPE.POSTGRESQL,
+            Constants.DATABASE_TYPE.SQL_SERVER,
+            Constants.DATABASE_TYPE.DM8,
+            Constants.DATABASE_TYPE.DORIS,
+            Constants.DATABASE_TYPE.STAR_ROCKS
+    );
+
+    /**
+     * FTP类型集合
+     */
+    private static final Set<String> FTP_TYPES = Set.of(
+            Constants.FTP_TYPE.FTP,
+            Constants.FTP_TYPE.FTPS
+    );
+
+    /**
+     * NoSQL类型集合
+     */
+    private static final Set<String> NOSQL_TYPES = Set.of(
+            Constants.DATABASE_TYPE.REDIS,
+            Constants.DATABASE_TYPE.MONGODB
+    );
+
+    /**
+     * MQ类型集合
+     */
+    private static final Set<String> MQ_TYPES = Set.of(
+            Constants.DATABASE_TYPE.KAFKA,
+            Constants.DATABASE_TYPE.RABBITMQ
+    );
 
     @Autowired
     private AESUtil aesUtil;
@@ -65,115 +114,37 @@ public class DbDatabaseServiceImpl extends ServiceImpl<DbDatabaseMapper, DbDatab
     @Lazy
     private DictService dictService;
 
-    /**
-     * 获取数据源集合
-     *
-     * @param groupId
-     * @param dbId
-     * @param name
-     * @param pageNo
-     * @param pageSize
-     * @return
-     */
+    // ==================== 查询方法 ====================
+
     @Override
     public IPage<DatabaseVo> list(Integer groupId, Integer dbId, String name, Integer pageNo, Integer pageSize) {
+        Map<Integer, String> groupMap = getGroupNameMap();
+        LambdaQueryWrapper<DbDatabase> queryWrapper = buildQueryWrapper(groupId, dbId, name);
+        Page<DbDatabase> page = dbDatabaseDao.selectPage(new Page<>(pageNo, pageSize), queryWrapper);
 
-        // 查询出所有分组
-        List<DbGroup> dbGroups = dbGroupService.getGroupList(null);
-        Map<Integer, String> groupMap = dbGroups.stream().collect(Collectors.toMap(DbGroup::getId, DbGroup::getName));
+        List<DatabaseVo> databaseList = page.getRecords().stream()
+                .map(database -> convertToDatabaseVo(database, groupMap))
+                .collect(Collectors.toList());
 
-        LambdaQueryWrapper<DbDatabase> ldq = buildQueryWrapper(groupId, dbId, name);
-        Page<DbDatabase> page = dbDatabaseDao.selectPage(new Page<>(pageNo, pageSize), ldq);
-
-        List<DatabaseVo> databaseList = new ArrayList<>();
-        for (DbDatabase database : page.getRecords()) {
-            DatabaseVo vo = convertDatabaseVo(database, groupMap);
-            databaseList.add(vo);
-        }
-
-        Page<DatabaseVo> result = new Page<>();
-        result.setRecords(databaseList);
-        result.setTotal(page.getTotal());
-        result.setSize(page.getSize());
-        result.setCurrent(page.getCurrent());
-
-        return result;
+        return convertToPageResult(databaseList, page);
     }
 
-    /**
-     * 根据数据库大类获取数据源集合
-     *
-     * @param category
-     * @return
-     */
     @Override
     public List<DbDatabase> listByCategory(String category) {
         LambdaQueryWrapper<DbDatabase> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(DbDatabase::getDeleted, Constants.DELETE_FLAG.FALSE);
+
         if (StringUtils.isNotBlank(category)) {
             queryWrapper.eq(DbDatabase::getCategory, category);
         }
+
         return dbDatabaseDao.selectList(queryWrapper);
     }
 
-    /**
-     * 构建查询条件
-     *
-     * @param groupId
-     * @param dbId
-     * @param name
-     * @return
-     */
-    private LambdaQueryWrapper<DbDatabase> buildQueryWrapper(Integer groupId, Integer dbId, String name) {
-        LambdaQueryWrapper<DbDatabase> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(DbDatabase::getDeleted, Constants.DELETE_FLAG.FALSE);
-
-        if (Objects.nonNull(groupId)) {
-            queryWrapper.eq(DbDatabase::getGroupId, groupId);
-        }
-
-        if (Objects.nonNull(dbId)) {
-            queryWrapper.eq(DbDatabase::getId, dbId);
-        }
-
-        if (StringUtils.isNotBlank(name)) {
-            queryWrapper.like(DbDatabase::getName, name);
-        }
-
-        return queryWrapper;
-    }
-
-    /**
-     * 转换数据源信息为Vo
-     *
-     * @param dbDatabase
-     * @param groupMap
-     * @return
-     */
-    private DatabaseVo convertDatabaseVo(DbDatabase dbDatabase, Map<Integer, String> groupMap) {
-        DatabaseVo vo = new DatabaseVo();
-        BeanUtils.copyProperties(dbDatabase, vo);
-        vo.setGroupName(groupMap.getOrDefault(vo.getGroupId(), ""));
-        vo.setLabelName(dictService.getDictItemValue(Constants.DICT.DATA_SOURCE_LAYERING, dbDatabase.getLabel()));
-        vo.setCategoryName(dictService.getDictItemValue(Constants.DICT.DATABASE_CATEGORY, dbDatabase.getLabel()));
-        vo.setCreatedTimeTxt(DateUtil.formatDateTime(vo.getCreatedTime()));
-
-        if (StringUtils.isNotBlank(dbDatabase.getProperties()) && "{}".equals(dbDatabase.getProperties())) {
-            vo.setProperties(null);
-        }
-        return vo;
-    }
-
-    /**
-     * 获取FTP数据源集合
-     *
-     * @param name
-     * @return
-     */
     @Override
     public List<DbDatabase> listFTPDatabaseList(String name) {
         LambdaQueryWrapper<DbDatabase> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.in(DbDatabase::getType, Arrays.asList(Constants.FTP_TYPE.FTP, Constants.FTP_TYPE.FTPS))
+        queryWrapper.in(DbDatabase::getType, FTP_TYPES)
                 .eq(DbDatabase::getDeleted, Constants.DELETE_FLAG.FALSE);
 
         if (StringUtils.isNotBlank(name)) {
@@ -181,21 +152,12 @@ public class DbDatabaseServiceImpl extends ServiceImpl<DbDatabaseMapper, DbDatab
         }
 
         List<DbDatabase> result = dbDatabaseDao.selectList(queryWrapper);
-        if (result.isEmpty()) {
-            return Collections.emptyList();
-        }
-        return result;
+        return CollectionUtils.isEmpty(result) ? Collections.emptyList() : result;
     }
 
-    /**
-     * 通过分组id获取数据源集合
-     *
-     * @param groupId
-     * @return
-     */
     @Override
     public List<DbDatabase> listDatabasesByGroupId(int groupId) {
-        if (Objects.isNull(groupId)) {
+        if (groupId <= 0) {
             return Collections.emptyList();
         }
 
@@ -204,20 +166,9 @@ public class DbDatabaseServiceImpl extends ServiceImpl<DbDatabaseMapper, DbDatab
                 .eq(DbDatabase::getGroupId, groupId);
 
         List<DbDatabase> list = dbDatabaseDao.selectList(queryWrapper);
-        if (CollectionUtils.isEmpty(list)) {
-            return Collections.emptyList();
-        }
-        return list;
+        return CollectionUtils.isEmpty(list) ? Collections.emptyList() : list;
     }
 
-
-    /**
-     * 通过分组id集合获取数据源集合
-     *
-     * @param groupIds 数据源分组id集合
-     * @param category 数据库类型
-     * @return
-     */
     @Override
     public List<DbDatabase> listDatabasesByGroupIds(Set<Integer> groupIds, String category) {
         if (CollectionUtils.isEmpty(groupIds)) {
@@ -233,242 +184,44 @@ public class DbDatabaseServiceImpl extends ServiceImpl<DbDatabaseMapper, DbDatab
         }
 
         List<DbDatabase> list = dbDatabaseDao.selectList(queryWrapper);
-        if (CollectionUtils.isEmpty(list)) {
-            return Collections.emptyList();
-        }
-        return list;
+        return CollectionUtils.isEmpty(list) ? Collections.emptyList() : list;
     }
 
-
-    /**
-     * 添加数据源
-     *
-     * @param form
-     */
-    @Transactional(rollbackFor = Exception.class)
-    @Override
-    public void add(DbDatabaseForm form) {
-
-        // 校验当前分类下数据源是否存在
-        verifyDbNameExisted(form.getName(), form.getGroupId());
-
-        // 密码入库加密
-        String decrypt = rsaUtil.decrypt(form.getPassword());
-        String pwd = aesUtil.encrypt(decrypt);
-
-        DbDatabase dbDatabase = new DbDatabase();
-        BeanUtils.copyProperties(form, dbDatabase, "password");
-        dbDatabase.setPassword(pwd);
-        dbDatabase.setCreatedBy(UserContext.getCurrentAccount());
-        dbDatabase.setCreatedTime(new Date());
-
-        // 处理数据源参数
-        DatabaseConnectionInfo databaseConnectionInfo = new DatabaseConnectionInfo();
-        BeanUtils.copyProperties(form, databaseConnectionInfo);
-
-        JSONObject properties = new JSONObject();
-        handleProperties(databaseConnectionInfo, properties);
-        dbDatabase.setProperties(properties.toJSONString());
-
-        // 处理扩展配置
-        JSONObject extConfig = new JSONObject();
-        handExtConfig(databaseConnectionInfo, extConfig);
-        dbDatabase.setExtConfig(extConfig.toJSONString());
-
-        dbDatabaseDao.insert(dbDatabase);
-    }
-
-    /**
-     * 修改数据源
-     *
-     * @param form
-     */
-    @Transactional(rollbackFor = Exception.class)
-    @Override
-    public void update(DbDatabaseForm form) {
-
-        if (Objects.isNull(form.getId())) {
-            throw new BusinessException("请校验数据源id是否为空!");
-        }
-
-        DbDatabase dbDatabase = getDatabaseById(form.getId());
-        if (Objects.isNull(dbDatabase)) {
-            throw new BusinessException("请校验数据源是否存在!");
-        }
-
-        // 校验数据源是否已存在
-        verifyDbNameExisted(form.getName(), form.getGroupId());
-
-        // 密码入库加密
-        String decrypt = rsaUtil.decrypt(form.getPassword());
-        String pwd = aesUtil.encrypt(decrypt);
-
-        BeanUtils.copyProperties(form, dbDatabase, "password");
-        dbDatabase.setPassword(pwd);
-        dbDatabase.setUpdatedBy(UserContext.getCurrentAccount());
-        dbDatabase.setUpdatedTime(new Date());
-
-        // 处理数据源参数
-        DatabaseConnectionInfo databaseConnectionInfo = new DatabaseConnectionInfo();
-        BeanUtils.copyProperties(form, databaseConnectionInfo);
-
-        JSONObject properties = new JSONObject();
-        handleProperties(databaseConnectionInfo, properties);
-        dbDatabase.setProperties(properties.toJSONString());
-
-        // 处理扩展配置
-        JSONObject extConfig = new JSONObject();
-        handExtConfig(databaseConnectionInfo, extConfig);
-        dbDatabase.setExtConfig(extConfig.toJSONString());
-
-        dbDatabaseDao.updateById(dbDatabase);
-    }
-
-    /**
-     * 删除数据源
-     *
-     * @param id
-     */
-    @Transactional(rollbackFor = Exception.class)
-    @Override
-    public void delete(Integer id) {
-
-        if (Objects.isNull(id)) {
-            throw new BusinessException("请校验数据源id是否为空!");
-        }
-
-        // 使用 UpdateWrapper 进行更新
-        UpdateWrapper<DbDatabase> updateWrapper = new UpdateWrapper<>();
-        updateWrapper.eq("id", id)
-                .eq("deleted", Constants.DELETE_FLAG.FALSE)
-                .set("deleted", Constants.DELETE_FLAG.TRUE)
-                .set("updated_by", UserContext.getCurrentAccount())
-                .set("updated_time", new Date());
-
-        dbDatabaseDao.update(null, updateWrapper);
-    }
-
-    /**
-     * 获取数据源详情
-     *
-     * @param id
-     * @return
-     */
     @Override
     public DatabaseVo detail(Integer id) {
-        if (Objects.isNull(id)) {
-            throw new BusinessException("请校验数据源id是否为空!");
-        }
+        validateId(id, "数据源id");
 
         DbDatabase dbDatabase = getDatabaseById(id);
         DbGroup group = dbGroupService.getById(dbDatabase.getGroupId());
-        Map<Integer, String> groupMap = new HashMap<>();
-        groupMap.put(group.getId(), group.getName());
-
-        DatabaseVo databaseVo = convertDatabaseVo(dbDatabase, groupMap);
-
-        // AES解密再Base64加密
-        try {
-            String decrypt = aesUtil.decrypt(dbDatabase.getPassword());
-            String encode = Base64Util.encode(decrypt);
-            databaseVo.setPassword(encode);
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new BusinessException(String.format("数据源[%s]密码解密失败!", databaseVo.getDbName()));
+        Map<Integer, String> groupMap = Map.of(group.getId(), group.getName());
+        
+        DatabaseVo databaseVo = convertToDatabaseVo(dbDatabase, groupMap);
+        if (!Constants.DATABASE_TYPE.KAFKA.equals(dbDatabase.getType())) {
+            databaseVo.setPassword(decryptAndEncodePassword(dbDatabase.getPassword()));
         }
-
         return databaseVo;
     }
 
-    /**
-     * 测试连接
-     *
-     * @param form
-     */
-    @Override
-    public void testConnect(DbDatabaseForm form) {
-        DatabaseConnectionInfo databaseConnectionInfo = new DatabaseConnectionInfo();
-        BeanUtils.copyProperties(form, databaseConnectionInfo);
-        connect(databaseConnectionInfo);
-    }
-
-    /**
-     * 数据源连接
-     *
-     * @param databaseConnectionInfo
-     */
-    @Override
-    public void connect(DatabaseConnectionInfo databaseConnectionInfo) {
-        switch (databaseConnectionInfo.getType()) {
-            case Constants.DATABASE_TYPE.MYSQL:
-            case Constants.DATABASE_TYPE.ORACLE:
-            case Constants.DATABASE_TYPE.POSTGRESQL:
-            case Constants.DATABASE_TYPE.SQL_SERVER:
-            case Constants.DATABASE_TYPE.DM8:
-            case Constants.DATABASE_TYPE.DORIS:
-            case Constants.DATABASE_TYPE.STAR_ROCKS:
-                connectDatabase(databaseConnectionInfo);
-                break;
-            case Constants.FTP_TYPE.FTP:
-            case Constants.FTP_TYPE.FTPS:
-                connectFTP(databaseConnectionInfo);
-                break;
-            case Constants.DATABASE_TYPE.REDIS:
-                break;
-            case Constants.DATABASE_TYPE.MONGODB:
-                break;
-            case Constants.DATABASE_TYPE.KAFKA:
-                break;
-            default:
-                throw new BusinessException(String.format("未知的数据源类型:%s!", databaseConnectionInfo.getType()));
-        }
-    }
-
-    /**
-     * 验证数据源是否存在
-     *
-     * @param dbId
-     */
-    @Override
-    public void validateDbExist(Integer dbId) {
-        LambdaQueryWrapper<DbDatabase> ldq = new LambdaQueryWrapper<>();
-        ldq.eq(DbDatabase::getId, dbId).eq(DbDatabase::getDeleted, Constants.DELETE_FLAG.FALSE);
-
-        DbDatabase database = dbDatabaseDao.selectOne(ldq);
-        if (database == null) {
-            throw new BusinessException(String.format("请校验id[%s]数据源是否已存在!", dbId));
-        }
-    }
-
-    /**
-     * 获取数据源信息
-     *
-     * @param id
-     * @return
-     */
     @Override
     public DbDatabase getDatabaseById(Integer id) {
-        LambdaQueryWrapper<DbDatabase> ldq = new LambdaQueryWrapper<>();
-        ldq.eq(DbDatabase::getId, id).eq(DbDatabase::getDeleted, Constants.DELETE_FLAG.FALSE);
+        validateId(id, "数据源id");
 
-        DbDatabase database = dbDatabaseDao.selectOne(ldq);
+        LambdaQueryWrapper<DbDatabase> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(DbDatabase::getId, id)
+                .eq(DbDatabase::getDeleted, Constants.DELETE_FLAG.FALSE);
+
+        DbDatabase database = dbDatabaseDao.selectOne(queryWrapper);
         if (Objects.isNull(database)) {
-            throw new BusinessException(String.format("请校验id[%s]数据源是否已存在!", id));
+            throw new BusinessException(String.format("数据源[id=%s]不存在", id));
         }
 
         return database;
     }
 
-    /**
-     * 获取数据源连接信息
-     *
-     * @param id 数据源id
-     * @return 数据源连接信息
-     */
     @Override
-    public DatabaseConnectionInfo getDatabaseConnectionInfo(Integer id) {
+    public DBConnectionInfo getDatabaseConnectionInfo(Integer id) {
         DbDatabase info = getDatabaseById(id);
-        return DatabaseConnectionInfo.builder()
+        return DBConnectionInfo.builder()
                 .type(info.getType())
                 .dbHost(info.getDbHost())
                 .dbPort(String.valueOf(info.getDbPort()))
@@ -479,195 +232,469 @@ public class DbDatabaseServiceImpl extends ServiceImpl<DbDatabaseMapper, DbDatab
                 .build();
     }
 
-    /**
-     * 构建数据源连接器
-     *
-     * @param databaseInfo
-     * @return
-     */
     @Override
-    public AbstractDatabaseConnector buildDbConnector(DatabaseConnectionInfo databaseInfo) {
-        // 获取连接器
+    public void validateDbExist(Integer dbId) {
+        validateId(dbId, "数据源id");
+
+        LambdaQueryWrapper<DbDatabase> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(DbDatabase::getId, dbId)
+                .eq(DbDatabase::getDeleted, Constants.DELETE_FLAG.FALSE);
+
+        DbDatabase database = dbDatabaseDao.selectOne(queryWrapper);
+        if (database == null) {
+            throw new BusinessException(String.format("数据源[id=%s]不存在", dbId));
+        }
+    }
+
+    // ==================== 增删改方法 ====================
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void add(DbDatabaseForm form) {
+        validateForm(form);
+        verifyDbNameExisted(form.getName(), form.getGroupId());
+
+        DbDatabase dbDatabase = buildDatabaseFromForm(form);
+        dbDatabase.setCreatedBy(UserContext.getCurrentAccount());
+        dbDatabase.setCreatedTime(new Date());
+
+        setConnectionInfoAndConfig(dbDatabase, form);
+        dbDatabaseDao.insert(dbDatabase);
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void update(DbDatabaseForm form) {
+        validateId(form.getId(), "数据源id");
+
+        DbDatabase dbDatabase = getDatabaseById(form.getId());
+        verifyDbNameExisted(form.getName(), form.getGroupId());
+
+        updateDatabaseFromForm(dbDatabase, form);
+        dbDatabase.setUpdatedBy(UserContext.getCurrentAccount());
+        dbDatabase.setUpdatedTime(new Date());
+
+        setConnectionInfoAndConfig(dbDatabase, form);
+        dbDatabaseDao.updateById(dbDatabase);
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void delete(Integer id) {
+        validateId(id, "数据源id");
+
+        UpdateWrapper<DbDatabase> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("id", id)
+                .eq("deleted", Constants.DELETE_FLAG.FALSE)
+                .set("deleted", Constants.DELETE_FLAG.TRUE)
+                .set("updated_by", UserContext.getCurrentAccount())
+                .set("updated_time", new Date());
+
+        dbDatabaseDao.update(null, updateWrapper);
+    }
+
+    // ==================== 连接测试方法 ====================
+
+    @Override
+    public void testConnect(DbDatabaseForm form) {
+        validateForm(form);
+        DBConnectionInfo connectionInfo = new DBConnectionInfo();
+        BeanUtils.copyProperties(form, connectionInfo);
+        connect(connectionInfo);
+    }
+
+    @Override
+    public void connect(DBConnectionInfo connectionInfo) {
+        String type = connectionInfo.getType();
+
+        if (RELATIONAL_DB_TYPES.contains(type)) {
+            connectRelationalDatabase(connectionInfo);
+        } else if (FTP_TYPES.contains(type)) {
+            connectFTP(connectionInfo);
+        } else if (NOSQL_TYPES.contains(type)) {
+            connectNoSQL(connectionInfo);
+        } else if (MQ_TYPES.contains(type)) {
+            connectMQ(connectionInfo);
+        } else {
+            throw new BusinessException(String.format("未知的数据源类型: %s", type));
+        }
+    }
+
+    @Override
+    public AbstractDatabaseConnector buildDbConnector(DBConnectionInfo databaseInfo) {
         AbstractDatabaseConnector connector = DatabaseConnectorFactory.getConnector(databaseInfo.getType());
         connector.setDbName(databaseInfo.getDbName());
         connector.setUsername(databaseInfo.getUsername());
-
-        //判断密码是否为空
-        if (StringUtils.isNotBlank(databaseInfo.getPassword())) {
-            // 解密
-            String decrypt = rsaUtil.decrypt(databaseInfo.getPassword());
-            connector.setPassword(decrypt);
-        } else {
-            DbDatabase dbDatabase = dbDatabaseDao.selectById(databaseInfo.getId());
-            String decodePassword = aesUtil.decrypt(dbDatabase.getPassword());
-            connector.setPassword(decodePassword);
-        }
-
+        connector.setPassword(resolvePassword(databaseInfo));
         connector.setHost(databaseInfo.getDbHost().trim());
+
         if (StringUtils.isNotBlank(databaseInfo.getDbPort())) {
             connector.setPort(Integer.parseInt(databaseInfo.getDbPort()));
         }
+
         connector.setSchema(databaseInfo.getDbSchema());
-
-        // 处理参数
-        JSONObject param = new JSONObject();
-        handleProperties(databaseInfo, param);
-
-        //获取数据库中已保存的properties
-        if (StringUtils.isNotBlank(databaseInfo.getProperties())) {
-            connector.setProperties(databaseInfo.getProperties());
-        } else {
-            connector.setProperties(param.toJSONString());
-        }
-
-        JSONObject extConfig = new JSONObject();
-        handExtConfig(databaseInfo, extConfig);
-        connector.setExtConfig(extConfig.toJSONString());
-
+        connector.setProperties(resolveProperties(databaseInfo));
+        connector.setExtConfig(resolveExtConfig(databaseInfo));
         connector.setType(databaseInfo.getType());
-
         connector.build();
 
         return connector;
     }
 
-    /**
-     * 连接数据库
-     *
-     * @param databaseInfo
-     */
-    public void connectDatabase(DatabaseConnectionInfo databaseInfo) {
+    // ==================== 私有辅助方法 ====================
 
-        // 单独校验schema
-        if ((Constants.DATABASE_TYPE.ORACLE.equals(databaseInfo.getType()) || Constants.DATABASE_TYPE.DM8.equals(databaseInfo.getType())) && StringUtils.isBlank(databaseInfo.getDbSchema())) {
+    /**
+     * 获取分组名称映射
+     */
+    private Map<Integer, String> getGroupNameMap() {
+        List<DbGroup> dbGroups = dbGroupService.getGroupList(null);
+        return dbGroups.stream()
+                .collect(Collectors.toMap(DbGroup::getId, DbGroup::getName));
+    }
+
+    /**
+     * 构建查询条件
+     */
+    /**
+     * 构建查询条件
+     */
+    private LambdaQueryWrapper<DbDatabase> buildQueryWrapper(Integer groupId, Integer dbId, String name) {
+        LambdaQueryWrapper<DbDatabase> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(DbDatabase::getDeleted, Constants.DELETE_FLAG.FALSE);
+
+        if (groupId != null) {
+            queryWrapper.eq(DbDatabase::getGroupId, groupId);
+        }
+
+        if (dbId != null) {
+            queryWrapper.eq(DbDatabase::getId, dbId);
+        }
+
+        if (StringUtils.isNotBlank(name)) {
+            queryWrapper.like(DbDatabase::getName, name);
+        }
+
+        return queryWrapper;
+    }
+
+    /**
+     * 转换为分页结果
+     */
+    private Page<DatabaseVo> convertToPageResult(List<DatabaseVo> records, Page<DbDatabase> sourcePage) {
+        Page<DatabaseVo> result = new Page<>();
+        result.setRecords(records);
+        result.setTotal(sourcePage.getTotal());
+        result.setSize(sourcePage.getSize());
+        result.setCurrent(sourcePage.getCurrent());
+        return result;
+    }
+
+    /**
+     * 转换为DatabaseVo
+     */
+    private DatabaseVo convertToDatabaseVo(DbDatabase dbDatabase, Map<Integer, String> groupMap) {
+        DatabaseVo vo = new DatabaseVo();
+        BeanUtils.copyProperties(dbDatabase, vo);
+        vo.setGroupName(groupMap.getOrDefault(vo.getGroupId(), ""));
+        vo.setLabelName(dictService.getDictItemValue(Constants.DICT.DATA_SOURCE_LAYERING, dbDatabase.getLabel()));
+        vo.setCategoryName(dictService.getDictItemValue(Constants.DICT.DATABASE_CATEGORY, dbDatabase.getCategory()));
+        vo.setCreatedTimeTxt(DateUtil.formatDateTime(vo.getCreatedTime()));
+
+        if (isInvalidProperties(dbDatabase.getProperties())) {
+            vo.setProperties(null);
+        }
+        return vo;
+    }
+
+    /**
+     * 判断properties是否无效
+     */
+    private boolean isInvalidProperties(String properties) {
+        return StringUtils.isNotBlank(properties) && "{}".equals(properties);
+    }
+
+    /**
+     * 从Form构建Database实体
+     */
+    private DbDatabase buildDatabaseFromForm(DbDatabaseForm form) {
+        DbDatabase dbDatabase = new DbDatabase();
+        BeanUtils.copyProperties(form, dbDatabase, "password");
+
+        if (isRelationalDatabase(form.getType())) {
+            validateRelationalDbCredentials(form.getUsername(), form.getPassword());
+            if (StringUtils.isNotBlank(form.getPassword())) {
+                dbDatabase.setPassword(encryptPassword(form.getPassword()));
+            }
+        }
+
+        return dbDatabase;
+    }
+
+    /**
+     * 从Form更新Database实体
+     */
+    private void updateDatabaseFromForm(DbDatabase dbDatabase, DbDatabaseForm form) {
+        String encryptedPassword = encryptPassword(form.getPassword());
+        BeanUtils.copyProperties(form, dbDatabase, "password");
+        dbDatabase.setPassword(encryptedPassword);
+    }
+
+    /**
+     * 设置连接信息和配置
+     */
+    private void setConnectionInfoAndConfig(DbDatabase dbDatabase, DbDatabaseForm form) {
+        DBConnectionInfo connectionInfo = new DBConnectionInfo();
+        BeanUtils.copyProperties(form, connectionInfo);
+
+        dbDatabase.setProperties(buildPropertiesJson(connectionInfo));
+        dbDatabase.setExtConfig(buildExtConfigJson(connectionInfo));
+    }
+
+    /**
+     * 构建Properties JSON
+     */
+    private String buildPropertiesJson(DBConnectionInfo connectionInfo) {
+        JSONObject properties = new JSONObject();
+
+        Optional.ofNullable(connectionInfo.getMode())
+                .filter(StringUtils::isNotBlank)
+                .ifPresent(v -> properties.put(Constants.FTP_PROPERTIES.MODE, v));
+
+        Optional.ofNullable(connectionInfo.getControlEncoding())
+                .filter(StringUtils::isNotBlank)
+                .ifPresent(v -> properties.put(Constants.FTP_PROPERTIES.CONTROL_ENCODING, v));
+
+        return properties.toJSONString();
+    }
+
+    /**
+     * 构建扩展配置JSON
+     */
+    private String buildExtConfigJson(DBConnectionInfo connectionInfo) {
+        JSONObject extConfig = new JSONObject();
+
+        Optional.ofNullable(connectionInfo.getFeAddress())
+                .filter(StringUtils::isNotBlank)
+                .ifPresent(v -> extConfig.put(Constants.DATABASE_EXT_CONFIG.FE_ADDRESS, v));
+
+        Optional.ofNullable(connectionInfo.getBeAddress())
+                .filter(StringUtils::isNotBlank)
+                .ifPresent(v -> extConfig.put(Constants.DATABASE_EXT_CONFIG.BE_ADDRESS, v));
+
+        return extConfig.toJSONString();
+    }
+
+    /**
+     * 密码加密
+     */
+    private String encryptPassword(String password) {
+        if (StringUtils.isBlank(password)) {
+            return null;
+        }
+        String decrypted = rsaUtil.decrypt(password);
+        return aesUtil.encrypt(decrypted);
+    }
+
+    /**
+     * 密码解密并Base64编码
+     */
+    private String decryptAndEncodePassword(String encryptedPassword) {
+        try {
+            String decrypted = aesUtil.decrypt(encryptedPassword);
+            return Base64Util.encode(decrypted);
+        } catch (Exception e) {
+            log.error("密码解密失败", e);
+            throw new BusinessException("数据源密码解密失败!");
+        }
+    }
+
+    /**
+     * 解析密码（优先使用传入密码，否则从数据库获取）
+     */
+    private String resolvePassword(DBConnectionInfo databaseInfo) {
+        if (StringUtils.isNotBlank(databaseInfo.getPassword())) {
+            return rsaUtil.decrypt(databaseInfo.getPassword());
+        }
+
+        if (databaseInfo.getId() != null) {
+            DbDatabase dbDatabase = dbDatabaseDao.selectById(databaseInfo.getId());
+            if (dbDatabase != null) {
+                return aesUtil.decrypt(dbDatabase.getPassword());
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * 解析Properties
+     */
+    private String resolveProperties(DBConnectionInfo databaseInfo) {
+        if (StringUtils.isNotBlank(databaseInfo.getProperties())) {
+            return databaseInfo.getProperties();
+        }
+
+        JSONObject param = new JSONObject();
+        Optional.ofNullable(databaseInfo.getMode())
+                .filter(StringUtils::isNotBlank)
+                .ifPresent(v -> param.put(Constants.FTP_PROPERTIES.MODE, v));
+
+        Optional.ofNullable(databaseInfo.getControlEncoding())
+                .filter(StringUtils::isNotBlank)
+                .ifPresent(v -> param.put(Constants.FTP_PROPERTIES.CONTROL_ENCODING, v));
+
+        return param.toJSONString();
+    }
+
+    /**
+     * 解析扩展配置
+     */
+    private String resolveExtConfig(DBConnectionInfo databaseInfo) {
+        JSONObject extConfig = new JSONObject();
+
+        Optional.ofNullable(databaseInfo.getFeAddress())
+                .filter(StringUtils::isNotBlank)
+                .ifPresent(v -> extConfig.put(Constants.DATABASE_EXT_CONFIG.FE_ADDRESS, v));
+
+        Optional.ofNullable(databaseInfo.getBeAddress())
+                .filter(StringUtils::isNotBlank)
+                .ifPresent(v -> extConfig.put(Constants.DATABASE_EXT_CONFIG.BE_ADDRESS, v));
+
+        return extConfig.toJSONString();
+    }
+
+    /**
+     * 连接关系型数据库
+     */
+    private void connectRelationalDatabase(DBConnectionInfo connectionInfo) {
+        validateRelationalDbCredentials(connectionInfo.getUsername(), connectionInfo.getPassword());
+
+        // Oracle和达梦需要校验Schema
+        if (SCHEMA_REQUIRED_TYPES.contains(connectionInfo.getType()) && StringUtils.isBlank(connectionInfo.getDbSchema())) {
             throw new BusinessException("请校验模式(Schema)是否为空!");
         }
 
-        // 获取连接器
-        AbstractDatabaseConnector connector = buildDbConnector(databaseInfo);
-        ConResponse response = connector.connect(databaseInfo.getType());
+        AbstractDatabaseConnector connector = buildDbConnector(connectionInfo);
+        ConResponse response = connector.connect(connectionInfo.getType());
 
-        // 判断ConResponse的标识，如果为false，则抛出异常
         if (!response.getResult()) {
             throw new BusinessException(response.getMsg());
         }
     }
 
-
     /**
-     * 处理参数
-     *
-     * @param databaseInfo
-     * @param properties
+     * 连接NoSQL数据库
      */
-    private void handleProperties(DatabaseConnectionInfo databaseInfo, JSONObject properties) {
+    private void connectNoSQL(DBConnectionInfo connectionInfo) {
+        AbstractNoSqlConnector connector = NoSqlConnectorFactory.getConnector(connectionInfo.getType());
+        connector.setId(connectionInfo.getId());
+        connector.setDbHost(connectionInfo.getDbHost());
+        connector.setDbPort(connectionInfo.getDbPort());
+        connector.setType(connectionInfo.getType());
+        connector.setUsername(connectionInfo.getUsername());
+        connector.setPassword(resolvePassword(connectionInfo));
+        connector.setDatabaseIndex(connectionInfo.getDatabaseIndex());
+        connector.setProperties(connectionInfo.getProperties());
 
-        if (StringUtils.isNotBlank(databaseInfo.getMode())) {
-            properties.put(Constants.FTP_PROPERTIES.MODE, databaseInfo.getMode());
+        ConResponse response = connector.connect();
+        if (!response.getResult()) {
+            throw new BusinessException(response.getMsg());
         }
-
-        if (StringUtils.isNotBlank(databaseInfo.getControlEncoding())) {
-            properties.put(Constants.FTP_PROPERTIES.CONTROL_ENCODING, databaseInfo.getControlEncoding());
-        }
-
-//        String properties = form.getProperties();
-
-//        String extConfig = form.getExtConfig();
-
-//        if (null != form.getUseSSL()) {
-//            map.put("useSSL", form.getUseSSL());
-//        }
-//        if (null != form.getUseCopy()) {
-//            map.put("useCopy", form.getUseCopy());
-//        }
-//        if (StringUtils.isNotBlank(form.getAuthWay())) {
-//            map.put("authWay", form.getAuthWay());
-//        }
-//        if (null != form.getConnectionTimeout()) {
-//            map.put("connectionTimeout", form.getConnectionTimeout());
-//        }
-//        if (null != form.getReadTimeout()) {
-//            map.put("readTimeout", form.getReadTimeout());
-//        }
-//        if (StringUtils.isNotBlank(form.getControlEncoding())) {
-//            map.put("controlEncoding", form.getControlEncoding());
-//        }
-//        if (StringUtils.isNotBlank(form.getMode())) {
-//            map.put("mode", form.getMode());
-//        }
-//        if (StringUtils.isNotBlank(form.getSecretId())) {
-//            map.put("secretId", form.getSecretId());
-//        }
-//        if (StringUtils.isNotBlank(form.getSecretKey())) {
-//            map.put("secretKey", form.getSecretKey());
-//        }
-//        if (StringUtils.isNotBlank(form.getOdpsEndpoint())) {
-//            map.put("odpsEndpoint", form.getOdpsEndpoint());
-//        }
-//        if (StringUtils.isNotBlank(form.getTunnelEndpoint())) {
-//            map.put("tunnelEndpoint", form.getTunnelEndpoint());
-//        }
-//        if (StringUtils.isNotBlank(form.getProject())) {
-//            map.put("project", form.getProject());
-//        }
-//        if (StringUtils.isNotBlank(form.getAccessKeyId())) {
-//            map.put("accessKeyId", form.getAccessKeyId());
-//        }
-//        if (StringUtils.isNotBlank(form.getAccessKeySecret())) {
-//            map.put("accessKeySecret", form.getAccessKeySecret());
-//        }
-//        if (Objects.nonNull(form.getPropertiesList())) {
-//            for (PropertiesForm propertiesForm : form.getPropertiesList()) {
-//                map.put(propertiesForm.getName(), propertiesForm.getValue());
-//            }
-//        }
     }
 
     /**
-     * 处理扩展配置
-     *
-     * @param databaseInfo
-     * @param extConfig
+     * 连接消息队列
      */
-    private void handExtConfig(DatabaseConnectionInfo databaseInfo, JSONObject extConfig) {
-        if (StringUtils.isNotBlank(databaseInfo.getFeAddress())) {
-            extConfig.put(Constants.DATABASE_EXT_CONFIG.FE_ADDRESS, databaseInfo.getFeAddress());
+    private void connectMQ(DBConnectionInfo connectionInfo) {
+        AbstractMQConnector connector = MQConnectorFactory.getConnector(connectionInfo.getType());
+        connector.setId(connectionInfo.getId());
+        connector.setDbHost(connectionInfo.getDbHost());
+        connector.setDbPort(connectionInfo.getDbPort());
+        if (Constants.DATABASE_TYPE.RABBITMQ.equals(connectionInfo.getType())) {
+            connector.setUsername(connectionInfo.getUsername());
+            connector.setPassword(resolvePassword(connectionInfo));
         }
+        connector.setType(connectionInfo.getType());
+        connector.setClientId(connectionInfo.getClientId());
+        connector.setTopic(connectionInfo.getTopic());
+        connector.setQueue(connectionInfo.getQueue());
+        connector.setProperties(connectionInfo.getProperties());
 
-        if (StringUtils.isNotBlank(databaseInfo.getBeAddress())) {
-            extConfig.put(Constants.DATABASE_EXT_CONFIG.BE_ADDRESS, databaseInfo.getBeAddress());
+        ConResponse response = connector.connect();
+        if (!response.getResult()) {
+            throw new BusinessException(response.getMsg());
         }
     }
 
     /**
      * 连接FTP/FTPS
-     *
-     * @param databaseConnectionInfo
      */
-    private void connectFTP(DatabaseConnectionInfo databaseConnectionInfo) {
-        AbstractFTPConnector connector = FTPConnectorFactory.getConnector(databaseConnectionInfo.getType());
-        connector.setHost(databaseConnectionInfo.getDbHost());
-        connector.setPort(Integer.parseInt(databaseConnectionInfo.getDbPort()));
-        connector.setUsername(databaseConnectionInfo.getUsername());
-        connector.setPassword(databaseConnectionInfo.getPassword());
-        connector.setMode(databaseConnectionInfo.getMode());
-        connector.setControlEncoding(databaseConnectionInfo.getControlEncoding());
+    private void connectFTP(DBConnectionInfo connectionInfo) {
+        AbstractFTPConnector connector = FTPConnectorFactory.getConnector(connectionInfo.getType());
+        connector.setHost(connectionInfo.getDbHost());
+        connector.setPort(Integer.parseInt(connectionInfo.getDbPort()));
+        connector.setUsername(connectionInfo.getUsername());
+        connector.setPassword(connectionInfo.getPassword());
+        connector.setMode(connectionInfo.getMode());
+        connector.setControlEncoding(connectionInfo.getControlEncoding());
         connector.connect();
     }
 
     /**
-     * 校验相同分组下数据源名称是否存在
-     *
-     * @param name
+     * 验证表单
+     */
+    private void validateForm(DbDatabaseForm form) {
+        if (form == null) {
+            throw new BusinessException("数据源信息不能为空");
+        }
+        if (StringUtils.isBlank(form.getName())) {
+            throw new BusinessException("数据源名称不能为空");
+        }
+        if (form.getGroupId() == null) {
+            throw new BusinessException("数据源分组不能为空");
+        }
+    }
+
+    /**
+     * 验证ID
+     */
+    private void validateId(Integer id, String fieldName) {
+        if (Objects.isNull(id)) {
+            throw new BusinessException(String.format("%s不能为空", fieldName));
+        }
+    }
+
+    /**
+     * 验证关系型数据库凭证
+     */
+    private void validateRelationalDbCredentials(String username, String password) {
+        if (StringUtils.isBlank(username)) {
+            throw new BusinessException("数据库用户名不能为空");
+        }
+        if (StringUtils.isBlank(password)) {
+            throw new BusinessException("数据库密码不能为空");
+        }
+    }
+
+    /**
+     * 判断是否为关系型数据库
+     */
+    private boolean isRelationalDatabase(String type) {
+        return RELATIONAL_DB_TYPES.contains(type);
+    }
+
+    /**
+     * 验证相同分组下数据源名称是否存在
      */
     private void verifyDbNameExisted(String name, Integer groupId) {
-        LambdaQueryWrapper<DbDatabase> ldq = new LambdaQueryWrapper<>();
-        ldq.eq(DbDatabase::getDbName, name).eq(DbDatabase::getGroupId, groupId).eq(DbDatabase::getDeleted, Constants.DELETE_FLAG.FALSE);
-        DbDatabase database = dbDatabaseDao.selectOne(ldq);
+        LambdaQueryWrapper<DbDatabase> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(DbDatabase::getDbName, name)
+                .eq(DbDatabase::getGroupId, groupId)
+                .eq(DbDatabase::getDeleted, Constants.DELETE_FLAG.FALSE);
+
+        DbDatabase database = dbDatabaseDao.selectOne(queryWrapper);
         if (Objects.nonNull(database)) {
-            throw new BusinessException("当前分组下数据源已存在!");
+            throw new BusinessException("当前分组下数据源名称已存在");
         }
     }
 }
-
-

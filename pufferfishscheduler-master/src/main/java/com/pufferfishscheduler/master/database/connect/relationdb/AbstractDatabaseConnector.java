@@ -6,7 +6,7 @@ import com.pufferfishscheduler.common.result.ConResponse;
 import com.pufferfishscheduler.domain.domain.TableForeignKey;
 import com.pufferfishscheduler.domain.domain.TableIndexSchema;
 import com.pufferfishscheduler.domain.domain.TableSchema;
-import com.pufferfishscheduler.domain.model.database.DatabaseConnectionInfo;
+import com.pufferfishscheduler.domain.model.database.DBConnectionInfo;
 import com.pufferfishscheduler.common.utils.JdbcUtil;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -88,25 +88,6 @@ public abstract class AbstractDatabaseConnector {
      */
     public abstract AbstractDatabaseConnector build();
 
-//    /**
-//     * 获取数据库下所有的表基础信息
-//     * @return Map<key,Value>  key=表名称；Value=表信息
-//     */
-//    public abstract Map<String, DBTableInfo> getTables() throws SQLException;
-//
-//    /**
-//     * 获取数据库中指定表名的表信息
-//     * @param tableName
-//     * @return
-//     */
-//    public abstract DBTableWithColumnInfo getTable(String tableName);
-//
-//    /**
-//     * 获取数据库下所有的表信息，包括表的字段信息；
-//     * @return Map<key,Value>  key=表名称；Value=表信息
-//     */
-//    public abstract Map<String, DBTableWithColumnInfo> getTableWithColumnInfos();
-
     /**
      * 获取数据库下所有的表信息，包括表的字段信息；
      *
@@ -123,24 +104,6 @@ public abstract class AbstractDatabaseConnector {
      */
     public abstract Connection getConnection();
 
-
-//    /**
-//     * 获取指定表的列信息
-//     * @param tableName 表名
-//     * @return
-//     */
-//    public abstract List<DBColumnInfo> getColumns(String tableName);
-//
-//    /**
-//     * 获取指定表的数据量
-//     * @param tableName 表名
-//     * @return
-//     */
-//    public abstract Long getDataVolumeByTableName(String tableName, Connection conn);
-//
-//    public abstract void checkDatabaseInfo(DatabaseForm form);
-//
-
     /**
      * 获取所有外键
      *
@@ -154,24 +117,6 @@ public abstract class AbstractDatabaseConnector {
      * @return
      */
     public abstract List<TableIndexSchema> getIndexes();
-//
-//    public void executeIgnoreError(String sql, Connection conn) {
-//        Statement stat = null;
-//
-//        try{
-//            stat = conn.createStatement();
-//
-//            if(sql.endsWith(";")){
-//                sql = sql.substring(0,sql.length()-1);
-//            }
-//            stat.execute(sql);
-//
-//        }catch (Exception e) {
-//            //
-//        }finally {
-//            JdbcUtil.close(stat);
-//        }
-//    }
 
     /**
      * 测试连接
@@ -232,8 +177,8 @@ public abstract class AbstractDatabaseConnector {
      *
      * @return
      */
-    public DatabaseConnectionInfo getDatabaseInfo() {
-        DatabaseConnectionInfo info = new DatabaseConnectionInfo();
+    public DBConnectionInfo getDatabaseInfo() {
+        DBConnectionInfo info = new DBConnectionInfo();
         info.setUsername(username);
         info.setPassword(password);
         info.setType(type);

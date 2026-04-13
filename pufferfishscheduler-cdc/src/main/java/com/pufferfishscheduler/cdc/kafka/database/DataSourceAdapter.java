@@ -9,7 +9,7 @@ import com.pufferfishscheduler.common.bean.PufferfishSchedulerApplicationContext
 import com.pufferfishscheduler.common.constants.Constants;
 import com.pufferfishscheduler.common.exception.BusinessException;
 import com.pufferfishscheduler.common.utils.AESUtil;
-import com.pufferfishscheduler.domain.model.database.DatabaseConnectionInfo;
+import com.pufferfishscheduler.domain.model.database.DBConnectionInfo;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 import org.sourcelab.kafka.connect.apiclient.request.dto.NewConnectorDefinition;
@@ -33,7 +33,7 @@ public abstract class DataSourceAdapter {
     }
 
     private DataBaseType type;// 数据库类型
-    protected DatabaseConnectionInfo connectionInfo;
+    protected DBConnectionInfo connectionInfo;
 
     /**
      * 实时数据同步引擎配置

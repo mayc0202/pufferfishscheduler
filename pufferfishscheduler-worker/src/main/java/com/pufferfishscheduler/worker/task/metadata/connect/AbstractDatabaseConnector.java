@@ -1,7 +1,7 @@
 package com.pufferfishscheduler.worker.task.metadata.connect;
 
 import com.pufferfishscheduler.domain.domain.TableSchema;
-import com.pufferfishscheduler.domain.model.database.DatabaseConnectionInfo;
+import com.pufferfishscheduler.domain.model.database.DBConnectionInfo;
 
 import java.sql.Connection;
 import java.util.List;
@@ -30,8 +30,8 @@ public abstract class AbstractDatabaseConnector {
 
     public abstract Map<String, TableSchema> getTableSchema(List<String> inTableNames, List<String> notInTableNames);
 
-    public DatabaseConnectionInfo getDatabaseInfo() {
-        DatabaseConnectionInfo info = new DatabaseConnectionInfo();
+    public DBConnectionInfo getDatabaseInfo() {
+        DBConnectionInfo info = new DBConnectionInfo();
         info.setUsername(username);
         info.setPassword(password);
         info.setType(type);

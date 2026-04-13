@@ -11,7 +11,7 @@ import com.pufferfishscheduler.dao.entity.DbTableProperties;
 import com.pufferfishscheduler.domain.domain.TableColumnSchema;
 import com.pufferfishscheduler.domain.domain.TableSchema;
 import com.pufferfishscheduler.domain.model.database.DatabaseTable;
-import com.pufferfishscheduler.domain.model.database.DatabaseConnectionInfo;
+import com.pufferfishscheduler.domain.model.database.DBConnectionInfo;
 import com.pufferfishscheduler.domain.model.database.DatabaseField;
 import com.pufferfishscheduler.master.database.connect.relationdb.AbstractDatabaseConnector;
 import com.pufferfishscheduler.master.database.database.service.DbDatabaseService;
@@ -66,18 +66,18 @@ public class DbSyncExecutor {
     public void syncTableInfo(int databaseId) {
         // 1.根据数据源ID获取数据源信息
         DbDatabase dbDatabase = dbDatabaseService.getDatabaseById(databaseId);
-        DatabaseConnectionInfo databaseConnectionInfo = new DatabaseConnectionInfo();
-        BeanUtils.copyProperties(dbDatabase, databaseConnectionInfo, "password");
+        DBConnectionInfo DBConnectionInfo = new DBConnectionInfo();
+        BeanUtils.copyProperties(dbDatabase, DBConnectionInfo, "password");
 
         // 2.测试数据源连接
-        dbDatabaseService.connect(databaseConnectionInfo);
+        dbDatabaseService.connect(DBConnectionInfo);
 
         // 3.获取当前数据源下所有表信息
-        AbstractDatabaseConnector connector = dbDatabaseService.buildDbConnector(databaseConnectionInfo);
+        AbstractDatabaseConnector connector = dbDatabaseService.buildDbConnector(DBConnectionInfo);
         Map<String, TableSchema> tableInfoMap = connector.getTableSchema(null, null);
 
         if (tableInfoMap == null || tableInfoMap.isEmpty()) {
-            log.warn("数据库 {} 中没有找到表信息", databaseConnectionInfo.getDbName());
+            log.warn("数据库 {} 中没有找到表信息", DBConnectionInfo.getDbName());
             return;
         }
 

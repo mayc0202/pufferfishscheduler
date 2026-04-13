@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin id="RedisOutput" type="Step">
+  <name>Redis输出</name>
+  <description>用于Redis输出数据。</description>
+  <category>转换</category>
+  <classname>com.pufferfishscheduler.plugin.RedisOutputStepMeta</classname>
+  <image>redis-output.svg</image>
+  <libraries>
+    <library name="lib/pfs-redisoutput-plugin-1.0.0.jar"/>
+  </libraries>
+</plugin>

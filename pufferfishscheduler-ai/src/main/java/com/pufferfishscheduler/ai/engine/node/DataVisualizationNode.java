@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.pufferfishscheduler.common.enums.ChartType;
 import com.pufferfishscheduler.common.result.ChartAnalysis;
-import com.pufferfishscheduler.domain.domain.EChartsMetadata;
+import com.pufferfishscheduler.domain.domain.EChartsMetaData;
 import com.pufferfishscheduler.domain.domain.QueryResult;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
@@ -102,7 +102,7 @@ public class DataVisualizationNode implements NodeAction {
             ChartAnalysis analysis = analyzeData(question, queryResult);
 
             // 2. 根据推荐生成 ECharts 配置
-            EChartsMetadata chartConfig = generateEChartsMetadata(analysis, queryResult);
+            EChartsMetaData chartConfig = generateEChartsMetadata(analysis, queryResult);
 
             // 3. 返回图表配置和数据
             Map<String, Object> result = new HashMap<>();
@@ -189,31 +189,31 @@ public class DataVisualizationNode implements NodeAction {
     /**
      * 生成 ECharts 配置
      */
-    private EChartsMetadata generateEChartsMetadata(ChartAnalysis analysis, QueryResult queryResult) {
+    private EChartsMetaData generateEChartsMetadata(ChartAnalysis analysis, QueryResult queryResult) {
         List<Map<String, Object>> data = queryResult.getData();
         ChartType chartType = ChartType.fromCode(analysis.getChartType());
 
-        EChartsMetadata.EChartsMetadataBuilder builder = EChartsMetadata.builder()
+        EChartsMetaData.EChartsMetaDataBuilder builder = EChartsMetaData.builder()
                 .type(analysis.getChartType())
-                .title(EChartsMetadata.Title.builder()
+                .title(EChartsMetaData.Title.builder()
                         .text(analysis.getTitle())
                         .left("center")
                         .build())
-                .tooltip(EChartsMetadata.Tooltip.builder()
+                .tooltip(EChartsMetaData.Tooltip.builder()
                         .show(true)
                         .trigger(chartType == ChartType.PIE ? "item" : "axis")
                         .build())
-                .toolbox(EChartsMetadata.Toolbox.builder()
+                .toolbox(EChartsMetaData.Toolbox.builder()
                         .show(true)
-                        .feature(EChartsMetadata.Toolbox.Feature.builder()
-                                .saveAsImage(EChartsMetadata.Toolbox.Feature.SaveAsImage.builder()
+                        .feature(EChartsMetaData.Toolbox.Feature.builder()
+                                .saveAsImage(EChartsMetaData.Toolbox.Feature.SaveAsImage.builder()
                                         .show(true)
                                         .type("png")
                                         .build())
-                                .dataView(EChartsMetadata.Toolbox.Feature.DataView.builder()
+                                .dataView(EChartsMetaData.Toolbox.Feature.DataView.builder()
                                         .show(true)
                                         .build())
-                                .restore(EChartsMetadata.Toolbox.Feature.Restore.builder()
+                                .restore(EChartsMetaData.Toolbox.Feature.Restore.builder()
                                         .show(true)
                                         .build())
                                 .build())
@@ -240,8 +240,8 @@ public class DataVisualizationNode implements NodeAction {
     /**
      * 构建柱状图/折线图
      */
-    private EChartsMetadata.EChartsMetadataBuilder buildBarOrLineChart(
-            EChartsMetadata.EChartsMetadataBuilder builder,
+    private EChartsMetaData.EChartsMetaDataBuilder buildBarOrLineChart(
+            EChartsMetaData.EChartsMetaDataBuilder builder,
             ChartAnalysis analysis,
             List<Map<String, Object>> data,
             ChartType chartType) {
@@ -256,21 +256,21 @@ public class DataVisualizationNode implements NodeAction {
                 .collect(Collectors.toList());
 
         // 配置 X 轴
-        builder.xAxis(EChartsMetadata.Axis.builder()
+        builder.xAxis(EChartsMetaData.Axis.builder()
                 .type("category")
                 .data(xAxisData)
-                .axisLabel(EChartsMetadata.AxisLabel.builder()
+                .axisLabel(EChartsMetaData.AxisLabel.builder()
                         .rotate(xAxisData.size() > 10 ? 45 : 0)
                         .build())
                 .build());
 
         // 配置 Y 轴
-        builder.yAxis(EChartsMetadata.Axis.builder()
+        builder.yAxis(EChartsMetaData.Axis.builder()
                 .type("value")
                 .build());
 
         // 配置系列
-        List<EChartsMetadata.Series> seriesList = new ArrayList<>();
+        List<EChartsMetaData.Series> seriesList = new ArrayList<>();
         for (int i = 0; i < yAxisColumns.size(); i++) {
             String column = yAxisColumns.get(i);
             String seriesName = i < seriesNames.size() ? seriesNames.get(i) : column;
@@ -279,7 +279,7 @@ public class DataVisualizationNode implements NodeAction {
                     .map(row -> row.get(column))
                     .collect(Collectors.toList());
 
-            EChartsMetadata.Series series = EChartsMetadata.Series.builder()
+            EChartsMetaData.Series series = EChartsMetaData.Series.builder()
                     .name(seriesName)
                     .type(chartType.getCode())
                     .data(seriesData)
@@ -295,8 +295,8 @@ public class DataVisualizationNode implements NodeAction {
     /**
      * 构建饼图
      */
-    private EChartsMetadata.EChartsMetadataBuilder buildPieChart(
-            EChartsMetadata.EChartsMetadataBuilder builder,
+    private EChartsMetaData.EChartsMetaDataBuilder buildPieChart(
+            EChartsMetaData.EChartsMetaDataBuilder builder,
             ChartAnalysis analysis,
             List<Map<String, Object>> data) {
 
@@ -314,12 +314,12 @@ public class DataVisualizationNode implements NodeAction {
                 .collect(Collectors.toList());
 
         // 创建数据集
-        builder.dataset(EChartsMetadata.Dataset.builder()
+        builder.dataset(EChartsMetaData.Dataset.builder()
                 .source(pieData)
                 .build());
 
         // 配置系列
-        EChartsMetadata.Series series = EChartsMetadata.Series.builder()
+        EChartsMetaData.Series series = EChartsMetaData.Series.builder()
                 .name(analysis.getTitle())
                 .type("pie")
                 .radius("55%")
@@ -335,33 +335,33 @@ public class DataVisualizationNode implements NodeAction {
     /**
      * 构建散点图
      */
-    private EChartsMetadata.EChartsMetadataBuilder buildScatterChart(
-            EChartsMetadata.EChartsMetadataBuilder builder,
+    private EChartsMetaData.EChartsMetaDataBuilder buildScatterChart(
+            EChartsMetaData.EChartsMetaDataBuilder builder,
             ChartAnalysis analysis,
             List<Map<String, Object>> data) {
 
         List<String> yAxisColumns = analysis.getYAxisColumns();
 
         // 配置 X 轴
-        builder.xAxis(EChartsMetadata.Axis.builder()
+        builder.xAxis(EChartsMetaData.Axis.builder()
                 .type("value")
                 .name(analysis.getXAxisColumn())
                 .build());
 
         // 配置 Y 轴
-        builder.yAxis(EChartsMetadata.Axis.builder()
+        builder.yAxis(EChartsMetaData.Axis.builder()
                 .type("value")
                 .name(yAxisColumns.get(0))
                 .build());
 
         // 配置系列
-        List<EChartsMetadata.Series> seriesList = new ArrayList<>();
+        List<EChartsMetaData.Series> seriesList = new ArrayList<>();
         for (String column : yAxisColumns) {
             List<Object> seriesData = data.stream()
                     .map(row -> Arrays.asList(row.get(analysis.getXAxisColumn()), row.get(column)))
                     .collect(Collectors.toList());
 
-            EChartsMetadata.Series series = EChartsMetadata.Series.builder()
+            EChartsMetaData.Series series = EChartsMetaData.Series.builder()
                     .name(column)
                     .type("scatter")
                     .data(seriesData)
@@ -377,8 +377,8 @@ public class DataVisualizationNode implements NodeAction {
     /**
      * 构建默认图表
      */
-    private EChartsMetadata.EChartsMetadataBuilder buildDefaultChart(
-            EChartsMetadata.EChartsMetadataBuilder builder,
+    private EChartsMetaData.EChartsMetaDataBuilder buildDefaultChart(
+            EChartsMetaData.EChartsMetaDataBuilder builder,
             ChartAnalysis analysis,
             List<Map<String, Object>> data) {
 
@@ -393,16 +393,16 @@ public class DataVisualizationNode implements NodeAction {
             seriesData.add(row.values().iterator().next());
         }
 
-        builder.xAxis(EChartsMetadata.Axis.builder()
+        builder.xAxis(EChartsMetaData.Axis.builder()
                 .type("category")
                 .data(xAxisData)
                 .build());
 
-        builder.yAxis(EChartsMetadata.Axis.builder()
+        builder.yAxis(EChartsMetaData.Axis.builder()
                 .type("value")
                 .build());
 
-        builder.series(List.of(EChartsMetadata.Series.builder()
+        builder.series(List.of(EChartsMetaData.Series.builder()
                 .name("数据")
                 .type("bar")
                 .data(seriesData)
@@ -444,9 +444,9 @@ public class DataVisualizationNode implements NodeAction {
         }
 
         // 构建简单图表配置
-        EChartsMetadata.EChartsMetadataBuilder builder = EChartsMetadata.builder()
+        EChartsMetaData.EChartsMetaDataBuilder builder = EChartsMetaData.builder()
                 .type("bar")
-                .title(EChartsMetadata.Title.builder()
+                .title(EChartsMetaData.Title.builder()
                         .text("数据可视化")
                         .left("center")
                         .build());
@@ -458,7 +458,7 @@ public class DataVisualizationNode implements NodeAction {
                     .map(row -> String.valueOf(row.get(finalCategoryField)))
                     .collect(Collectors.toList());
 
-            builder.xAxis(EChartsMetadata.Axis.builder()
+            builder.xAxis(EChartsMetaData.Axis.builder()
                     .type("category")
                     .data(xAxisData)
                     .build());
@@ -470,11 +470,11 @@ public class DataVisualizationNode implements NodeAction {
                 .map(row -> row.get(finalValueField))
                 .collect(Collectors.toList());
 
-        builder.yAxis(EChartsMetadata.Axis.builder()
+        builder.yAxis(EChartsMetaData.Axis.builder()
                 .type("value")
                 .build());
 
-        builder.series(List.of(EChartsMetadata.Series.builder()
+        builder.series(List.of(EChartsMetaData.Series.builder()
                 .name(valueField)
                 .type("bar")
                 .data(seriesData)

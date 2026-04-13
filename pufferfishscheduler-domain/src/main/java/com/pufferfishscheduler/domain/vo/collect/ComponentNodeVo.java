@@ -45,6 +45,11 @@ public class ComponentNodeVo {
     private String componentType;
 
     /**
+     * 配置信息（JSON格式）
+     */
+    private String config;
+
+    /**
      * 图标Base64
      */
     private String icon;
@@ -83,6 +88,11 @@ public class ComponentNodeVo {
      * 阶段
      */
     private String stage;
+
+    /**
+     * 是否启用
+     */
+    private Boolean enabled;
 
     /**
      * 子节点列表（仅菜单类型有值）

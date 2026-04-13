@@ -123,16 +123,21 @@ public class DbGroupServiceImpl extends ServiceImpl<DbGroupMapper, DbGroup> impl
      */
     @Override
     public List<Tree> relationalDbTree() {
+        return dbTreeByCategory(DatabaseCategory.SQL);
+    }
+
+    @Override
+    public List<Tree> dbTreeByCategory(DatabaseCategory category) {
+        if (category == null) {
+            throw new BusinessException("数据源类型不能为空");
+        }
+        String categoryCode = category.getCode();
         List<DbGroup> groups = getGroupList(null);
-        List<DbDatabase> databases = getDatabasesByGroups(groups, DatabaseCategory.SQL.getCode());
-
-        // 过滤关系型数据库
-        List<DbDatabase> relationalDbs = databases.stream()
-                .filter(db -> DatabaseCategory.SQL.getCode().equals(db.getCategory()))
+        List<DbDatabase> databases = getDatabasesByGroups(groups, categoryCode);
+        List<DbDatabase> filtered = databases.stream()
+                .filter(db -> categoryCode.equals(db.getCategory()))
                 .collect(Collectors.toList());
-
-        List<Tree> allNodes = convertToTreeNodes(groups, relationalDbs, false);
-
+        List<Tree> allNodes = convertToTreeNodes(groups, filtered, false);
         return treeBuilder.buildTree(allNodes, Comparator.comparing(TreeNode::getOrder));
     }
 

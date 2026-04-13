@@ -2,14 +2,14 @@
 <project version="4">
   <component name="RemoteRepositoriesConfiguration">
     <remote-repository>
-      <option name="id" value="central" />
-      <option name="name" value="Central Repository" />
-      <option name="url" value="https://repo.maven.apache.org/maven2" />
-    </remote-repository>
-    <remote-repository>
       <option name="id" value="pentaho-public" />
       <option name="name" value="Pentaho Public (Hitachi Vantara)" />
       <option name="url" value="https://repo.orl.eng.hitachivantara.com/artifactory/pnt-mvn/" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="nexus-repository" />
+      <option name="name" value="nexus-repository" />
+      <option name="url" value="https://maven.aliyun.com/repository/public" />
     </remote-repository>
     <remote-repository>
       <option name="id" value="central" />
@@ -27,9 +27,9 @@
       <option name="url" value="https://maven.aliyun.com/repository/public" />
     </remote-repository>
     <remote-repository>
-      <option name="id" value="central" />
-      <option name="name" value="Central Repository" />
-      <option name="url" value="https://maven.aliyun.com/repository/central" />
+      <option name="id" value="aliyun-repository" />
+      <option name="name" value="aliyun-repository" />
+      <option name="url" value="https://maven.aliyun.com/repository/public" />
     </remote-repository>
     <remote-repository>
       <option name="id" value="confluent" />

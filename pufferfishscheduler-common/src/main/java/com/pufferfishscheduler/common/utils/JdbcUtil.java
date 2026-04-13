@@ -4,10 +4,10 @@ import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
 import com.pufferfishscheduler.common.constants.Constants;
 import com.pufferfishscheduler.common.exception.BusinessException;
-import com.pufferfishscheduler.domain.domain.ColumnMetadata;
+import com.pufferfishscheduler.domain.domain.ColumnMetaData;
 import com.pufferfishscheduler.domain.domain.QueryResult;
-import com.pufferfishscheduler.domain.domain.TableMetadata;
-import com.pufferfishscheduler.domain.model.database.DatabaseConnectionInfo;
+import com.pufferfishscheduler.domain.domain.TableMetaData;
+import com.pufferfishscheduler.domain.model.database.DBConnectionInfo;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -108,27 +108,21 @@ public class JdbcUtil {
      * @return
      */
     public static String getDriver(String type) {
-        switch (type) {
-            case Constants.DATABASE_TYPE.MYSQL:
-            case Constants.DATABASE_TYPE.DORIS:
-            case Constants.DATABASE_TYPE.STAR_ROCKS:
-                return MYSQL_DRIVER;
-
-            case Constants.DATABASE_TYPE.ORACLE:
-                return ORACLE_DRIVER;
-
-            case Constants.DATABASE_TYPE.POSTGRESQL:
-                return POSTGRESQL_DRIVER;
-
-            case Constants.DATABASE_TYPE.SQL_SERVER:
-                return SQLSERVER_DRIVER;
-
-            case Constants.DATABASE_TYPE.DM8:
-                return DM_DRIVER;
-
-            default:
-                throw new BusinessException("Unsupported database type: " + type);
-        }
+        return switch (type) {
+            case Constants.DATABASE_TYPE.MYSQL,
+                 Constants.DATABASE_TYPE.DORIS,
+                 Constants.DATABASE_TYPE.STAR_ROCKS
+                    -> MYSQL_DRIVER;
+            case Constants.DATABASE_TYPE.ORACLE
+                    -> ORACLE_DRIVER;
+            case Constants.DATABASE_TYPE.POSTGRESQL
+                    -> POSTGRESQL_DRIVER;
+            case Constants.DATABASE_TYPE.SQL_SERVER
+                    -> SQLSERVER_DRIVER;
+            case Constants.DATABASE_TYPE.DM8
+                    -> DM_DRIVER;
+            default -> throw new BusinessException(String.format("暂不支持[%s]此类型数据库!", type));
+        };
     }
 
     /**
@@ -154,14 +148,14 @@ public class JdbcUtil {
     /**
      * 获取数据库连接（使用DatabaseVo）
      */
-    public static Connection getConnection(String driverName, String url, DatabaseConnectionInfo databaseInfo) {
+    public static Connection getConnection(String driverName, String url, DBConnectionInfo databaseInfo) {
         return createConnection(driverName, url, buildConnectionProperties(databaseInfo, true));
     }
 
     /**
      * 获取数据库连接（用于DDL操作）
      */
-    public static Connection getConnectionForDDL(String driverName, String url, DatabaseConnectionInfo databaseInfo) {
+    public static Connection getConnectionForDDL(String driverName, String url, DBConnectionInfo databaseInfo) {
         Properties properties = buildConnectionProperties(databaseInfo, false);
         properties.remove("useCursorFetch"); // DDL操作不需要游标获取
         return createConnection(driverName, url, properties);
@@ -189,7 +183,7 @@ public class JdbcUtil {
     /**
      * 构建连接属性
      */
-    private static Properties buildConnectionProperties(DatabaseConnectionInfo databaseInfo, boolean useCursorFetch) {
+    private static Properties buildConnectionProperties(DBConnectionInfo databaseInfo, boolean useCursorFetch) {
         Properties properties = new Properties();
         properties.put("user", databaseInfo.getUsername());
         properties.put("password", databaseInfo.getPassword());
@@ -340,11 +334,11 @@ public class JdbcUtil {
     /**
      * 获取多张表的元数据（表结构 + 样例数据）。
      */
-    public static List<TableMetadata> getTablesMetadata(Connection connection, List<String> tableNames) throws SQLException {
+    public static List<TableMetaData> getTablesMetadata(Connection connection, List<String> tableNames) throws SQLException {
         if (tableNames == null || tableNames.isEmpty()) {
             return Collections.emptyList();
         }
-        List<TableMetadata> result = new ArrayList<>();
+        List<TableMetaData> result = new ArrayList<>();
         for (String tableName : tableNames) {
             result.add(getTableMetadata(connection, tableName));
         }
@@ -354,11 +348,11 @@ public class JdbcUtil {
     /**
      * 获取单表元数据。
      */
-    public static TableMetadata getTableMetadata(Connection connection, String tableName) throws SQLException {
+    public static TableMetaData getTableMetadata(Connection connection, String tableName) throws SQLException {
         logger.debug("获取表元数据: {}", tableName);
 
-        TableMetadata.TableMetadataBuilder builder = TableMetadata.builder().tableName(tableName);
-        List<ColumnMetadata> columns = new ArrayList<>();
+        TableMetaData.TableMetaDataBuilder builder = TableMetaData.builder().tableName(tableName);
+        List<ColumnMetaData> columns = new ArrayList<>();
         DatabaseMetaData metaData = connection.getMetaData();
 
         builder.tableComment(getTableComment(metaData, tableName));
@@ -369,7 +363,7 @@ public class JdbcUtil {
         builder.sampleData(sampleData);
 
         if (sampleData != null) {
-            for (ColumnMetadata column : columns) {
+            for (ColumnMetaData column : columns) {
                 if (sampleData.containsKey(column.getColumnName())) {
                     Object value = sampleData.get(column.getColumnName());
                     column.setSampleValue(value != null ? safeToString(value) : "NULL");
@@ -390,12 +384,12 @@ public class JdbcUtil {
         return "";
     }
 
-    private static List<ColumnMetadata> getColumnMetadata(DatabaseMetaData metaData, String tableName) throws SQLException {
-        List<ColumnMetadata> columns = new ArrayList<>();
+    private static List<ColumnMetaData> getColumnMetadata(DatabaseMetaData metaData, String tableName) throws SQLException {
+        List<ColumnMetaData> columns = new ArrayList<>();
 
         try (ResultSet rs = metaData.getColumns(null, null, tableName, "%")) {
             while (rs.next()) {
-                ColumnMetadata column = ColumnMetadata.builder()
+                ColumnMetaData column = ColumnMetaData.builder()
                         .columnName(rs.getString("COLUMN_NAME"))
                         .columnType(rs.getString("TYPE_NAME"))
                         .columnSize(rs.getInt("COLUMN_SIZE"))
@@ -410,7 +404,7 @@ public class JdbcUtil {
         return columns;
     }
 
-    private static void setPrimaryKeys(DatabaseMetaData metaData, String tableName, List<ColumnMetadata> columns) throws SQLException {
+    private static void setPrimaryKeys(DatabaseMetaData metaData, String tableName, List<ColumnMetaData> columns) throws SQLException {
         Set<String> pkColumns = new HashSet<>();
 
         try (ResultSet rs = metaData.getPrimaryKeys(null, null, tableName)) {
@@ -419,7 +413,7 @@ public class JdbcUtil {
             }
         }
 
-        for (ColumnMetadata col : columns) {
+        for (ColumnMetaData col : columns) {
             if (pkColumns.contains(col.getColumnName())) {
                 col.setPrimaryKey(true);
             }

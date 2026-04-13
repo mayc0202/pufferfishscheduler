@@ -230,9 +230,13 @@ security:
       - /doc.html
       - /api/**
 
-# 资源根路径
-ftp:
-  path: /data/ftp
+# 文件路径配置
+file:
+  path:
+    ftp: /data/ftp # FTP资源根路径
+    local: contfiles # 本地资源根路径，使用 项目运行目录下的相对路径，适配windows/linux/macOS
+    input: contfiles/data/input # 输入文件路径
+    output: contfiles/data/output # 输出文件路径
 
 # 插件配置
 plugin:

@@ -51,4 +51,7 @@ public class OpenApiTags {
 
     public static final String RULE = "规则管理";
     public static final String RULE_DESC = "提供规则管理相关接口";
+
+    public static final String DASHBOARD = "首页仪表盘";
+    public static final String DASHBOARD_DESC = "提供首页仪表盘统计相关接口";
 }

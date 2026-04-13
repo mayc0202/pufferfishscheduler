@@ -10,9 +10,9 @@ import com.pufferfishscheduler.common.utils.ListenDatabaseType;
 import com.pufferfishscheduler.common.utils.MD5Util;
 import com.pufferfishscheduler.dao.entity.DbDatabase;
 import com.pufferfishscheduler.domain.vo.collect.FieldMappingVo;
-import com.pufferfishscheduler.worker.task.metadata.service.DbDatabaseService;
 import com.pufferfishscheduler.worker.task.trans.plugin.AbstractStepMetaConstructor;
 import com.pufferfishscheduler.worker.task.trans.plugin.StepContext;
+import com.pufferfishscheduler.worker.task.metadata.service.DbDatabaseService;
 import org.apache.commons.lang3.StringUtils;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.plugins.PluginRegistry;
@@ -187,8 +187,8 @@ public class TableOutputConstructor extends AbstractStepMetaConstructor {
      * @return DatabaseMeta 数据库元数据
      */
     private DatabaseMeta createDatabaseMeta(String dataSourceId, Integer flowId,
-                                            DbDatabaseService databaseService, AESUtil aesUtil,
-                                            String schemaName) {
+            DbDatabaseService databaseService, AESUtil aesUtil,
+            String schemaName) {
         DatabaseMeta dataMeta = new DatabaseMeta();
 
         if (StringUtils.isNotBlank(dataSourceId)) {

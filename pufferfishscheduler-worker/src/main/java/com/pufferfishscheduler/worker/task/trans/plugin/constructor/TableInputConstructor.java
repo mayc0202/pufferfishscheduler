@@ -8,11 +8,11 @@ import com.pufferfishscheduler.common.utils.AESUtil;
 import com.pufferfishscheduler.common.utils.ListenDatabaseType;
 import com.pufferfishscheduler.common.utils.MD5Util;
 import com.pufferfishscheduler.dao.entity.DbDatabase;
+import com.pufferfishscheduler.worker.task.metadata.editor.AbstractQueryEditor;
+import com.pufferfishscheduler.worker.task.metadata.editor.DatabaseEditorFactory;
 import com.pufferfishscheduler.worker.task.metadata.service.DbDatabaseService;
 import com.pufferfishscheduler.worker.task.trans.plugin.AbstractStepMetaConstructor;
 import com.pufferfishscheduler.worker.task.trans.plugin.StepContext;
-import com.pufferfishscheduler.worker.task.metadata.editor.AbstractQueryEditor;
-import com.pufferfishscheduler.worker.task.metadata.editor.DatabaseEditorFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -119,9 +119,9 @@ public class TableInputConstructor extends AbstractStepMetaConstructor {
      * @return DatabaseMeta 数据库元数据
      */
     private DatabaseMeta createDatabaseMeta(String dataSourceId, Integer flowId,
-                                            DbDatabaseService databaseService, AESUtil aesUtil,
-                                            JSONObject data, String sql, boolean increment,
-                                            TableInputMeta tableInput) {
+            DbDatabaseService databaseService, AESUtil aesUtil,
+            JSONObject data, String sql, boolean increment,
+            TableInputMeta tableInput) {
         DatabaseMeta dataMeta = new DatabaseMeta();
 
         if (StringUtils.isNotBlank(dataSourceId)) {

@@ -54,6 +54,7 @@ public class RuleGroupServiceImpl implements RuleGroupService {
 
     /**
      * 获取规则分类树
+     *
      * @param name 分类名称，用于模糊查询
      * @return 规则分类树菜单
      */
@@ -66,8 +67,9 @@ public class RuleGroupServiceImpl implements RuleGroupService {
 
     /**
      * 新增规则分类
+     *
      * @param form 分类表单
-     * 分类表单验证规则：分类名称不能重复，不能选择子分类作为父级
+     *             分类表单验证规则：分类名称不能重复，不能选择子分类作为父级
      */
     @Transactional(rollbackFor = Exception.class)
     @Override
@@ -94,8 +96,9 @@ public class RuleGroupServiceImpl implements RuleGroupService {
 
     /**
      * 更新规则分类
+     *
      * @param form 分类表单
-     * 分类表单验证规则：分类名称不能重复，不能选择子分类作为父级
+     *             分类表单验证规则：分类名称不能重复，不能选择子分类作为父级
      */
     @Transactional(rollbackFor = Exception.class)
     @Override
@@ -131,6 +134,7 @@ public class RuleGroupServiceImpl implements RuleGroupService {
 
     /**
      * 删除规则分类
+     *
      * @param id 分类ID
      */
     @Transactional(rollbackFor = Exception.class)
@@ -163,6 +167,7 @@ public class RuleGroupServiceImpl implements RuleGroupService {
 
     /**
      * 获取固定分类ID集合
+     *
      * @return 固定分类ID数组
      */
     @Override
@@ -211,6 +216,12 @@ public class RuleGroupServiceImpl implements RuleGroupService {
         return allGroups.stream().filter(g -> keepIds.contains(g.getId())).collect(Collectors.toList());
     }
 
+    /**
+     * 将规则分类列表转换为树节点列表
+     *
+     * @param groups 规则分类列表
+     * @return 树节点列表
+     */
     private List<Tree> convertToTreeNodes(List<RuleGroup> groups) {
         List<Tree> nodes = new ArrayList<>();
         for (RuleGroup group : groups) {
@@ -227,6 +238,7 @@ public class RuleGroupServiceImpl implements RuleGroupService {
 
     /**
      * 获取规则分类的第一级分类ID
+     *
      * @param parentId 父级分类ID
      * @return 第一级分类ID
      */
@@ -244,6 +256,13 @@ public class RuleGroupServiceImpl implements RuleGroupService {
         return ruleGroup.getId();
     }
 
+    /**
+     * 验证分类名称是否重复
+     *
+     * @param name      分类名称
+     * @param parentId  父级分类ID
+     * @param excludeId 排除的分类ID
+     */
     private void verifyGroupNameIsRepeat(String name, Integer parentId, Integer excludeId) {
         LambdaQueryWrapper<RuleGroup> qw = new LambdaQueryWrapper<>();
         qw.eq(RuleGroup::getGroupName, name)
@@ -262,6 +281,12 @@ public class RuleGroupServiceImpl implements RuleGroupService {
         }
     }
 
+    /**
+     * 获取所有子分类ID
+     *
+     * @param id 分类ID
+     * @return 所有子分类ID列表
+     */
     private List<Integer> getAllGroupIdById(Integer id) {
         LambdaQueryWrapper<RuleGroup> qw = new LambdaQueryWrapper<>();
         qw.eq(RuleGroup::getDeleted, Constants.DELETE_FLAG.FALSE);
@@ -277,6 +302,13 @@ public class RuleGroupServiceImpl implements RuleGroupService {
         return new ArrayList<>(result);
     }
 
+    /**
+     * 递归收集所有子分类ID
+     *
+     * @param parentId       父级分类ID
+     * @param parentChildMap 父子分类映射
+     * @param out            输出结果
+     */
     private void collectChildren(Integer parentId, Map<Integer, List<Integer>> parentChildMap, Set<Integer> out) {
         List<Integer> children = parentChildMap.get(parentId);
         if (children == null || children.isEmpty()) {
@@ -291,6 +323,7 @@ public class RuleGroupServiceImpl implements RuleGroupService {
 
     /**
      * 判断分类ID是否为固定分类ID
+     *
      * @param groupId 分类ID
      * @return 是否为固定分类ID
      */
@@ -307,6 +340,11 @@ public class RuleGroupServiceImpl implements RuleGroupService {
         return false;
     }
 
+    /**
+     * 验证分类创建权限
+     *
+     * @param parentId 父级分类ID
+     */
     private void validateGroupCreatePermission(Integer parentId) {
         if (parentId == null) {
             throw new BusinessException("请选择公共或自定义目录作为父级！");
@@ -328,6 +366,9 @@ public class RuleGroupServiceImpl implements RuleGroupService {
         }
     }
 
+    /**
+     * 判断当前用户是否为管理员
+     */
     private boolean isAdmin() {
         Integer uid = UserContext.getCurrentUserId();
         if (uid == null) {
@@ -337,6 +378,9 @@ public class RuleGroupServiceImpl implements RuleGroupService {
         return roles.stream().anyMatch(r -> Constants.ROLE_NAME.ADMIN.equals(r.getRoleName()));
     }
 
+    /**
+     * 解析公共分类ID
+     */
     private Integer resolvePublicGroupId() {
         Integer fromCfg = parseIntOrNull(publicGroupIdCfg);
         if (fromCfg != null) {
@@ -345,6 +389,9 @@ public class RuleGroupServiceImpl implements RuleGroupService {
         return findTopGroupIdByKeyword("公共");
     }
 
+    /**
+     * 解析自定义分类ID
+     */
     private Integer resolveCustomGroupId() {
         Integer fromCfg = parseIntOrNull(customGroupIdCfg);
         if (fromCfg != null) {
@@ -353,6 +400,9 @@ public class RuleGroupServiceImpl implements RuleGroupService {
         return findTopGroupIdByKeyword("自定义");
     }
 
+    /**
+     * 查找顶级分类ID
+     */
     private Integer findTopGroupIdByKeyword(String keyword) {
         LambdaQueryWrapper<RuleGroup> qw = new LambdaQueryWrapper<>();
         qw.eq(RuleGroup::getDeleted, Constants.DELETE_FLAG.FALSE)
@@ -366,6 +416,9 @@ public class RuleGroupServiceImpl implements RuleGroupService {
         return null;
     }
 
+    /**
+     * 尝试解析整数，若失败则返回null
+     */
     private Integer parseIntOrNull(String s) {
         if (StringUtils.isBlank(s)) {
             return null;

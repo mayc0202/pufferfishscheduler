@@ -17,6 +17,16 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <maven.compiler.encoding>UTF-8</maven.compiler.encoding>
+
+        <!-- commons-csv -->
+        <commons-csv.version>1.10.0</commons-csv.version>
+        <!-- pdfbox -->
+        <pdfbox.version>2.0.30</pdfbox.version>
+        <!-- poi-ooxml -->
+        <poi-ooxml.version>5.2.5</poi-ooxml.version>
+        <xmlbeans.version>5.2.0</xmlbeans.version>
+        <!-- tika-core -->
+        <tika-core.version>2.9.2</tika-core.version>
     </properties>
 
     <dependencies>
@@ -29,6 +39,10 @@
                 <exclusion>
                     <groupId>com.pufferfishscheduler.domain</groupId>
                     <artifactId>pufferfishscheduler-domain</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.alibaba</groupId>
+                    <artifactId>easyexcel</artifactId>
                 </exclusion>
             </exclusions>
             <version>1.0.0</version>
@@ -104,6 +118,7 @@
             <artifactId>zookeeper</artifactId>
         </dependency>
 
+        <!-- Spring AI Start- -->
         <!-- VectorStore Redis -->
         <dependency>
             <groupId>org.springframework.ai</groupId>
@@ -128,6 +143,8 @@
             <artifactId>spring-ai-alibaba-graph-core</artifactId>
         </dependency>
 
+        <!-- Spring AI End- -->
+
         <!-- HikariCP -->
         <dependency>
             <groupId>com.zaxxer</groupId>
@@ -138,6 +155,59 @@
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
+        </dependency>
+
+        <!-- PDF 处理 -->
+        <dependency>
+            <groupId>org.apache.pdfbox</groupId>
+            <artifactId>pdfbox</artifactId>
+            <version>${pdfbox.version}</version>
+        </dependency>
+
+        <!-- Apache POI：须与 poi-ooxml 同版本；否则 Kettle 等会就近解析到旧 poi-core，与 5.x ooxml 混用会 NoSuchMethodError -->
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi</artifactId>
+            <version>${poi-ooxml.version}</version>
+        </dependency>
+
+        <!-- Word / Excel (OOXML) -->
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml</artifactId>
+            <version>${poi-ooxml.version}</version>
+        </dependency>
+
+        <!--
+          POI 5.x 默认依赖的精简 schemas 包不包含全部 OOXML 生成类。
+          EasyExcel 2.x 在解析 xlsx 时会用到 org.openxmlformats.schemas.*（如 WorkbookDocument$Factory），
+          需要引入 poi-ooxml-full 提供完整 schemas 实现。
+        -->
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml-full</artifactId>
+            <version>${poi-ooxml.version}</version>
+        </dependency>
+
+        <!-- 强制统一 xmlbeans 版本，避免 POI 运行时与 XMLBeans 不兼容 -->
+        <dependency>
+            <groupId>org.apache.xmlbeans</groupId>
+            <artifactId>xmlbeans</artifactId>
+            <version>${xmlbeans.version}</version>
+        </dependency>
+
+        <!-- CSV 解析 -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-csv</artifactId>
+            <version>${commons-csv.version}</version>
+        </dependency>
+
+        <!-- 文本提取工具 -->
+        <dependency>
+            <groupId>org.apache.tika</groupId>
+            <artifactId>tika-core</artifactId>
+            <version>${tika-core.version}</version>
         </dependency>
 
     </dependencies>

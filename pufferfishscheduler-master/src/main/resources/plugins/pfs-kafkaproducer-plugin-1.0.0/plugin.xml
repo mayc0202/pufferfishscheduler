@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin id="KafkaProducerOutput" type="Step">
+  <name>Kafka生产者组件</name>
+  <description>用于Kafka生产数据。</description>
+  <category>转换</category>
+  <classname>com.pufferfishscheduler.plugin.KafkaProducerOutput</classname>
+  <image>kafka-output.svg</image>
+  <libraries>
+    <library name="lib/pfs-kafkaproducer-plugin-1.0.0.jar"/>
+  </libraries>
+</plugin>
+

@@ -2,6 +2,7 @@ package com.pufferfishscheduler.master.collect.trans.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
+import com.pufferfishscheduler.common.constants.Constants;
 import com.pufferfishscheduler.common.enums.TransComponentType;
 import com.pufferfishscheduler.dao.entity.TransComponent;
 import com.pufferfishscheduler.dao.mapper.TransComponentMapper;
@@ -118,7 +119,7 @@ public class TransComponentServiceImpl implements TransComponentService {
                 .id(Integer.valueOf(typeEnum.getType()))  // 使用类型编码作为目录节点ID
                 .label(typeEnum.getDescription())
                 .icon(typeEnum.getIcon())
-                .nodeType("menu")
+                .nodeType(Constants.TREE_TYPE.MENU)
                 .componentType(typeCode)
                 .build();
     }
@@ -143,7 +144,9 @@ public class TransComponentServiceImpl implements TransComponentService {
                 .code(component.getCode())
                 .componentType(component.getType())
                 .icon(component.getIcon())
-                .nodeType("plugin")
+                .nodeType(Constants.TREE_TYPE.PLUGIN)
+                .enabled(component.getEnabled())
+                .config(component.getConfig())
                 .width(DEFAULT_PLUGIN_WIDTH)
                 .height(DEFAULT_PLUGIN_HEIGHT);
 

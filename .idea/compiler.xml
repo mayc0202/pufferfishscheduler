@@ -8,32 +8,65 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="pufferfishscheduler-cdc" />
+        <module name="pufferfishscheduler-ai" />
+        <module name="pfs-debeziumjson-plugin" />
+        <module name="pfs-redisinput-plugin" />
+        <module name="pufferfishscheduler-common" />
+        <module name="pfs-rabbitmqproducer-plugin" />
+        <module name="pfs-filedownload-plugin" />
+        <module name="pfs-filter-plugin" />
+        <module name="pfs-kafkaproducer-plugin" />
         <module name="pufferfishscheduler-dao" />
         <module name="pufferfishscheduler-master" />
-        <module name="pufferfishscheduler-ai" />
+        <module name="pfs-ftpdownload-plugin" />
+        <module name="pfs-rabbitmqconsumer-plugin" />
         <module name="pufferfishscheduler-alert" />
-        <module name="pufferfishscheduler-common" />
+        <module name="pfs-ftpupload-plugin" />
+        <module name="pfs-redisoutput-plugin" />
         <module name="pufferfishscheduler-domain" />
+        <module name="pfs-apioutput-plugin" />
+        <module name="pfs-apiinput-plugin" />
         <module name="pufferfishscheduler-api" />
+        <module name="pfs-kafkaconsumer-plugin" />
+        <module name="pfs-doris-plugin" />
         <module name="pufferfishscheduler-worker" />
+        <module name="pfs-dataclean-plugin" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="pufferfishscheduler-aop" target="17" />
+      <module name="pfs-ftp-plugin" target="17" />
+      <module name="pufferfishscheduler-kettle" target="17" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="pfs-apiinput-plugin" options="-parameters" />
+      <module name="pfs-apioutput-plugin" options="-parameters" />
+      <module name="pfs-dataclean-plugin" options="-parameters" />
+      <module name="pfs-debeziumjson-plugin" options="-parameters" />
+      <module name="pfs-doris-plugin" options="-parameters" />
+      <module name="pfs-filedownload-plugin" options="-parameters" />
+      <module name="pfs-filter-plugin" options="-parameters" />
+      <module name="pfs-ftp-plugin" options="-parameters" />
+      <module name="pfs-ftpdownload-plugin" options="-parameters" />
+      <module name="pfs-ftpupload-plugin" options="-parameters" />
+      <module name="pfs-kafkaconsumer-plugin" options="-parameters" />
+      <module name="pfs-kafkaproducer-plugin" options="-parameters" />
+      <module name="pfs-rabbitmqconsumer-plugin" options="-parameters" />
+      <module name="pfs-rabbitmqproducer-plugin" options="-parameters" />
+      <module name="pfs-redisinput-plugin" options="-parameters" />
+      <module name="pfs-redisoutput-plugin" options="-parameters" />
       <module name="pufferfishscheduler" options="-parameters" />
       <module name="pufferfishscheduler-ai" options="-parameters" />
       <module name="pufferfishscheduler-alert" options="-parameters" />
-      <module name="pufferfishscheduler-aop" options="-parameters" />
       <module name="pufferfishscheduler-api" options="-parameters" />
       <module name="pufferfishscheduler-cdc" options="-parameters" />
       <module name="pufferfishscheduler-common" options="-parameters" />
       <module name="pufferfishscheduler-dao" options="-parameters" />
       <module name="pufferfishscheduler-domain" options="-parameters" />
+      <module name="pufferfishscheduler-kettle" options="-parameters" />
       <module name="pufferfishscheduler-master" options="-parameters" />
+      <module name="pufferfishscheduler-plugin" options="-parameters" />
       <module name="pufferfishscheduler-worker" options="-parameters" />
     </option>
   </component>

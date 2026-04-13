@@ -24,9 +24,6 @@ import java.util.*;
  */
 @Slf4j
 public class MySQLConnector extends AbstractDatabaseConnector {
-
-    private static final String URL_FORMAT = "jdbc:mysql://%s:%s/%s?useCursorFetch=true&useSSL=false&useUnicode=yes&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull&allowMultiQueries=true&serverTimezone=Asia/Shanghai";
-
     /**
      * 表信息
      */

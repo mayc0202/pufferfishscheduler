@@ -25,7 +25,7 @@ import com.pufferfishscheduler.dao.mapper.RtTaskMapper;
 import com.pufferfishscheduler.domain.form.collect.RealTimeFieldMapperForm;
 import com.pufferfishscheduler.domain.form.collect.RealTimeTableForm;
 import com.pufferfishscheduler.domain.form.collect.RealTimeTaskForm;
-import com.pufferfishscheduler.domain.model.database.DatabaseConnectionInfo;
+import com.pufferfishscheduler.domain.model.database.DBConnectionInfo;
 import com.pufferfishscheduler.domain.model.database.DatabaseField;
 import com.pufferfishscheduler.domain.vo.collect.RealTimeFieldMapperVo;
 import com.pufferfishscheduler.domain.vo.collect.RealTimeTableMapperVo;
@@ -753,7 +753,7 @@ public class RealTimeTaskServiceImpl implements RealTimeTaskService {
         DataSourceAdapter adapter = DataSourceAdapterFactory.getDataSourceAdapter(database.getType());
         DataSourceAdapter.DataBaseType type = DataSourceAdapter.DataBaseType.valueOf(database.getType());
         adapter.setType(type);
-        DatabaseConnectionInfo connectionInfo = new DatabaseConnectionInfo();
+        DBConnectionInfo connectionInfo = new DBConnectionInfo();
         BeanUtils.copyProperties(database, connectionInfo);
         adapter.setConnectionInfo(connectionInfo);
         return adapter;

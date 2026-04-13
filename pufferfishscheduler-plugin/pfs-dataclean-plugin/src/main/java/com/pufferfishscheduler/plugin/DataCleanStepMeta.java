@@ -274,8 +274,6 @@ public class DataCleanStepMeta extends BaseStepMeta implements StepMetaInterface
     @Override
     public Object clone() {
         DataCleanStepMeta retval = (DataCleanStepMeta) super.clone();
-        // ✅ 修复2: BeanUtils.copyProperties(dest, orig) — 第一个参数是目标对象
-        // 原代码写反了：copyProperties(this, retval) 是把空克隆覆盖回原对象
         try {
             BeanUtils.copyProperties(retval, this);
         } catch (IllegalAccessException | InvocationTargetException e) {

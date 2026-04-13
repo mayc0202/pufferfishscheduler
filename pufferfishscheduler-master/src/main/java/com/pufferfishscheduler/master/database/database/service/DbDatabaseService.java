@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.pufferfishscheduler.dao.entity.DbDatabase;
 import com.pufferfishscheduler.domain.form.database.DbDatabaseForm;
-import com.pufferfishscheduler.domain.model.database.DatabaseConnectionInfo;
+import com.pufferfishscheduler.domain.model.database.DBConnectionInfo;
 import com.pufferfishscheduler.domain.vo.database.DatabaseVo;
 import com.pufferfishscheduler.master.database.connect.relationdb.AbstractDatabaseConnector;
 
@@ -107,7 +107,7 @@ public interface DbDatabaseService extends IService<DbDatabase> {
      * @param id
      * @return
      */
-    DatabaseConnectionInfo getDatabaseConnectionInfo(Integer id);
+    DBConnectionInfo getDatabaseConnectionInfo(Integer id);
 
     /**
      * 构建数据源连接器
@@ -115,7 +115,7 @@ public interface DbDatabaseService extends IService<DbDatabase> {
      * @param databaseInfo
      * @return
      */
-    AbstractDatabaseConnector buildDbConnector(DatabaseConnectionInfo databaseInfo);
+    AbstractDatabaseConnector buildDbConnector(DBConnectionInfo databaseInfo);
 
     /**
      * 测试连接
@@ -129,7 +129,7 @@ public interface DbDatabaseService extends IService<DbDatabase> {
      *
      * @param databaseInfo
      */
-    void connect(DatabaseConnectionInfo databaseInfo);
+    void connect(DBConnectionInfo databaseInfo);
 
     /**
      * 验证数据源是否存在

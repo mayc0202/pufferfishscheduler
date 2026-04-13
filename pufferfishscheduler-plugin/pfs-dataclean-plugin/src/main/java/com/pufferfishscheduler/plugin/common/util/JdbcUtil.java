@@ -56,7 +56,7 @@ public class JdbcUtil {
      * @param extConfig
      * @return
      */
-    public static String getUrl(String type, String host, String port, String dbName, String extConfig) {
+    public static String getUrl(String type, String host, String port, String dbName, String extConfig) throws KettleException {
         switch (type) {
             case Constants.DATABASE_TYPE.MYSQL:
             case Constants.DATABASE_TYPE.DORIS:
@@ -80,7 +80,7 @@ public class JdbcUtil {
                 return String.format(DM_URL_FORMAT, host, port, dbName);
 
             default:
-                throw new IllegalArgumentException("Unsupported database type: " + type);
+                throw new KettleException(String.format("暂不支持[%s]此类型数据库!", type));
         }
     }
 
@@ -91,27 +91,17 @@ public class JdbcUtil {
      * @return
      */
     public static String getDriver(String type) throws KettleException {
-        switch (type) {
-            case Constants.DATABASE_TYPE.MYSQL:
-            case Constants.DATABASE_TYPE.DORIS:
-            case Constants.DATABASE_TYPE.STAR_ROCKS:
-                return MYSQL_DRIVER;
-
-            case Constants.DATABASE_TYPE.ORACLE:
-                return ORACLE_DRIVER;
-
-            case Constants.DATABASE_TYPE.POSTGRESQL:
-                return POSTGRESQL_DRIVER;
-
-            case Constants.DATABASE_TYPE.SQL_SERVER:
-                return SQLSERVER_DRIVER;
-
-            case Constants.DATABASE_TYPE.DM8:
-                return DM_DRIVER;
-
-            default:
-                throw new KettleException("Unsupported database type: " + type);
-        }
+        return switch (type) {
+            case Constants.DATABASE_TYPE.MYSQL,
+                 Constants.DATABASE_TYPE.DORIS,
+                 Constants.DATABASE_TYPE.STAR_ROCKS ->
+                    MYSQL_DRIVER;
+            case Constants.DATABASE_TYPE.ORACLE -> ORACLE_DRIVER;
+            case Constants.DATABASE_TYPE.POSTGRESQL -> POSTGRESQL_DRIVER;
+            case Constants.DATABASE_TYPE.SQL_SERVER -> SQLSERVER_DRIVER;
+            case Constants.DATABASE_TYPE.DM8 -> DM_DRIVER;
+            default -> throw new KettleException(String.format("暂不支持[%s]此类型数据库!", type));
+        };
     }
 
     /**

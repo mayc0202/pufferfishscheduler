@@ -9,6 +9,7 @@
         <result property="imgConfig" column="img_config" jdbcType="VARCHAR"/>
         <result property="categoryId" column="category_id" jdbcType="INTEGER"/>
         <result property="orderBy" column="order_by" jdbcType="INTEGER"/>
+        <result property="enabled" column="enabled" jdbcType="BOOLEAN"/>
         <result property="createdBy" column="created_by" jdbcType="VARCHAR"/>
         <result property="createdTime" column="created_time" jdbcType="TIMESTAMP"/>
         <result property="updatedBy" column="updated_by" jdbcType="VARCHAR"/>
@@ -23,7 +24,8 @@
                db.img_config,
                db.category_id,
                dc.`name` AS category_name,
-               db.order_by
+               db.order_by,
+               db.enabled
         FROM db_basic AS db
                  LEFT JOIN db_category AS dc ON db.category_id = dc.id
     </select>
@@ -36,7 +38,8 @@
                db.img_config,
                db.category_id,
                dc.`name` AS category_name,
-               db.order_by
+               db.order_by,
+               db.enabled
         FROM db_basic AS db
                  LEFT JOIN db_category AS dc ON db.category_id = dc.id
         WHERE dc.id = #{categoryId}

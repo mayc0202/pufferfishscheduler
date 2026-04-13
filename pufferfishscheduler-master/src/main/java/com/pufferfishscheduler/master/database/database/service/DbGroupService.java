@@ -1,6 +1,7 @@
 package com.pufferfishscheduler.master.database.database.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.pufferfishscheduler.common.enums.DatabaseCategory;
 import com.pufferfishscheduler.common.node.Tree;
 import com.pufferfishscheduler.dao.entity.DbGroup;
 import com.pufferfishscheduler.domain.form.database.DbGroupForm;
@@ -45,6 +46,13 @@ public interface DbGroupService extends IService<DbGroup> {
      */
     List<Tree> relationalDbTree();
 
+    /**
+     * 按数据源大类构建分组树（仅该大类下的数据源作为叶子节点，不展示图标）。
+     * FTP 等需特殊查询的类别请仍使用专用方法（如 {@link #ftpDbTree(String)}）。
+     *
+     * @param category 数据源大类，不可为 null
+     */
+    List<Tree> dbTreeByCategory(DatabaseCategory category);
 
     /**
      * 获取分组集合

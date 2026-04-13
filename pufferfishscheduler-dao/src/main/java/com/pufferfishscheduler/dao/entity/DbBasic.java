@@ -64,6 +64,12 @@ public class DbBasic implements Serializable {
     private Integer orderBy;
 
     /**
+     * 是否启用
+     */
+    @TableField(value = "enabled")
+    private Boolean enabled;
+
+    /**
      * 创建人
      */
     @TableField(value = "created_by")

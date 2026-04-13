@@ -18,7 +18,6 @@ import org.pentaho.di.trans.steps.userdefinedjavaclass.UserDefinedJavaClassMeta;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -31,11 +30,6 @@ public class JavaCodeConstructor extends AbstractStepMetaConstructor {
     public StepMeta create(String config, TransMeta transMeta, StepContext context) {
         // 验证输入参数
         validateInput(config, context);
-
-        PluginRegistry registryID = context.getRegistryID();
-        Map<String, StepMeta> map = context.getStepMetaMap();
-        String id = context.getId();
-        Integer flowId = context.getFlowId();
 
         JSONObject jsonObject = JSONObject.parseObject(config);
         if (jsonObject == null) {

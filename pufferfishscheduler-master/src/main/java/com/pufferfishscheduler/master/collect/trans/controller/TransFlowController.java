@@ -1,6 +1,7 @@
 package com.pufferfishscheduler.master.collect.trans.controller;
 
 import com.pufferfishscheduler.domain.form.collect.FieldStreamForm;
+import com.pufferfishscheduler.master.collect.trans.service.StepService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -40,6 +41,9 @@ public class TransFlowController {
 
     @Autowired
     private TransFlowService flowService;
+
+    @Autowired
+    private StepService stepService;
 
     /**
      * 转换分组 + 转换流程树（用于左侧导航等）
@@ -143,7 +147,7 @@ public class TransFlowController {
     @Operation(summary = "预览数据")
     @PostMapping(value = "/preview.do")
     public ApiResponse preview(@RequestBody @Valid PreviewForm form) {
-        return ApiResponse.success(flowService.preview(form));
+        return ApiResponse.success(stepService.preview(form));
     }
 
     /**
@@ -155,7 +159,7 @@ public class TransFlowController {
     @Operation(summary = "获取转换流字段流")
     @PostMapping(value = "/getFieldStream.do")
     public ApiResponse getFieldStream(@RequestBody @Valid FieldStreamForm form) {
-        return ApiResponse.success(flowService.getFieldStream(form.getFlowId(), form.getConfig(), form.getStepName(), null));
+        return ApiResponse.success(stepService.getFieldStream(form.getFlowId(), form.getConfig(), form.getStepName(), null));
     }
 
     /**
@@ -222,7 +226,7 @@ public class TransFlowController {
     @Operation(summary = "流程运行日志")
     @GetMapping(value = "/getProcessLog.do")
     public ApiResponse getProcessLog(@RequestParam Integer id) {
-        LogChannel logChannel = flowService.getProcessLog(id);
+        LogChannel logChannel = stepService.getProcessLog(id);
         return ApiResponse.success(logChannel.clone());
     }
 
@@ -235,19 +239,7 @@ public class TransFlowController {
     @Operation(summary = "校验转换流程运行状态")
     @GetMapping("/checkTransStatus.do")
     public ApiResponse checkTransStatus(@RequestParam Integer id) {
-        return ApiResponse.success(flowService.checkTransStatus(id));
-    }
-
-    /**
-     * 展示转换流图片
-     * 
-     * @param id
-     * @return
-     */
-    @Operation(summary = "展示转换流图片")
-    @GetMapping("/showTransImg.do")
-    public ApiResponse showTransImg(@RequestParam Integer id) {
-        return ApiResponse.success(flowService.showTransImg(id));
+        return ApiResponse.success(stepService.checkTransStatus(id));
     }
 
      /**

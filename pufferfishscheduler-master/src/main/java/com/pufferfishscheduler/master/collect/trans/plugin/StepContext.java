@@ -12,22 +12,31 @@ import lombok.Data;
  */
 @Data
 public class StepContext {
-     private PluginRegistry registryID;
+    /**
+     * 插件注册器
+     */
+    private PluginRegistry registryID;
+
+    /**
+     * 步骤元数据映射
+     */
     private Map<String, StepMeta> stepMetaMap;
-    //组件ID
+    /**
+     * 组件ID
+     */
     private String id;
-    //是否需要校验组件
+
+    /**
+     * 是否需要校验组件
+     */
     private boolean validate;
+
     /**
      * 流程id
      */
     private Integer flowId;
 
     private String url;
-
-    private String rootPath;
-
-    private String workDir;
 
     private String address;
 
@@ -37,6 +46,8 @@ public class StepContext {
 
     private String password;
 
-    //组件id及步骤名称
+    /**
+     * 组件id及步骤名称
+     */
     private Map<String, String> stepNames;
 }

@@ -36,6 +36,7 @@
         UPDATE kettle_flow_repository 
         SET flow_type = #{flowType}, 
             flow_content = #{flowContent}, 
+            flow_json = #{flowJson},
             updated_time = NOW() 
         WHERE biz_type = #{bizType} 
           AND biz_object_id = #{bizObjectId} 

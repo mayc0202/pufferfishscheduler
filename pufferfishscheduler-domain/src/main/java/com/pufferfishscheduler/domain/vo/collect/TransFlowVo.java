@@ -36,6 +36,11 @@ public class TransFlowVo {
     private String path;
 
     /**
+     * 数据处理阶段
+     */
+    private String stage;
+
+    /**
      * 分类id
      */
     private Integer groupId;

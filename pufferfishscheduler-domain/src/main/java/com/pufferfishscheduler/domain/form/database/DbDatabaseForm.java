@@ -45,10 +45,10 @@ public class DbDatabaseForm {
     // 模式schema
     private String dbSchema;
 
-    @NotBlank(message = "数据库用户名不能为空!")
+//    @NotBlank(message = "数据库用户名不能为空!")
     private String username;
 
-    @NotBlank(message = "数据库密码不能为空!")
+//    @NotBlank(message = "数据库密码不能为空!")
     private String password;
 
     // 备注

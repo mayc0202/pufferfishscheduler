@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin id="RabbitMqConsumerInput" type="Step">
+  <name>RabbitMQ输入</name>
+  <description>订阅 RabbitMQ 队列消息。</description>
+  <category>输入</category>
+  <classname>com.pufferfishscheduler.plugin.RabbitMqConsumerInputMeta</classname>
+  <image>rabbitmq-input.svg</image>
+  <libraries>
+    <library name="lib/pfs-rabbitmqconsumer-plugin-1.0.0.jar"/>
+  </libraries>
+</plugin>

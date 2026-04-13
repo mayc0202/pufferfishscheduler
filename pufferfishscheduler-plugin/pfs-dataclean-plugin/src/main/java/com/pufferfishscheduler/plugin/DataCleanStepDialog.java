@@ -205,7 +205,7 @@ public class DataCleanStepDialog extends BaseStepDialog implements StepDialogInt
                     // 处理流中字段
                     dealFlowFields(row.getValueMetaList());
                     for (int i = 0; i < row.size(); ++i) {
-                        DataCleanStepDialog.this.inputFields.put(row.getValueMeta(i).getName(), new Integer(i));
+                        DataCleanStepDialog.this.inputFields.put(row.getValueMeta(i).getName(), Integer.valueOf(i));
                     }
                     // 获取流中字段
                     DataCleanStepDialog.this.setComboBoxes();

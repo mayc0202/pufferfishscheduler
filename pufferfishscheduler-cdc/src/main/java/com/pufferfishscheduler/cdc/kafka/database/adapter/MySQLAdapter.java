@@ -9,7 +9,7 @@ import com.pufferfishscheduler.common.utils.AESUtil;
 import com.pufferfishscheduler.common.utils.JdbcUrlUtil;
 import com.pufferfishscheduler.common.utils.JdbcUtil;
 import com.pufferfishscheduler.common.utils.MD5Util;
-import com.pufferfishscheduler.domain.model.database.DatabaseConnectionInfo;
+import com.pufferfishscheduler.domain.model.database.DBConnectionInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.sourcelab.kafka.connect.apiclient.request.dto.NewConnectorDefinition;
@@ -36,7 +36,7 @@ public class MySQLAdapter extends DataSourceAdapter {
         Connection conn = null;
         try {
             // 连接信息里的 password 通常是加密串，JDBC 直连需要明文密码
-            DatabaseConnectionInfo plainConn = new DatabaseConnectionInfo();
+            DBConnectionInfo plainConn = new DBConnectionInfo();
             plainConn.setType(connectionInfo.getType());
             plainConn.setDbHost(connectionInfo.getDbHost());
             plainConn.setDbPort(connectionInfo.getDbPort());

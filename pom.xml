@@ -70,25 +70,20 @@
         <!--DM8-->
         <dm.version>8.1.3.62</dm.version>
 
-        <!-- redisson -->
-        <redisson.version>3.27.2</redisson.version>
+        <!-- jedis -->
+        <jedis.version>4.4.3</jedis.version>
         <!--Kafka-->
-        <kafka.version>3.6.1</kafka.version>
+        <kafka-clients.version>3.6.1</kafka-clients.version>
         <!-- kafka connect -->
         <kafka-connect.version>3.6.1</kafka-connect.version>
+        <!-- 强制与 kafka-clients 一致；避免 Kettle/mstor 等传递的 snappy-java 1.1.0 在 Mac aarch64 无原生库 -->
+        <snappy-java.version>1.1.10.5</snappy-java.version>
+        <!-- RabbitMQ 客户端 -->
+        <rabbitmq-client.version>5.20.0</rabbitmq-client.version>
 
         <!-- caffeine -->
         <caffeine.version>3.1.8</caffeine.version>
-        <!-- commons-csv -->
-        <commons-csv.version>1.10.0</commons-csv.version>
-        <!-- pdfbox -->
-        <pdfbox.version>2.0.30</pdfbox.version>
-        <!-- poi-ooxml -->
-        <poi-ooxml.version>5.2.5</poi-ooxml.version>
-        <!-- xmlbeans：POI 5.2.5 依赖 5.2.0，否则会出现 NoSuchFieldError/NoSuchMethodError -->
-        <xmlbeans.version>5.2.0</xmlbeans.version>
-        <!-- tika-core -->
-        <tika-core.version>2.9.2</tika-core.version>
+
         <!--lombok-->
         <lombok.version>1.18.36</lombok.version>
         <!--fastjson2-->
@@ -115,10 +110,16 @@
         <easyexcel.version>4.0.3</easyexcel.version>
         <!-- c3p0 -->
         <c3p0.version>0.9.5.5</c3p0.version>
+        <!-- guava -->
+        <guava.version>32.0.0-jre</guava.version>
+        <!-- Guava 拆出的 failureaccess（InternalFutureFailureAccess）；与 Kettle 同 classpath 时需显式引入 -->
+        <failureaccess.version>1.0.1</failureaccess.version>
         <!-- Janino 核心编译器依赖 -->
         <janino.version>3.1.12</janino.version>
         <!--poi-tl-->
         <poi-tl.version>1.12.1</poi-tl.version>
+        <!-- tika-core -->
+        <tika-core.version>2.9.2</tika-core.version>
 
         <!-- 阿里云手机验证码依赖版本号 -->
         <aliyun-phone.version>4.6.2</aliyun-phone.version>
@@ -133,6 +134,8 @@
         <pentaho-metadata.version>9.2.0.0-290</pentaho-metadata.version>
         <!-- kettle -->
         <pentaho-kettle.version>9.2.0.0-290</pentaho-kettle.version>
+        <!-- Kettle 9.2 SubtransExecutor 仍引用 org.eclipse.jetty.util.ConcurrentHashSet；Jetty 10+ 已移除，需与 Spring Boot 3 传递的 Jetty 12 区分版本 -->
+        <kettle-jetty-util.version>9.4.53.v20231009</kettle-jetty-util.version>
         <!-- kettle 加密 -->
         <pentaho-encryption.version>9.4.0.0-343</pentaho-encryption.version>
     </properties>
@@ -282,6 +285,13 @@
                 <version>${hikaricp.version}</version>
             </dependency>
 
+            <!-- jedis -->
+            <dependency>
+                <groupId>redis.clients</groupId>
+                <artifactId>jedis</artifactId>
+                <version>${jedis.version}</version>
+            </dependency>
+
             <!-- commons-pool2 -->
             <dependency>
                 <groupId>org.apache.commons</groupId>
@@ -289,11 +299,30 @@
                 <version>${commons-pool2.version}</version>
             </dependency>
 
+            <!-- guava -->
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>${guava.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>failureaccess</artifactId>
+                <version>${failureaccess.version}</version>
+            </dependency>
+
             <!-- fastjson2 -->
             <dependency>
                 <groupId>com.alibaba.fastjson2</groupId>
                 <artifactId>fastjson2</artifactId>
                 <version>${fastjson.version}</version>
+            </dependency>
+
+            <!-- 文本提取工具 -->
+            <dependency>
+                <groupId>org.apache.tika</groupId>
+                <artifactId>tika-core</artifactId>
+                <version>${tika-core.version}</version>
             </dependency>
 
             <!-- easyexcel -->
@@ -387,59 +416,6 @@
                 <version>${caffeine.version}</version>
             </dependency>
 
-            <!-- CSV 解析 -->
-            <dependency>
-                <groupId>org.apache.commons</groupId>
-                <artifactId>commons-csv</artifactId>
-                <version>${commons-csv.version}</version>
-            </dependency>
-
-            <!-- PDF 处理 -->
-            <dependency>
-                <groupId>org.apache.pdfbox</groupId>
-                <artifactId>pdfbox</artifactId>
-                <version>${pdfbox.version}</version>
-            </dependency>
-
-            <!-- Apache POI：须与 poi-ooxml 同版本；否则 Kettle 等会就近解析到旧 poi-core，与 5.x ooxml 混用会 NoSuchMethodError -->
-            <dependency>
-                <groupId>org.apache.poi</groupId>
-                <artifactId>poi</artifactId>
-                <version>${poi-ooxml.version}</version>
-            </dependency>
-
-            <!-- Word / Excel (OOXML) -->
-            <dependency>
-                <groupId>org.apache.poi</groupId>
-                <artifactId>poi-ooxml</artifactId>
-                <version>${poi-ooxml.version}</version>
-            </dependency>
-
-            <!--
-              POI 5.x 默认依赖的精简 schemas 包不包含全部 OOXML 生成类。
-              EasyExcel 2.x 在解析 xlsx 时会用到 org.openxmlformats.schemas.*（如 WorkbookDocument$Factory），
-              需要引入 poi-ooxml-full 提供完整 schemas 实现。
-            -->
-            <dependency>
-                <groupId>org.apache.poi</groupId>
-                <artifactId>poi-ooxml-full</artifactId>
-                <version>${poi-ooxml.version}</version>
-            </dependency>
-
-            <!-- 强制统一 xmlbeans 版本，避免 POI 运行时与 XMLBeans 不兼容 -->
-            <dependency>
-                <groupId>org.apache.xmlbeans</groupId>
-                <artifactId>xmlbeans</artifactId>
-                <version>${xmlbeans.version}</version>
-            </dependency>
-
-            <!-- 文本提取工具 -->
-            <dependency>
-                <groupId>org.apache.tika</groupId>
-                <artifactId>tika-core</artifactId>
-                <version>${tika-core.version}</version>
-            </dependency>
-
             <!-- Springdoc OpenAPI (替代Springfox，支持Spring Boot 3.x) -->
             <dependency>
                 <groupId>org.springdoc</groupId>
@@ -454,11 +430,25 @@
                 <version>${kafka-connect.version}</version>
             </dependency>
 
+            <!-- Snappy：覆盖传递依赖中的极旧版本，否则 Mac ARM 上 Kafka 压缩 snappy 会 NoClassDefFoundError -->
+            <dependency>
+                <groupId>org.xerial.snappy</groupId>
+                <artifactId>snappy-java</artifactId>
+                <version>${snappy-java.version}</version>
+            </dependency>
+
             <!-- Kafka Connect 客户端 -->
             <dependency>
                 <groupId>org.sourcelab</groupId>
                 <artifactId>kafka-connect-client</artifactId>
                 <version>4.0.1</version>
+            </dependency>
+
+            <!-- RabbitMQ 客户端 -->
+            <dependency>
+                <groupId>com.rabbitmq</groupId>
+                <artifactId>amqp-client</artifactId>
+                <version>${rabbitmq-client.version}</version>
             </dependency>
 
             <!-- 阿里云短信验证 -->
@@ -481,13 +471,6 @@
                 <artifactId>poi-tl</artifactId>
                 <version>${poi-tl.version}</version>
             </dependency>
-
-            <!-- swt -->
-<!--            <dependency>-->
-<!--                <groupId>org.eclipse.platform</groupId>-->
-<!--                <artifactId>org.eclipse.swt</artifactId>-->
-<!--                <version>${swt.version}</version>-->
-<!--            </dependency>-->
 
             <!-- pentaho-metadata -->
             <dependency>
@@ -570,6 +553,13 @@
                 <version>${pentaho-kettle.version}</version>
             </dependency>
 
+            <!-- 供 Kettle 流式步骤子映射初始化（SubtransExecutor）使用 Jetty 9 API，避免 classpath 上仅存在 Jetty 12 -->
+            <dependency>
+                <groupId>org.eclipse.jetty</groupId>
+                <artifactId>jetty-util</artifactId>
+                <version>${kettle-jetty-util.version}</version>
+            </dependency>
+
             <!-- kettle UI SWT -->
             <dependency>
                 <groupId>pentaho-kettle</groupId>
@@ -586,13 +576,6 @@
                     </exclusion>
                 </exclusions>
             </dependency>
-
-            <!-- pentaho 加密库 -->
-            <!--            <dependency>-->
-            <!--                <groupId>pentaho</groupId>-->
-            <!--                <artifactId>pentaho-encryption</artifactId>-->
-            <!--                <version>${pentaho-encryption.version}</version>-->
-            <!--            </dependency>-->
 
         </dependencies>
     </dependencyManagement>

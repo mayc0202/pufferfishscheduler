@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin id="FTPDownload" type="Step">
+  <name>FTP下载组件</name>
+  <description>用于FTP下载文件。</description>
+  <category>转换</category>
+  <classname>com.pufferfishscheduler.plugin.FtpDownloadStepMeta</classname>
+  <image>ftp-download.svg</image>
+  <libraries>
+    <library name="lib/pfs-ftpdownload-plugin-1.0.0.jar"/>
+  </libraries>
+</plugin>
+

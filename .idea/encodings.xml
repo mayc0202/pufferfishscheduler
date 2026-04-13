@@ -5,8 +5,6 @@
     <file url="file://$PROJECT_DIR$/pufferfishscheduler-ai/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/pufferfishscheduler-alert/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/pufferfishscheduler-alert/src/main/resources" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/pufferfishscheduler-aop/src/main/java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/pufferfishscheduler-aop/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/pufferfishscheduler-api/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/pufferfishscheduler-api/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/pufferfishscheduler-cdc/src/main/java" charset="UTF-8" />
@@ -17,8 +15,44 @@
     <file url="file://$PROJECT_DIR$/pufferfishscheduler-dao/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/pufferfishscheduler-domain/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/pufferfishscheduler-domain/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/pufferfishscheduler-kettle/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/pufferfishscheduler-kettle/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/pufferfishscheduler-master/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/pufferfishscheduler-master/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-apiinput-plugin/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-apiinput-plugin/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-apioutput-plugin/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-apioutput-plugin/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-dataclean-plugin/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-dataclean-plugin/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-debeziumjson-plugin/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-debeziumjson-plugin/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-doris-plugin/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-doris-plugin/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-filedownload-plugin/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-filedownload-plugin/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-filter-plugin/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-filter-plugin/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-ftp-plugin/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-ftp-plugin/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-ftpdownload-plugin/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-ftpdownload-plugin/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-ftpupload-plugin/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-ftpupload-plugin/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-kafkaconsumer-plugin/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-kafkaconsumer-plugin/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-kafkaproducer-plugin/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-kafkaproducer-plugin/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-rabbitmqconsumer-plugin/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-rabbitmqconsumer-plugin/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-rabbitmqproducer-plugin/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-rabbitmqproducer-plugin/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-redisinput-plugin/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-redisinput-plugin/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-redisoutput-plugin/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-redisoutput-plugin/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/pufferfishscheduler-plugin/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/pufferfishscheduler-plugin/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/pufferfishscheduler-worker/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/pufferfishscheduler-worker/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/java" charset="UTF-8" />

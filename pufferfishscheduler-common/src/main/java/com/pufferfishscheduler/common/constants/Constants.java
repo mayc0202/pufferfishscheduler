@@ -115,6 +115,10 @@ public interface Constants {
         String MAPPING_TYPE = "mapping_type";
         // 知识类型
         String KNOWLEDGE_TYPE = "knowledge_type";
+        // 电子表格类型
+        String SPREAD_SHEET_TYPE = "spread_sheet_type";
+        // 操作类型
+        String OPERATOR_TYPE = "operator_type";
     }
 
     /**
@@ -123,7 +127,9 @@ public interface Constants {
     interface TASK_TYPE {
         String METADATA_TASK = "metadata_task";
         String TRANS_TASK = "trans_task";
-        /** Worker 侧停止正在执行的转换（与 TRANS_TASK 共用 trans_task.id） */
+        /**
+         * Worker 侧停止正在执行的转换（与 TRANS_TASK 共用 trans_task.id）
+         */
         String TRANS_TASK_STOP = "trans_task_stop";
     }
 
@@ -143,6 +149,7 @@ public interface Constants {
         String MONGODB = "MongoDB";
 
         String KAFKA = "Kafka";
+        String RABBITMQ = "RabbitMQ";
     }
 
     /**
@@ -393,6 +400,8 @@ public interface Constants {
         String RULE = "RULE";
         String DATABASE = "DATABASE";
         String TRANS_FLOW = "TRANS_FLOW";
+        String MENU = "menu";
+        String PLUGIN = "plugin";
     }
 
     /**
@@ -523,12 +532,23 @@ public interface Constants {
         String STREAM = "3";
     }
 
-
     /**
      * 模板标识
      */
     interface TEMPLATE {
         String VALUE_MAPPING = "value-mapping-template.xlsx";
+    }
+
+    /**
+     * 规则管理
+     */
+    interface RULE_MANAGER {
+        Integer GENERIC_TYPE = 1; // 通用
+        String GENERIC_TXT = "通用"; // 通用
+        Integer PUBLIC_TYPE = 2; // 公共的
+        String PUBLIC_TXT = "公共"; // 公共的
+        Integer CUSTOM_TYPE = 3; // 自定义的
+        String CUSTOM_TXT = "自定义"; // 自定义的
     }
 
     /**
@@ -555,59 +575,132 @@ public interface Constants {
         Integer CUSTOM_SQL = 2; // 自定义sql
     }
 
+    /**
+     * 从数据源获取数据的类型
+     */
+    interface FROM_SOURCE_TYPE {
+        Integer FROM_FIELD = 1; // 从字段获取
+        Integer FROM_FILE = 2; // 从文件源获取
+    }
+
+    /**
+     * 文件源类型
+     * 1：FTP文件
+     * 2：本地文件
+     */
+    interface FILE_SOURCE_TYPE {
+        String FTP_FILE = "FTP_FILE";
+        String LOCAL_FILE = "LOCAL_FILE";
+    }
+
+    /**
+     * 记录生成器类型
+     */
+    interface RECORD_GENERATOR_TYPE {
+        Integer BATCH = 1; // 批量生成记录
+        Integer CONTINUOUS = 2; // 持续生成记录
+    }
+
+    /**
+     * 本地文件类型
+     */
+    interface LOCAL_FILE_TYPE {
+        String ALL = "1";
+        String DIR = "2";
+        String ZIP = "3";
+    }
 
     /**
      * 组件类型
      */
     interface StepMetaType {
         String TABLE_INPUT = "TableInput";
-        String GENERATE_TEST_DATA = "generateTestData";
-        String EXCEL_INPUT = "excelInput";
-        String CSV_INPUT = "csvInput";
-        String JSON_INPUT = "jsonInput";
-        String MONGODB_INPUT = "mongoDBInput";
-        String FIELD_SELECT = "fieldSelect";
-        String API_INPUT = "apiInput";
+        String ROW_GENERATOR = "RowGenerator";
+        String EXCEL_INPUT = "ExcelInput";
+        String CSV_INPUT = "CsvInput";
+        String JSON_INPUT = "JsonInput";
+        String MONGODB_INPUT = "MongoDBInput";
+        String API_INPUT = "ApiInput";
         String KAFKA_CONSUMER_INPUT = "KafkaConsumerInput";
+        String RABBITMQ_CONSUMER_INPUT = "RabbitMqConsumerInput";
         String RECORDS_FROM_STREAM = "RecordsFromStream";
         String REDIS_INPUT = "RedisInput";
 
         String TABLE_OUTPUT = "TableOutput";
-        String INSERT_OR_UPDATE = "insertOrUpdate";
-        String UPDATE = "update";
-        String EXCEL_OUTPUT = "excelOutput";
-        String JSON_OUTPUT = "jsonOutput";
-        String MONGODB_OUTPUT = "mongoDBOutput";
-        String API_OUTPUT = "apiOutput";
-        String FILE_DOWNLOAD = "fileDownload";
+        String INSERT_OR_UPDATE = "InsertOrUpdate";
+        String EXCEL_OUTPUT = "ExcelOutput";
+//        String JSON_OUTPUT = "JsonOutput";
+//        String MONGODB_OUTPUT = "MongoDBOutput";
+        String API_OUTPUT = "ApiOutput";
+        String FILE_DOWNLOAD = "FileDownload";
         String KAFKA_PRODUCER_OUTPUT = "KafkaProducerOutput";
+        String RABBITMQ_PRODUCER_OUTPUT = "RabbitMqProducerOutput";
         String REDIS_OUTPUT = "RedisOutput";
-        String STARROCKS_OUTPUT = "StarRocksOutput";
         String DORIS_OUTPUT = "DorisOutput"; // DorisOutput输出
 
-        String JAVA_CODE = "JavaCode";
-        String EXECUTE_SQL_SCRIPT = "executeSQL";
+        String JAVA_CODE = "JavaCode"; // Java脚本
+        String SQL_SCRIPT = "SQLScript"; // 执行SQL脚本
 
-        String CONDITIONAL_JAVA = "conditionalJava";
-        String PROCESS_BRANCH = "processBranch";
-
-        String GET_VARIABLES = "geVariables";
-        String SET_VARIABLES = "setVariables";
+        String JAVA_CONDITIONAL = "JavaCondition"; // 条件Java
+        String PROCESS_BRANCH = "ProcessBranch"; // 多分支
 
         String SYSTEM_DATE = "SystemDate";
-        String FORMULA = "formula";
-        String DENORMALISER = "Denormaliser"; // 行转列
+        String DENORMALIZED = "Denormalized"; // 行转列
         String NORMALISER = "Normaliser"; // 列转行
-        String SPLITFIELDTOROWS3 = "SplitFieldToRows3"; // 字段拆分为多行
-        String FIELDSPLITTER = "FieldSplitter"; // 字段拆分为多列
-        String GROUPBY = "GroupBy"; // 分组
-        String FILTER = "Filter"; // 过滤
+        String SORT_ROWS = "SortRows"; // 排序
+        String FIELD_SELECT = "FieldSelect";
+        String SPLIT_FIELD_TO_ROWS = "SplitFieldToRows"; // 字段拆分为多行
+        String FIELD_SPLIT_TO_COLUMNS = "FieldSplitter"; // 字段拆分为多列
+        String DATA_FILTER = "DataFilter"; // 数据过滤
         String DATA_CLEAN = "DataClean"; // 清洗
         String DEBEZIUM_JSON = "DebeziumJson"; // Debezium格式JSON
 
         String FTP_UPLOAD = "FTPUpload"; // FTP上传
         String FTP_DOWNLOAD = "FTPDownload"; // FTP下载
 
-        String WRITE_TO_LOG = "WriteToLog";
+        String WRITE_TO_LOG = "WriteToLog"; // 写入日志
+        String GET_VARIABLES = "GetVariables"; // 获取变量
+        String SET_VARIABLES = "SetVariables"; // 设置变量
+    }
+
+    /**
+     * 提交类型
+     */
+    interface COMMIT_TYPE {
+        String MANUAL_COMMIT = "1";
+        String AUTO_COMMIT = "2";
+    }
+
+    /**
+     * kafka字段
+     */
+    interface KAFKA_FIELD {
+        String KEY = "key";
+        String MESSAGE = "message";
+        String TOPIC = "topic";
+        String PARTITION = "partition";
+        String OFFSET = "offset";
+        String TIMESTAMP = "timestamp";
+    }
+
+    /**
+     * RabbitMQ 消费输出列（与前端 fieldList.rabbitName 对齐）
+     */
+    interface RABBITMQ_FIELD {
+        String MESSAGE = "message";
+        String ROUTING_KEY = "routingKey";
+        String MESSAGE_ID = "messageId";
+        String DELIVERY_TAG = "deliveryTag";
+        String EXCHANGE = "exchange";
+        String TIMESTAMP = "timestamp";
+    }
+
+    /**
+     * RabbitMQ 公共配置
+     */
+    interface RABBITMQ_COMMON_CONFIG {
+        String DEFAULT_PORT = "5672";
+        String DEFAULT_USERNAME = "guest";
+        String DEFAULT_PASSWORD = "guest";
     }
 }

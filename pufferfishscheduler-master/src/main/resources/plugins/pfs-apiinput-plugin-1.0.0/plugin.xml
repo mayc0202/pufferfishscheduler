@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin id="ApiInput" type="Step">
+  <name>API输入</name>
+  <description>用于API输入数据。</description>
+  <category>转换</category>
+  <classname>com.pufferfishscheduler.plugin.ApiInputStepMeta</classname>
+  <image>api-input.svg</image>
+  <libraries>
+    <library name="lib/pfs-apiinput-plugin-1.0.0.jar"/>
+  </libraries>
+</plugin>

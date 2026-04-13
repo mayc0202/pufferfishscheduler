@@ -25,26 +25,16 @@ public class SprintDataTransEngineConfiguration {
 		DataTransEngine dataEngine = new DataTransEngine();
 		dataEngine.setTransComponentMapper(transComponentMapper);
 
-		new Thread(new Runnable() {
-			@Override
-			public void run() {
-				log.info("Init data trans engine!");
-
-				try {
-					// 初始化 Kettle 环境
-					dataEngine.init();
-					
-					// 初始化数据缓存
-					DataCache.init();
-					DataCache.setEnable(true);
-
-					log.info("Finish data trans engine!");
-				} catch (Exception e) {
-					log.error("Failed to initialize data trans engine", e);
-					// 可以添加告警或其他处理逻辑
-				}
-			}
-		}).start();
+		log.info("Init data trans engine (Kettle sync)...");
+		try {
+			// 必须在任意 buildTransMeta / PluginRegistry 使用之前完成，否则步骤 pluginId 解析失败会导致 flow_content 中 <type/> 为空
+			dataEngine.init();
+			DataCache.init();
+			DataCache.setEnable(true);
+			log.info("Finish data trans engine!");
+		} catch (Exception e) {
+			log.error("Failed to initialize data trans engine", e);
+		}
 
 		return dataEngine;
 	}

@@ -119,48 +119,6 @@
             <artifactId>easyexcel</artifactId>
         </dependency>
 
-        <!-- CSV 解析 -->
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-csv</artifactId>
-        </dependency>
-
-        <!-- PDF 处理 -->
-        <dependency>
-            <groupId>org.apache.pdfbox</groupId>
-            <artifactId>pdfbox</artifactId>
-        </dependency>
-
-        <!-- Apache POI：与 poi-ooxml 同版本，避免与其它模块（如 Kettle）传递的旧 poi-core 冲突 -->
-        <dependency>
-            <groupId>org.apache.poi</groupId>
-            <artifactId>poi</artifactId>
-        </dependency>
-
-        <!-- Word / Excel (OOXML) -->
-        <dependency>
-            <groupId>org.apache.poi</groupId>
-            <artifactId>poi-ooxml</artifactId>
-        </dependency>
-
-        <!-- EasyExcel 解析 xlsx 需要完整 OOXML schemas（WorkbookDocument 等） -->
-        <dependency>
-            <groupId>org.apache.poi</groupId>
-            <artifactId>poi-ooxml-full</artifactId>
-        </dependency>
-
-        <!-- 显式引入，避免被其它传递依赖裁剪/冲突 -->
-        <dependency>
-            <groupId>org.apache.xmlbeans</groupId>
-            <artifactId>xmlbeans</artifactId>
-        </dependency>
-
-        <!-- 文本提取工具 -->
-        <dependency>
-            <groupId>org.apache.tika</groupId>
-            <artifactId>tika-core</artifactId>
-        </dependency>
-
         <!-- caffeine -->
         <dependency>
             <groupId>com.github.ben-manes.caffeine</groupId>

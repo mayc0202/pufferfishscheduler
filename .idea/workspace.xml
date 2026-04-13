@@ -1,0 +1,675 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="ALL" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="23dadde7-da13-451b-9817-4dd6da3e4241" name="更改" comment="">
+      <change afterPath="$PROJECT_DIR$/.cursor/skills/plugin-generation/SKILL.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/data_source_mapping.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-common/src/main/java/com/pufferfishscheduler/common/enums/ConnectionType.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-domain/src/main/java/com/pufferfishscheduler/domain/domain/RowGeneratorMateData.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-domain/src/main/java/com/pufferfishscheduler/domain/domain/RuleMetaData.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-domain/src/main/java/com/pufferfishscheduler/domain/form/collect/SetVariableForm.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-domain/src/main/java/com/pufferfishscheduler/domain/form/collect/TransConfigForm.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-domain/src/main/java/com/pufferfishscheduler/domain/vo/collect/BaseFieldVo.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-domain/src/main/java/com/pufferfishscheduler/domain/vo/collect/DenormalizedFieldVo.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-domain/src/main/java/com/pufferfishscheduler/domain/vo/collect/ExcelOutputFieldVo.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-domain/src/main/java/com/pufferfishscheduler/domain/vo/collect/FieldSplitterVo.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-domain/src/main/java/com/pufferfishscheduler/domain/vo/collect/FileVo.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-domain/src/main/java/com/pufferfishscheduler/domain/vo/collect/NormaliserFieldVo.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-domain/src/main/java/com/pufferfishscheduler/domain/vo/collect/ProcessBranchSetupVo.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-domain/src/main/java/com/pufferfishscheduler/domain/vo/collect/PropertiesVo.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-domain/src/main/java/com/pufferfishscheduler/domain/vo/collect/SheetVo.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/collect/trans/plugin/constructor/ApiInputConstructor.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/collect/trans/plugin/constructor/ApiOutputConstructor.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/collect/trans/plugin/constructor/DataFilterConstructor.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/collect/trans/plugin/constructor/DebeziumJsonConstructor.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/collect/trans/plugin/constructor/DenormalizedConstructor.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/collect/trans/plugin/constructor/DorisOutputConstructor.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/collect/trans/plugin/constructor/ExcelInputConstructor.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/collect/trans/plugin/constructor/ExcelOutputConstructor.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/collect/trans/plugin/constructor/FTPDownloadConstructor.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/collect/trans/plugin/constructor/FTPUploadConstructor.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/collect/trans/plugin/constructor/FieldSelectConstructor.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/collect/trans/plugin/constructor/FieldSplitterConstructor.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/collect/trans/plugin/constructor/FileDownloadConstructor.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/collect/trans/plugin/constructor/GetVariablesConstructor.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/collect/trans/plugin/constructor/InsertOrUpdateConstructor.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/collect/trans/plugin/constructor/JavaConditionConstructor.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/collect/trans/plugin/constructor/KafkaConsumerInputConstructor.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/collect/trans/plugin/constructor/KafkaProducerOutputConstructor.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/collect/trans/plugin/constructor/NormaliserConstructor.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/collect/trans/plugin/constructor/ProcessBranchConstructor.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/collect/trans/plugin/constructor/RecordsFromStreamConstructor.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/collect/trans/plugin/constructor/RedisInputConstructor.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/collect/trans/plugin/constructor/RedisOutputConstructor.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/collect/trans/plugin/constructor/RowGeneratorConstructor.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/collect/trans/plugin/constructor/SQLScriptConstructor.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/collect/trans/plugin/constructor/SetVariablesConstructor.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/collect/trans/plugin/constructor/SortRowsConstructor.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/collect/trans/plugin/constructor/SplitFieldToRowsConstructor.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/collect/trans/plugin/constructor/SystemDateConstructor.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/collect/trans/plugin/constructor/WriteToLogConstructor.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/collect/trans/plugin/controller/DebeziumPluginController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/collect/trans/plugin/controller/ExcelPluginController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/collect/trans/plugin/controller/FtpPluginController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/collect/trans/plugin/controller/KafkaPluginController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/collect/trans/plugin/controller/RedisPluginController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/collect/trans/plugin/service/DebeziumPluginService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/collect/trans/plugin/service/ExcelPluginService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/collect/trans/plugin/service/FtpPluginService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/collect/trans/plugin/service/KafkaPluginService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/collect/trans/plugin/service/RedisPluginService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/collect/trans/plugin/service/impl/DebeziumPluginServiceImpl.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/collect/trans/plugin/service/impl/ExcelPluginServiceImpl.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/collect/trans/plugin/service/impl/FtpPluginServiceImpl.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/collect/trans/plugin/service/impl/KafkaPluginServiceImpl.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/collect/trans/plugin/service/impl/RedisPluginServiceImpl.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/collect/trans/service/StepService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/collect/trans/service/impl/StepServiceImpl.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/common/config/file/FilePathConfig.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/database/connect/mq/AbstractMQConnector.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/database/connect/mq/MQConnectorFactory.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/database/connect/mq/impl/KafkaConnector.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/database/connect/mq/impl/RabbitMQConnector.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/database/connect/nosql/AbstractNoSqlConnector.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/database/connect/nosql/NoSqlConnectorFactory.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/database/connect/nosql/impl/RedisConnector.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/database/connect/relationdb/impl/Dm8Connector.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/database/connect/relationdb/impl/PostgreSQLConnector.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/database/connect/relationdb/impl/SQLServerConnector.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/database/connect/relationdb/impl/StarRocksConnector.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-apiinput-plugin/pom.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-apiinput-plugin/src/main/java/com/pufferfishscheduler/plugin/ApiInputStep.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-apiinput-plugin/src/main/java/com/pufferfishscheduler/plugin/ApiInputStepData.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-apiinput-plugin/src/main/java/com/pufferfishscheduler/plugin/ApiInputStepMeta.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-apiinput-plugin/src/main/java/com/pufferfishscheduler/plugin/common/Param.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-apiinput-plugin/src/main/java/com/pufferfishscheduler/plugin/common/RequestType.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-apiinput-plugin/src/main/java/com/pufferfishscheduler/plugin/common/WayType.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-apiinput-plugin/src/main/resources/api-input.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-apiinput-plugin/src/main/resources/assembly/assembly.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-apiinput-plugin/src/main/resources/plugin.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-apiinput-plugin/src/main/resources/version.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-apioutput-plugin/pom.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-apioutput-plugin/src/main/java/com/pufferfishscheduler/plugin/ApiOutputStep.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-apioutput-plugin/src/main/java/com/pufferfishscheduler/plugin/ApiOutputStepData.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-apioutput-plugin/src/main/java/com/pufferfishscheduler/plugin/ApiOutputStepMeta.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-apioutput-plugin/src/main/java/com/pufferfishscheduler/plugin/common/Param.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-apioutput-plugin/src/main/java/com/pufferfishscheduler/plugin/common/RequestType.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-apioutput-plugin/src/main/java/com/pufferfishscheduler/plugin/common/WayType.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-apioutput-plugin/src/main/resources/api-output.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-apioutput-plugin/src/main/resources/assembly/assembly.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-apioutput-plugin/src/main/resources/plugin.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-apioutput-plugin/src/main/resources/version.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-debeziumjson-plugin/pom.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-debeziumjson-plugin/src/main/java/com/pufferfishscheduler/plugin/DebeziumJsonStep.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-debeziumjson-plugin/src/main/java/com/pufferfishscheduler/plugin/DebeziumJsonStepData.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-debeziumjson-plugin/src/main/java/com/pufferfishscheduler/plugin/DebeziumJsonStepDialog.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-debeziumjson-plugin/src/main/java/com/pufferfishscheduler/plugin/DebeziumJsonStepMeta.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-debeziumjson-plugin/src/main/java/com/pufferfishscheduler/plugin/common/Constants.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-debeziumjson-plugin/src/main/java/com/pufferfishscheduler/plugin/common/domain/DebeziumField.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-debeziumjson-plugin/src/main/resources/assembly/assembly.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-debeziumjson-plugin/src/main/resources/debezium.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-debeziumjson-plugin/src/main/resources/plugin.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-debeziumjson-plugin/src/main/resources/version.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-doris-plugin/pom.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-doris-plugin/src/main/java/com/pufferfishscheduler/plugin/DorisStreamLoader.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-doris-plugin/src/main/java/com/pufferfishscheduler/plugin/DorisStreamLoaderData.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-doris-plugin/src/main/java/com/pufferfishscheduler/plugin/DorisStreamLoaderMeta.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-doris-plugin/src/main/java/com/pufferfishscheduler/plugin/load/BatchBufferHttpEntity.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-doris-plugin/src/main/java/com/pufferfishscheduler/plugin/load/BatchBufferStream.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-doris-plugin/src/main/java/com/pufferfishscheduler/plugin/load/BatchRecordBuffer.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-doris-plugin/src/main/java/com/pufferfishscheduler/plugin/load/DefaultThreadFactory.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-doris-plugin/src/main/java/com/pufferfishscheduler/plugin/load/DelimiterParser.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-doris-plugin/src/main/java/com/pufferfishscheduler/plugin/load/DorisBatchStreamLoad.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-doris-plugin/src/main/java/com/pufferfishscheduler/plugin/load/DorisOptions.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-doris-plugin/src/main/java/com/pufferfishscheduler/plugin/load/DorisRuntimeException.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-doris-plugin/src/main/java/com/pufferfishscheduler/plugin/load/EscapeHandler.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-doris-plugin/src/main/java/com/pufferfishscheduler/plugin/load/HttpPutBuilder.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-doris-plugin/src/main/java/com/pufferfishscheduler/plugin/load/HttpUtil.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-doris-plugin/src/main/java/com/pufferfishscheduler/plugin/load/LoadConstants.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-doris-plugin/src/main/java/com/pufferfishscheduler/plugin/load/LoadStatus.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-doris-plugin/src/main/java/com/pufferfishscheduler/plugin/load/RespContent.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-doris-plugin/src/main/java/com/pufferfishscheduler/plugin/load/TripleDESUtil.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-doris-plugin/src/main/java/com/pufferfishscheduler/plugin/serializer/DorisRecordSerializer.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-doris-plugin/src/main/java/com/pufferfishscheduler/plugin/util/Constants.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-doris-plugin/src/main/java/com/pufferfishscheduler/plugin/util/DatabaseConstants.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-doris-plugin/src/main/java/com/pufferfishscheduler/plugin/util/DbDatabaseVo.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-doris-plugin/src/main/java/com/pufferfishscheduler/plugin/util/JdbcUrlUtil.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-doris-plugin/src/main/java/com/pufferfishscheduler/plugin/util/JdbcUtil.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-doris-plugin/src/main/resources/assembly/assembly.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-doris-plugin/src/main/resources/doris.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-doris-plugin/src/main/resources/plugin.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-doris-plugin/src/main/resources/version.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-filedownload-plugin/pom.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-filedownload-plugin/src/main/java/com/pufferfishscheduler/plugin/FileDownloadStep.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-filedownload-plugin/src/main/java/com/pufferfishscheduler/plugin/FileDownloadStepData.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-filedownload-plugin/src/main/java/com/pufferfishscheduler/plugin/FileDownloadStepMeta.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-filedownload-plugin/src/main/java/com/pufferfishscheduler/plugin/common/Param.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-filedownload-plugin/src/main/java/com/pufferfishscheduler/plugin/common/RequestType.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-filedownload-plugin/src/main/java/com/pufferfishscheduler/plugin/common/WayType.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-filedownload-plugin/src/main/resources/assembly/assembly.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-filedownload-plugin/src/main/resources/file-download.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-filedownload-plugin/src/main/resources/plugin.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-filedownload-plugin/src/main/resources/version.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-filter-plugin/pom.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-filter-plugin/src/main/java/com/pufferfishscheduler/plugin/DataFilterStep.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-filter-plugin/src/main/java/com/pufferfishscheduler/plugin/DataFilterStepData.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-filter-plugin/src/main/java/com/pufferfishscheduler/plugin/DataFilterStepDialog.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-filter-plugin/src/main/java/com/pufferfishscheduler/plugin/DataFilterStepMeta.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-filter-plugin/src/main/java/com/pufferfishscheduler/plugin/common/Constants.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-filter-plugin/src/main/java/com/pufferfishscheduler/plugin/common/conditon/ConditionGroup.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-filter-plugin/src/main/java/com/pufferfishscheduler/plugin/common/conditon/ConditionParam.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-filter-plugin/src/main/java/com/pufferfishscheduler/plugin/common/conditon/ConditionTree.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-filter-plugin/src/main/resources/assembly/assembly.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-filter-plugin/src/main/resources/datafilter.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-filter-plugin/src/main/resources/plugin.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-filter-plugin/src/main/resources/version.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-ftpdownload-plugin/pom.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-ftpdownload-plugin/src/main/java/com/pufferfishscheduler/plugin/FtpDownloadStep.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-ftpdownload-plugin/src/main/java/com/pufferfishscheduler/plugin/FtpDownloadStepData.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-ftpdownload-plugin/src/main/java/com/pufferfishscheduler/plugin/FtpDownloadStepDialog.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-ftpdownload-plugin/src/main/java/com/pufferfishscheduler/plugin/FtpDownloadStepMeta.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-ftpdownload-plugin/src/main/java/com/pufferfishscheduler/plugin/common/Constants.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-ftpdownload-plugin/src/main/java/com/pufferfishscheduler/plugin/common/DGPCopyStreamListener.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-ftpdownload-plugin/src/main/java/com/pufferfishscheduler/plugin/common/FTPConstants.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-ftpdownload-plugin/src/main/java/com/pufferfishscheduler/plugin/manager/FTPManager.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-ftpdownload-plugin/src/main/java/com/pufferfishscheduler/plugin/manager/FTPSManager.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-ftpdownload-plugin/src/main/java/com/pufferfishscheduler/plugin/manager/FtpOption.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-ftpdownload-plugin/src/main/resources/assembly/assembly.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-ftpdownload-plugin/src/main/resources/ftp-download.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-ftpdownload-plugin/src/main/resources/plugin.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-ftpdownload-plugin/src/main/resources/version.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-ftpupload-plugin/pom.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-ftpupload-plugin/src/main/java/com/pufferfishscheduler/plugin/FtpUploadStep.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-ftpupload-plugin/src/main/java/com/pufferfishscheduler/plugin/FtpUploadStepData.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-ftpupload-plugin/src/main/java/com/pufferfishscheduler/plugin/FtpUploadStepDialog.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-ftpupload-plugin/src/main/java/com/pufferfishscheduler/plugin/FtpUploadStepMeta.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-ftpupload-plugin/src/main/java/com/pufferfishscheduler/plugin/common/Constants.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-ftpupload-plugin/src/main/java/com/pufferfishscheduler/plugin/common/DGPCopyStreamListener.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-ftpupload-plugin/src/main/java/com/pufferfishscheduler/plugin/common/FTPConstants.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-ftpupload-plugin/src/main/java/com/pufferfishscheduler/plugin/manager/FTPManager.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-ftpupload-plugin/src/main/java/com/pufferfishscheduler/plugin/manager/FTPSManager.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-ftpupload-plugin/src/main/java/com/pufferfishscheduler/plugin/manager/FtpOption.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-ftpupload-plugin/src/main/resources/assembly/assembly.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-ftpupload-plugin/src/main/resources/ftp-upload.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-ftpupload-plugin/src/main/resources/plugin.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-ftpupload-plugin/src/main/resources/version.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-kafkaconsumer-plugin/pom.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-kafkaconsumer-plugin/src/main/resources/assembly/assembly.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-kafkaconsumer-plugin/src/main/resources/kafka-input.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-kafkaconsumer-plugin/src/main/resources/plugin.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-kafkaconsumer-plugin/src/main/resources/version.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-kafkaproducer-plugin/pom.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-kafkaproducer-plugin/src/main/java/com/pufferfishscheduler/plugin/KafkaProducerOutput.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-kafkaproducer-plugin/src/main/java/com/pufferfishscheduler/plugin/KafkaProducerOutputData.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-kafkaproducer-plugin/src/main/java/com/pufferfishscheduler/plugin/KafkaProducerOutputMeta.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-kafkaproducer-plugin/src/main/resources/assembly/assembly.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-kafkaproducer-plugin/src/main/resources/kafka-output.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-kafkaproducer-plugin/src/main/resources/plugin.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-kafkaproducer-plugin/src/main/resources/version.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-redisinput-plugin/pom.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-redisinput-plugin/src/main/java/com/pufferfishscheduler/plugin/RedisInputStep.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-redisinput-plugin/src/main/java/com/pufferfishscheduler/plugin/RedisInputStepData.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-redisinput-plugin/src/main/java/com/pufferfishscheduler/plugin/RedisInputStepMeta.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-redisinput-plugin/src/main/resources/assembly/assembly.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-redisinput-plugin/src/main/resources/plugin.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-redisinput-plugin/src/main/resources/redis-input.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-redisinput-plugin/src/main/resources/version.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-redisoutput-plugin/pom.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-redisoutput-plugin/src/main/java/com/pufferfishscheduler/plugin/RedisOutputStep.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-redisoutput-plugin/src/main/java/com/pufferfishscheduler/plugin/RedisOutputStepData.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-redisoutput-plugin/src/main/java/com/pufferfishscheduler/plugin/RedisOutputStepMeta.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-redisoutput-plugin/src/main/resources/assembly/assembly.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-redisoutput-plugin/src/main/resources/plugin.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-redisoutput-plugin/src/main/resources/redis-output.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-redisoutput-plugin/src/main/resources/version.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-worker/src/main/java/com/pufferfishscheduler/worker/config/FilePathConfig.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-worker/src/main/java/com/pufferfishscheduler/worker/task/trans/plugin/constructor/DataCleanConstructor.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-worker/src/main/java/com/pufferfishscheduler/worker/task/trans/plugin/constructor/DataFilterConstructor.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-worker/src/main/java/com/pufferfishscheduler/worker/task/trans/plugin/constructor/DebeziumJsonConstructor.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-worker/src/main/java/com/pufferfishscheduler/worker/task/trans/plugin/constructor/DenormalizedConstructor.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-worker/src/main/java/com/pufferfishscheduler/worker/task/trans/plugin/constructor/DorisOutputConstructor.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-worker/src/main/java/com/pufferfishscheduler/worker/task/trans/plugin/constructor/ExcelInputConstructor.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-worker/src/main/java/com/pufferfishscheduler/worker/task/trans/plugin/constructor/ExcelOutputConstructor.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-worker/src/main/java/com/pufferfishscheduler/worker/task/trans/plugin/constructor/FTPDownloadConstructor.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-worker/src/main/java/com/pufferfishscheduler/worker/task/trans/plugin/constructor/FTPUploadConstructor.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-worker/src/main/java/com/pufferfishscheduler/worker/task/trans/plugin/constructor/FieldSelectConstructor.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-worker/src/main/java/com/pufferfishscheduler/worker/task/trans/plugin/constructor/GetVariablesConstructor.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-worker/src/main/java/com/pufferfishscheduler/worker/task/trans/plugin/constructor/InsertOrUpdateConstructor.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-worker/src/main/java/com/pufferfishscheduler/worker/task/trans/plugin/constructor/JavaCodeConstructor.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-worker/src/main/java/com/pufferfishscheduler/worker/task/trans/plugin/constructor/JavaConditionConstructor.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-worker/src/main/java/com/pufferfishscheduler/worker/task/trans/plugin/constructor/KafkaConsumerInputConstructor.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-worker/src/main/java/com/pufferfishscheduler/worker/task/trans/plugin/constructor/KafkaProducerOutputConstructor.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-worker/src/main/java/com/pufferfishscheduler/worker/task/trans/plugin/constructor/NormaliserConstructor.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-worker/src/main/java/com/pufferfishscheduler/worker/task/trans/plugin/constructor/ProcessBranchConstructor.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-worker/src/main/java/com/pufferfishscheduler/worker/task/trans/plugin/constructor/RecordsFromStreamConstructor.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-worker/src/main/java/com/pufferfishscheduler/worker/task/trans/plugin/constructor/RowGeneratorConstructor.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-worker/src/main/java/com/pufferfishscheduler/worker/task/trans/plugin/constructor/SQLScriptConstructor.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-worker/src/main/java/com/pufferfishscheduler/worker/task/trans/plugin/constructor/SetVariablesConstructor.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-worker/src/main/java/com/pufferfishscheduler/worker/task/trans/plugin/constructor/SortRowsConstructor.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-worker/src/main/java/com/pufferfishscheduler/worker/task/trans/plugin/constructor/SystemDateConstructor.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-worker/src/main/java/com/pufferfishscheduler/worker/task/trans/plugin/constructor/WriteToLogConstructor.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-worker/src/main/resources/plugins/pfs-dataclean-plugin-1.0.0/dataclean.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-worker/src/main/resources/plugins/pfs-dataclean-plugin-1.0.0/plugin.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-worker/src/main/resources/plugins/pfs-dataclean-plugin-1.0.0/version.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-worker/src/main/resources/plugins/pfs-debeziumjson-plugin-1.0.0/debezium.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-worker/src/main/resources/plugins/pfs-debeziumjson-plugin-1.0.0/plugin.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-worker/src/main/resources/plugins/pfs-debeziumjson-plugin-1.0.0/version.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-worker/src/main/resources/plugins/pfs-doris-plugin-1.0.0/doris.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-worker/src/main/resources/plugins/pfs-doris-plugin-1.0.0/plugin.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-worker/src/main/resources/plugins/pfs-doris-plugin-1.0.0/version.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-worker/src/main/resources/plugins/pfs-filter-plugin-1.0.0/datafilter.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-worker/src/main/resources/plugins/pfs-filter-plugin-1.0.0/plugin.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-worker/src/main/resources/plugins/pfs-filter-plugin-1.0.0/version.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-worker/src/main/resources/plugins/pfs-ftpdownload-plugin-1.0.0/ftp-download.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-worker/src/main/resources/plugins/pfs-ftpdownload-plugin-1.0.0/plugin.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-worker/src/main/resources/plugins/pfs-ftpdownload-plugin-1.0.0/version.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-worker/src/main/resources/plugins/pfs-ftpupload-plugin-1.0.0/ftp-upload.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-worker/src/main/resources/plugins/pfs-ftpupload-plugin-1.0.0/plugin.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-worker/src/main/resources/plugins/pfs-ftpupload-plugin-1.0.0/version.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-worker/src/main/resources/plugins/pfs-kafkaconsumer-plugin-1.0.0/kafka-input.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-worker/src/main/resources/plugins/pfs-kafkaconsumer-plugin-1.0.0/plugin.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pufferfishscheduler-worker/src/main/resources/plugins/pfs-kafkaconsumer-plugin-1.0.0/version.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/encodings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/free-mybatis-generator-config.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/jarRepositories.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/jarRepositories.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.mvn/maven.config" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.vscode/launch.json" beforeDir="false" afterPath="$PROJECT_DIR$/.vscode/launch.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pufferfishscheduler-ai/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pufferfishscheduler-ai/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pufferfishscheduler-ai/src/main/java/com/pufferfishscheduler/ai/engine/node/DataQueryNode.java" beforeDir="false" afterPath="$PROJECT_DIR$/pufferfishscheduler-ai/src/main/java/com/pufferfishscheduler/ai/engine/node/DataQueryNode.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pufferfishscheduler-ai/src/main/java/com/pufferfishscheduler/ai/engine/node/DataVisualizationNode.java" beforeDir="false" afterPath="$PROJECT_DIR$/pufferfishscheduler-ai/src/main/java/com/pufferfishscheduler/ai/engine/node/DataVisualizationNode.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pufferfishscheduler-cdc/src/main/java/com/pufferfishscheduler/cdc/kafka/database/DataSourceAdapter.java" beforeDir="false" afterPath="$PROJECT_DIR$/pufferfishscheduler-cdc/src/main/java/com/pufferfishscheduler/cdc/kafka/database/DataSourceAdapter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pufferfishscheduler-cdc/src/main/java/com/pufferfishscheduler/cdc/kafka/database/adapter/MySQLAdapter.java" beforeDir="false" afterPath="$PROJECT_DIR$/pufferfishscheduler-cdc/src/main/java/com/pufferfishscheduler/cdc/kafka/database/adapter/MySQLAdapter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pufferfishscheduler-common/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pufferfishscheduler-common/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pufferfishscheduler-common/src/main/java/com/pufferfishscheduler/common/condition/SqlConditionBuilder.java" beforeDir="false" afterPath="$PROJECT_DIR$/pufferfishscheduler-common/src/main/java/com/pufferfishscheduler/common/condition/SqlConditionBuilder.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pufferfishscheduler-common/src/main/java/com/pufferfishscheduler/common/constants/Constants.java" beforeDir="false" afterPath="$PROJECT_DIR$/pufferfishscheduler-common/src/main/java/com/pufferfishscheduler/common/constants/Constants.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pufferfishscheduler-common/src/main/java/com/pufferfishscheduler/common/utils/JdbcUrlUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/pufferfishscheduler-common/src/main/java/com/pufferfishscheduler/common/utils/JdbcUrlUtil.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pufferfishscheduler-common/src/main/java/com/pufferfishscheduler/common/utils/JdbcUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/pufferfishscheduler-common/src/main/java/com/pufferfishscheduler/common/utils/JdbcUtil.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pufferfishscheduler-dao/src/main/java/com/pufferfishscheduler/dao/entity/DbBasic.java" beforeDir="false" afterPath="$PROJECT_DIR$/pufferfishscheduler-dao/src/main/java/com/pufferfishscheduler/dao/entity/DbBasic.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pufferfishscheduler-dao/src/main/java/com/pufferfishscheduler/dao/mapper/KettleFlowRepositoryMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/pufferfishscheduler-dao/src/main/java/com/pufferfishscheduler/dao/mapper/KettleFlowRepositoryMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pufferfishscheduler-dao/src/main/resources/mapper/DbBasicMapper.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pufferfishscheduler-dao/src/main/resources/mapper/DbBasicMapper.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pufferfishscheduler-dao/src/main/resources/mapper/KettleFlowRepositoryMapper.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pufferfishscheduler-dao/src/main/resources/mapper/KettleFlowRepositoryMapper.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pufferfishscheduler-domain/src/main/java/com/pufferfishscheduler/domain/domain/ColumnMetadata.java" beforeDir="false" afterPath="$PROJECT_DIR$/pufferfishscheduler-domain/src/main/java/com/pufferfishscheduler/domain/domain/ColumnMetaData.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pufferfishscheduler-domain/src/main/java/com/pufferfishscheduler/domain/domain/EChartsMetadata.java" beforeDir="false" afterPath="$PROJECT_DIR$/pufferfishscheduler-domain/src/main/java/com/pufferfishscheduler/domain/domain/EChartsMetaData.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pufferfishscheduler-domain/src/main/java/com/pufferfishscheduler/domain/domain/TableMetadata.java" beforeDir="false" afterPath="$PROJECT_DIR$/pufferfishscheduler-domain/src/main/java/com/pufferfishscheduler/domain/domain/TableMetaData.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pufferfishscheduler-domain/src/main/java/com/pufferfishscheduler/domain/form/database/DbDatabaseForm.java" beforeDir="false" afterPath="$PROJECT_DIR$/pufferfishscheduler-domain/src/main/java/com/pufferfishscheduler/domain/form/database/DbDatabaseForm.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pufferfishscheduler-domain/src/main/java/com/pufferfishscheduler/domain/model/database/DatabaseConnectionInfo.java" beforeDir="false" afterPath="$PROJECT_DIR$/pufferfishscheduler-domain/src/main/java/com/pufferfishscheduler/domain/model/database/DBConnectionInfo.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pufferfishscheduler-domain/src/main/java/com/pufferfishscheduler/domain/model/quartz/QuartzJobDetail.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pufferfishscheduler-domain/src/main/java/com/pufferfishscheduler/domain/vo/collect/ComponentNodeVo.java" beforeDir="false" afterPath="$PROJECT_DIR$/pufferfishscheduler-domain/src/main/java/com/pufferfishscheduler/domain/vo/collect/ComponentNodeVo.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pufferfishscheduler-domain/src/main/java/com/pufferfishscheduler/domain/vo/collect/TransFlowVo.java" beforeDir="false" afterPath="$PROJECT_DIR$/pufferfishscheduler-domain/src/main/java/com/pufferfishscheduler/domain/vo/collect/TransFlowVo.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pufferfishscheduler-domain/src/main/java/com/pufferfishscheduler/domain/vo/database/DbBasicVo.java" beforeDir="false" afterPath="$PROJECT_DIR$/pufferfishscheduler-domain/src/main/java/com/pufferfishscheduler/domain/vo/database/DbBasicVo.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pufferfishscheduler-master/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pufferfishscheduler-master/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/MasterApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/MasterApplication.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/collect/realtime/service/impl/RealTimeTaskServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/collect/realtime/service/impl/RealTimeTaskServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/collect/rule/service/impl/RuleGroupServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/collect/rule/service/impl/RuleGroupServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/collect/rule/service/impl/RuleServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/collect/rule/service/impl/RuleServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/collect/trans/controller/TransFlowController.java" beforeDir="false" afterPath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/collect/trans/controller/TransFlowController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/collect/trans/engine/DataFlowRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/collect/trans/engine/DataFlowRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/collect/trans/engine/DataTransEngine.java" beforeDir="false" afterPath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/collect/trans/engine/DataTransEngine.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/collect/trans/engine/SprintDataTransEngineConfiguration.java" beforeDir="false" afterPath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/collect/trans/engine/SprintDataTransEngineConfiguration.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/collect/trans/plugin/AbstractStepMetaConstructor.java" beforeDir="false" afterPath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/collect/trans/plugin/AbstractStepMetaConstructor.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/collect/trans/plugin/StepContext.java" beforeDir="false" afterPath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/collect/trans/plugin/StepContext.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/collect/trans/plugin/StepMetaConstructorFactory.java" beforeDir="false" afterPath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/collect/trans/plugin/StepMetaConstructorFactory.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/collect/trans/plugin/constructor/JavaCodeConstructor.java" beforeDir="false" afterPath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/collect/trans/plugin/constructor/JavaCodeConstructor.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/collect/trans/plugin/constructor/TableInputConstructor.java" beforeDir="false" afterPath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/collect/trans/plugin/constructor/TableInputConstructor.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/collect/trans/plugin/constructor/TableOutputConstructor.java" beforeDir="false" afterPath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/collect/trans/plugin/constructor/TableOutputConstructor.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/collect/trans/plugin/controller/TableOutputController.java" beforeDir="false" afterPath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/collect/trans/plugin/controller/TableOutputPluginController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/collect/trans/plugin/service/TableOutputService.java" beforeDir="false" afterPath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/collect/trans/plugin/service/TableOutputPluginService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/collect/trans/plugin/service/impl/TableOutputServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/collect/trans/plugin/service/impl/TableOutputPluginServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/collect/trans/service/TransFlowService.java" beforeDir="false" afterPath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/collect/trans/service/TransFlowService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/collect/trans/service/impl/TransComponentServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/collect/trans/service/impl/TransComponentServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/collect/trans/service/impl/TransFlowServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/collect/trans/service/impl/TransFlowServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/common/config/openapi/OpenApiTags.java" beforeDir="false" afterPath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/common/config/openapi/OpenApiTags.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/database/connect/relationdb/AbstractDatabaseConnector.java" beforeDir="false" afterPath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/database/connect/relationdb/AbstractDatabaseConnector.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/database/connect/relationdb/DatabaseConnectorFactory.java" beforeDir="false" afterPath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/database/connect/relationdb/DatabaseConnectorFactory.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/database/connect/relationdb/impl/DorisConnector.java" beforeDir="false" afterPath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/database/connect/relationdb/impl/DorisConnector.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/database/connect/relationdb/impl/MySQLConnector.java" beforeDir="false" afterPath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/database/connect/relationdb/impl/MySQLConnector.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/database/connect/relationdb/impl/OracleConnector.java" beforeDir="false" afterPath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/database/connect/relationdb/impl/OracleConnector.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/database/database/service/DbDatabaseService.java" beforeDir="false" afterPath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/database/database/service/DbDatabaseService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/database/database/service/DbGroupService.java" beforeDir="false" afterPath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/database/database/service/DbGroupService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/database/database/service/impl/DbDatabaseServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/database/database/service/impl/DbDatabaseServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/database/database/service/impl/DbGroupServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/database/database/service/impl/DbGroupServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/database/metadata/service/DbSyncExecutor.java" beforeDir="false" afterPath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/database/metadata/service/DbSyncExecutor.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/database/resource/service/ResourceService.java" beforeDir="false" afterPath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/database/resource/service/ResourceService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/database/resource/service/impl/ResourceServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/java/com/pufferfishscheduler/master/database/resource/service/impl/ResourceServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/resources/application.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/resources/dict.json" beforeDir="false" afterPath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/resources/dict.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/resources/plugins/pfs-dataclean-plugin-1.0.0/dataclean.svg" beforeDir="false" afterPath="$PROJECT_DIR$/pufferfishscheduler-master/src/main/resources/plugins/pfs-dataclean-plugin-1.0.0/dataclean.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-dataclean-plugin/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-dataclean-plugin/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-dataclean-plugin/src/main/java/com/pufferfishscheduler/plugin/DataCleanStepDialog.java" beforeDir="false" afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-dataclean-plugin/src/main/java/com/pufferfishscheduler/plugin/DataCleanStepDialog.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-dataclean-plugin/src/main/java/com/pufferfishscheduler/plugin/DataCleanStepMeta.java" beforeDir="false" afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-dataclean-plugin/src/main/java/com/pufferfishscheduler/plugin/DataCleanStepMeta.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-dataclean-plugin/src/main/java/com/pufferfishscheduler/plugin/common/util/JdbcUrlUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-dataclean-plugin/src/main/java/com/pufferfishscheduler/plugin/common/util/JdbcUrlUtil.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-dataclean-plugin/src/main/java/com/pufferfishscheduler/plugin/common/util/JdbcUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-dataclean-plugin/src/main/java/com/pufferfishscheduler/plugin/common/util/JdbcUtil.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-dataclean-plugin/src/main/java/com/pufferfishscheduler/plugin/common/util/MD5Util.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-dataclean-plugin/src/main/java/com/pufferfishscheduler/plugin/common/util/StringUtil.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-dataclean-plugin/src/main/resources/dataclean.svg" beforeDir="false" afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-dataclean-plugin/src/main/resources/dataclean.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pufferfishscheduler-plugin/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pufferfishscheduler-plugin/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pufferfishscheduler-worker/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pufferfishscheduler-worker/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pufferfishscheduler-worker/src/main/java/com/pufferfishscheduler/worker/WorkerApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/pufferfishscheduler-worker/src/main/java/com/pufferfishscheduler/worker/WorkerApplication.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pufferfishscheduler-worker/src/main/java/com/pufferfishscheduler/worker/task/metadata/connect/AbstractDatabaseConnector.java" beforeDir="false" afterPath="$PROJECT_DIR$/pufferfishscheduler-worker/src/main/java/com/pufferfishscheduler/worker/task/metadata/connect/AbstractDatabaseConnector.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pufferfishscheduler-worker/src/main/java/com/pufferfishscheduler/worker/task/metadata/service/DbSyncExecutor.java" beforeDir="false" afterPath="$PROJECT_DIR$/pufferfishscheduler-worker/src/main/java/com/pufferfishscheduler/worker/task/metadata/service/DbSyncExecutor.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pufferfishscheduler-worker/src/main/java/com/pufferfishscheduler/worker/task/trans/engine/DataFlowRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/pufferfishscheduler-worker/src/main/java/com/pufferfishscheduler/worker/task/trans/engine/DataFlowRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pufferfishscheduler-worker/src/main/java/com/pufferfishscheduler/worker/task/trans/engine/DataTransEngine.java" beforeDir="false" afterPath="$PROJECT_DIR$/pufferfishscheduler-worker/src/main/java/com/pufferfishscheduler/worker/task/trans/engine/DataTransEngine.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pufferfishscheduler-worker/src/main/java/com/pufferfishscheduler/worker/task/trans/engine/SprintDataTransEngineConfiguration.java" beforeDir="false" afterPath="$PROJECT_DIR$/pufferfishscheduler-worker/src/main/java/com/pufferfishscheduler/worker/task/trans/engine/SprintDataTransEngineConfiguration.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pufferfishscheduler-worker/src/main/java/com/pufferfishscheduler/worker/task/trans/plugin/AbstractStepMetaConstructor.java" beforeDir="false" afterPath="$PROJECT_DIR$/pufferfishscheduler-worker/src/main/java/com/pufferfishscheduler/worker/task/trans/plugin/AbstractStepMetaConstructor.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pufferfishscheduler-worker/src/main/java/com/pufferfishscheduler/worker/task/trans/plugin/StepMetaConstructorFactory.java" beforeDir="false" afterPath="$PROJECT_DIR$/pufferfishscheduler-worker/src/main/java/com/pufferfishscheduler/worker/task/trans/plugin/StepMetaConstructorFactory.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pufferfishscheduler-worker/src/main/java/com/pufferfishscheduler/worker/task/trans/plugin/constructor/TableInputConstructor.java" beforeDir="false" afterPath="$PROJECT_DIR$/pufferfishscheduler-worker/src/main/java/com/pufferfishscheduler/worker/task/trans/plugin/constructor/TableInputConstructor.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pufferfishscheduler-worker/src/main/java/com/pufferfishscheduler/worker/task/trans/plugin/constructor/TableOutputConstructor.java" beforeDir="false" afterPath="$PROJECT_DIR$/pufferfishscheduler-worker/src/main/java/com/pufferfishscheduler/worker/task/trans/plugin/constructor/TableOutputConstructor.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pufferfishscheduler-worker/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/pufferfishscheduler-worker/src/main/resources/application.yml" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ChangesViewManager">
+    <option name="groupingKeys">
+      <option value="directory" />
+      <option value="module" />
+      <option value="repository" />
+    </option>
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Enum" />
+        <option value="Interface" />
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="InstancesTracker">
+    <option name="classes">
+      <map>
+        <entry key="com.alibaba.fastjson2.JSONObject" value="CREATION" />
+      </map>
+    </option>
+  </component>
+  <component name="KubernetesApiPersistence">{}</component>
+  <component name="KubernetesApiProvider">{
+  &quot;isMigrated&quot;: true
+}</component>
+  <component name="MavenImportPreferences">
+    <option name="generalSettings">
+      <MavenGeneralSettings>
+        <option name="localRepository" value="$MAVEN_REPOSITORY$" />
+        <option name="userSettingsFile" value="$USER_HOME$/.m2/settings.xml" />
+      </MavenGeneralSettings>
+    </option>
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;customColor&quot;: &quot;&quot;,
+  &quot;associatedIndex&quot;: 3
+}</component>
+  <component name="ProjectId" id="3BLeXRVVjs0kYU3bvvbXmvCLgkw" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Maven.pfs-dataclean-plugin [clean].executor": "Run",
+    "Maven.pfs-dataclean-plugin [compile].executor": "Run",
+    "Maven.pfs-dataclean-plugin [install].executor": "Run",
+    "Maven.pfs-dataclean-plugin [package].executor": "Run",
+    "Maven.pfs-debeziumjson-plugin [clean].executor": "Run",
+    "Maven.pfs-debeziumjson-plugin [install].executor": "Run",
+    "Maven.pfs-debeziumjson-plugin [package].executor": "Run",
+    "Maven.pfs-kafkaconsumer-plugin [clean].executor": "Run",
+    "Maven.pfs-kafkaconsumer-plugin [package].executor": "Run",
+    "Maven.pufferfishscheduler [clean].executor": "Run",
+    "Maven.pufferfishscheduler [compile].executor": "Run",
+    "Maven.pufferfishscheduler [install].executor": "Run",
+    "Maven.pufferfishscheduler [package].executor": "Run",
+    "Maven.pufferfishscheduler [validate].executor": "Run",
+    "Maven.pufferfishscheduler-ai [clean].executor": "Run",
+    "Maven.pufferfishscheduler-ai [compile].executor": "Run",
+    "Maven.pufferfishscheduler-common [clean].executor": "Run",
+    "Maven.pufferfishscheduler-common [compile].executor": "Run",
+    "Maven.pufferfishscheduler-common [install].executor": "Run",
+    "Maven.pufferfishscheduler-dao [compile].executor": "Run",
+    "Maven.pufferfishscheduler-dao [install].executor": "Run",
+    "Maven.pufferfishscheduler-domain [install].executor": "Run",
+    "Maven.pufferfishscheduler-master [clean].executor": "Run",
+    "Maven.pufferfishscheduler-master [compile].executor": "Run",
+    "Maven.pufferfishscheduler-master [package].executor": "Run",
+    "Maven.pufferfishscheduler-plugin [clean].executor": "Run",
+    "Maven.pufferfishscheduler-plugin [compile].executor": "Run",
+    "Maven.pufferfishscheduler-plugin [install].executor": "Run",
+    "Maven.pufferfishscheduler-plugin [package].executor": "Run",
+    "Maven.pufferfishscheduler-plugin [validate].executor": "Run",
+    "Maven.pufferfishscheduler-worker [compile].executor": "Run",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RequestMappingsPanelOrder0": "0",
+    "RequestMappingsPanelOrder1": "1",
+    "RequestMappingsPanelWidth0": "75",
+    "RequestMappingsPanelWidth1": "75",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "Spring Boot.AgentApplication.executor": "Debug",
+    "Spring Boot.AlertApplication.executor": "Debug",
+    "Spring Boot.MasterApplication.executor": "Debug",
+    "Spring Boot.WorkerApplication.executor": "Debug",
+    "git-widget-placeholder": "main",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "/Users/mayongchun/Project/PufferfishScheduler/pufferfishscheduler/pufferfishscheduler-plugin/pfs-kafkaproducer-plugin/src/main/resources",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "onboarding.tips.debug.path": "/Users/mayongchun/Project/PufferfishScheduler/pufferfishscheduler/pufferfishscheduler-plugin/pfs-kafkaproducer-plugin/src/main/java/com/pufferfishscheduler/plugin/Main.java",
+    "run.configurations.included.in.services": "true",
+    "settings.build.tools.auto.reload": "ALL",
+    "settings.editor.selected.configurable": "advanced.settings",
+    "vue.rearranger.settings.migration": "true"
+  },
+  "keyToStringList": {
+    "DatabaseDriversLRU": [
+      "mysql"
+    ]
+  }
+}]]></component>
+  <component name="ReactorSettings">
+    <option name="notificationShown" value="true" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-kafkaproducer-plugin/src/main/resources" />
+      <recent name="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-kafkaproducer-plugin/src/main/java/com/pufferfishscheduler/plugin" />
+      <recent name="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-redisoutput-plugin/src/main/resources" />
+      <recent name="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-redisinput-plugin/src/main/resources" />
+      <recent name="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-filedownload-plugin/src/main/java/com/pufferfishscheduler" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/pufferfishscheduler-plugin/pfs-filter-plugin/src/main/resources" />
+    </key>
+    <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="com.pufferfishscheduler.common" />
+      <recent name="com.pufferfishscheduler.worker.task.trans.service.impl" />
+      <recent name="com.pufferfishscheduler.worker.task.trans.service" />
+      <recent name="com.pufferfishscheduler.worker.config" />
+      <recent name="com.pufferfishscheduler.plugin.util" />
+    </key>
+  </component>
+  <component name="RunDashboard">
+    <option name="configurationTypes">
+      <set>
+        <option value="KtorApplicationConfigurationType" />
+        <option value="MicronautRunConfigurationType" />
+        <option value="QuarkusRunConfigurationType" />
+        <option value="SpringBootApplicationConfigurationType" />
+      </set>
+    </option>
+    <option name="configurationStatuses">
+      <map>
+        <entry key="SpringBootApplicationConfigurationType">
+          <value>
+            <map>
+              <entry key="AgentApplication" value="STOPPED" />
+              <entry key="AlertApplication" value="STOPPED" />
+              <entry key="MasterApplication" value="STOPPED" />
+              <entry key="WorkerApplication" value="STOPPED" />
+            </map>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="RunManager" selected="Spring Boot.MasterApplication">
+    <configuration name="AgentApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+      <module name="pufferfishscheduler-ai" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.pufferfishscheduler.ai.AgentApplication" />
+      <option name="VM_PARAMETERS" value="-Djava.net.preferIPv4Stack=true  -Dzookeeper.sasl.client=false  --add-opens java.base/java.lang=ALL-UNNAMED  --add-opens java.base/java.math=ALL-UNNAMED  --add-opens java.base/java.util=ALL-UNNAMED  --add-opens java.base/java.util.concurrent=ALL-UNNAMED  --add-opens java.base/java.net=ALL-UNNAMED  --add-opens java.base/java.text=ALL-UNNAMED  --add-opens java.base/java.sql=ALL-UNNAMED" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="AlertApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+      <module name="pufferfishscheduler-alert" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.pufferfishscheduler.alert.AlertApplication" />
+      <option name="VM_PARAMETERS" value="-Djava.net.preferIPv4Stack=true  -Dzookeeper.sasl.client=false  --add-opens java.base/java.lang=ALL-UNNAMED  --add-opens java.base/java.math=ALL-UNNAMED  --add-opens java.base/java.util=ALL-UNNAMED  --add-opens java.base/java.util.concurrent=ALL-UNNAMED  --add-opens java.base/java.net=ALL-UNNAMED  --add-opens java.base/java.text=ALL-UNNAMED  --add-opens java.base/java.sql=ALL-UNNAMED" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="MasterApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+      <module name="pufferfishscheduler-master" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.pufferfishscheduler.master.MasterApplication" />
+      <option name="VM_PARAMETERS" value="-Djava.net.preferIPv4Stack=true -Dzookeeper.sasl.client=false --add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.math=ALL-UNNAMED --add-opens java.base/java.util=ALL-UNNAMED --add-opens java.base/java.util.concurrent=ALL-UNNAMED --add-opens java.base/java.net=ALL-UNNAMED --add-opens java.base/java.text=ALL-UNNAMED --add-opens java.base/java.sql=ALL-UNNAMED --add-opens java.base/sun.net.www.protocol.jar=ALL-UNNAMED" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="WorkerApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+      <module name="pufferfishscheduler-worker" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.pufferfishscheduler.worker.WorkerApplication" />
+      <option name="VM_PARAMETERS" value="-Djava.net.preferIPv4Stack=true  -Dzookeeper.sasl.client=false  --add-opens java.base/java.lang=ALL-UNNAMED  --add-opens java.base/java.math=ALL-UNNAMED  --add-opens java.base/java.util=ALL-UNNAMED  --add-opens java.base/java.util.concurrent=ALL-UNNAMED  --add-opens java.base/java.net=ALL-UNNAMED  --add-opens java.base/java.text=ALL-UNNAMED  --add-opens java.base/java.sql=ALL-UNNAMED" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <list>
+      <item itemvalue="Spring Boot.AgentApplication" />
+      <item itemvalue="Spring Boot.AlertApplication" />
+      <item itemvalue="Spring Boot.MasterApplication" />
+      <item itemvalue="Spring Boot.WorkerApplication" />
+    </list>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-9823dce3aa75-bf35d07a577b-intellij.indexing.shared.core-IU-252.28238.7" />
+        <option value="bundled-js-predefined-d6986cc7102b-a71380e98a7c-JavaScript-IU-252.28238.7" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="默认任务">
+      <changelist id="23dadde7-da13-451b-9817-4dd6da3e4241" name="更改" comment="" />
+      <created>1774272817026</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1774272817026</updated>
+      <workItem from="1774272818318" duration="11699000" />
+      <workItem from="1774323173086" duration="385000" />
+      <workItem from="1774323796398" duration="76000" />
+      <workItem from="1774323983104" duration="222000" />
+      <workItem from="1774325893254" duration="111000" />
+      <workItem from="1774326157551" duration="27465000" />
+      <workItem from="1774403642191" duration="20291000" />
+      <workItem from="1774448704777" duration="10060000" />
+      <workItem from="1774489170598" duration="27916000" />
+      <workItem from="1774575523011" duration="29969000" />
+      <workItem from="1774672613082" duration="3134000" />
+      <workItem from="1774759425230" duration="4302000" />
+      <workItem from="1774837250699" duration="408000" />
+      <workItem from="1774837811477" duration="20349000" />
+      <workItem from="1774862562674" duration="15143000" />
+      <workItem from="1774923408911" duration="30527000" />
+      <workItem from="1775009962672" duration="31982000" />
+      <workItem from="1775103814121" duration="23314000" />
+      <workItem from="1775184539819" duration="34661000" />
+      <workItem from="1775277600234" duration="20384000" />
+      <workItem from="1775356084167" duration="10412000" />
+      <workItem from="1775443356121" duration="32347000" />
+      <workItem from="1775563375055" duration="9612000" />
+      <workItem from="1775616779015" duration="19816000" />
+      <workItem from="1775697646775" duration="32891000" />
+      <workItem from="1775785585050" duration="25202000" />
+      <workItem from="1775890630441" duration="13041000" />
+      <workItem from="1775968569582" duration="27226000" />
+    </task>
+    <task id="LOCAL-00001" summary="#节点2:新增自定义清洗转换组件；新增清洗转换规则配置模块；">
+      <option name="closed" value="true" />
+      <created>1774804194269</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1774804194270</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="UnknownFeatures">
+    <option featureType="dependencySupport" implementationName="java:org.springframework:spring-core" />
+    <option featureType="dependencySupport" implementationName="java:jakarta.enterprise:jakarta.enterprise.cdi-api" />
+    <option featureType="dependencySupport" implementationName="java:jakarta.validation:jakarta.validation-api" />
+    <option featureType="dependencySupport" implementationName="java:org.apache.dubbo:dubbo" />
+    <option featureType="dependencySupport" implementationName="java:io.projectreactor:reactor-core" />
+    <option featureType="dependencySupport" implementationName="java:io.smallrye.reactive:mutiny" />
+    <option featureType="dependencySupport" implementationName="java:org.springframework.data:spring-data-commons" />
+    <option featureType="dependencySupport" implementationName="java:org.hibernate.validator:hibernate-validator" />
+    <option featureType="dependencySupport" implementationName="java:javax.validation:validation-api" />
+    <option featureType="dependencySupport" implementationName="java:org.springframework:spring-webmvc" />
+    <option featureType="dependencySupport" implementationName="java:org.projectlombok:lombok" />
+    <option featureType="dependencySupport" implementationName="java:io.reactivex.rxjava2:rxjava" />
+    <option featureType="dependencySupport" implementationName="java:io.quarkus:quarkus-core" />
+    <option featureType="dependencySupport" implementationName="maven-packaging:war" />
+    <option featureType="dependencySupport" implementationName="java:jakarta.ws.rs:jakarta.ws.rs-api" />
+    <option featureType="dependencySupport" implementationName="java:org.springframework:spring-messaging" />
+    <option featureType="dependencySupport" implementationName="java:org.springframework.boot:spring-boot" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="#节点2:新增自定义清洗转换组件；新增清洗转换规则配置模块；" />
+    <option name="LAST_COMMIT_MESSAGE" value="#节点2:新增自定义清洗转换组件；新增清洗转换规则配置模块；" />
+  </component>
+  <component name="XDebuggerManager">
+    <watches-manager>
+      <configuration name="SpringBootApplicationConfigurationType">
+        <watch expression="mport java.io.IOException;&#10;import java.util.HashSet;&#10;import java.util.List;&#10;im" />
+      </configuration>
+    </watches-manager>
+  </component>
+  <component name="XSLT-Support.FileAssociations.UIState">
+    <expand />
+    <select />
+  </component>
+</project>

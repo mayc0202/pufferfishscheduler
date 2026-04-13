@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin id="FileDownload" type="Step">
+  <name>文件下载</name>
+  <description>用于接口下载文件。</description>
+  <category>转换</category>
+  <classname>com.pufferfishscheduler.plugin.FileDownloadStepMeta</classname>
+  <image>file-download.svg</image>
+  <libraries>
+    <library name="lib/pfs-filedownload-plugin-1.0.0.jar"/>
+  </libraries>
+</plugin>

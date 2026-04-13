@@ -58,17 +58,21 @@ public class TableOutputConstructor extends AbstractStepMetaConstructor {
         // 从配置中提取组件属性
         String name = jsonObject.getString("name"); // 组件名称
         if (StringUtils.isBlank(name)) {
-            throw new BusinessException("组件名称不能为空！");
+            throw new BusinessException("【" + name + "】组件名称不能为空！");
         }
 
         // 从配置中提取组件数据
         JSONObject data = jsonObject.getJSONObject("data");
         if (data == null) {
-            throw new BusinessException("组件数据不能为空！");
+            throw new BusinessException("【" + name + "】组件数据不能为空！");
         }
 
         // 从配置中提取组件属性
-        String dataSourceId = extractDataSourceId(data);
+        String dataSourceId = data.getString("dataSourceId");
+        if (StringUtils.isBlank(dataSourceId)) {
+            throw new BusinessException("【" + name + "】数据源ID不能为空！");
+        }
+
         String schemaName = data.getString("schemaName");// 模式名称
         String tableName = extractTableName(data);
         String commitSize = extractCommitSize(data);
@@ -116,19 +120,6 @@ public class TableOutputConstructor extends AbstractStepMetaConstructor {
             throw new BusinessException("组件名称不能为空！");
         }
         return name;
-    }
-
-    /**
-     * 提取数据源ID
-     * @param data 配置数据
-     * @return 数据源ID
-     */
-    private String extractDataSourceId(JSONObject data) {
-        String dataSourceId = data.getString("dataSourceId");
-        if (StringUtils.isBlank(dataSourceId)) {
-            throw new BusinessException("数据源ID不能为空！");
-        }
-        return dataSourceId;
     }
 
     /**

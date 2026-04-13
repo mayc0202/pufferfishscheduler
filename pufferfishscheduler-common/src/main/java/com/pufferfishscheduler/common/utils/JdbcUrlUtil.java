@@ -3,6 +3,7 @@ package com.pufferfishscheduler.common.utils;
 
 import com.alibaba.fastjson2.JSONObject;
 import com.pufferfishscheduler.common.constants.Constants;
+import com.pufferfishscheduler.common.exception.BusinessException;
 
 /**
  * JDBC URL 与 Driver 构造工具。
@@ -39,31 +40,32 @@ public class JdbcUrlUtil {
             return null;
         }
 
-        if (Constants.DATABASE_TYPE.MYSQL.equals(type)
-                || Constants.DATABASE_TYPE.DORIS.equals(type)) {
-            return String.format(MYSQL_URL_FORMAT, host, port, dbName);
-        }
-
-        if (Constants.DATABASE_TYPE.ORACLE.equals(type)) {
-            String connectType = null;
-            if (extConfig != null && !extConfig.isEmpty()) {
-                JSONObject jsonObject = JSONObject.parseObject(extConfig);
-                connectType = jsonObject.getString(Constants.DATABASE_EXT_CONFIG.ORACLE_CONNECT_TYPE);
+        switch (type) {
+            case Constants.DATABASE_TYPE.MYSQL,
+                 Constants.DATABASE_TYPE.DORIS,
+                 Constants.DATABASE_TYPE.STAR_ROCKS -> {
+                return String.format(MYSQL_URL_FORMAT, host, port, dbName);
             }
-            if (Constants.ORACLE_CONNECT_TYPE.SID.equals(connectType)) {
-                return String.format(ORACLE_SID_URL_FORMAT, host, port, dbName);
+            case Constants.DATABASE_TYPE.ORACLE -> {
+                String connectType = null;
+                if (extConfig != null && !extConfig.isEmpty()) {
+                    JSONObject jsonObject = JSONObject.parseObject(extConfig);
+                    connectType = jsonObject.getString(Constants.DATABASE_EXT_CONFIG.ORACLE_CONNECT_TYPE);
+                }
+                if (Constants.ORACLE_CONNECT_TYPE.SID.equals(connectType)) {
+                    return String.format(ORACLE_SID_URL_FORMAT, host, port, dbName);
+                }
+                return String.format(ORACLE_SERVICE_URL_FORMAT, host, port, dbName);
             }
-            return String.format(ORACLE_SERVICE_URL_FORMAT, host, port, dbName);
-        }
-
-        if (Constants.DATABASE_TYPE.POSTGRESQL.equals(type)) {
-            return String.format(POSTGRESQL_URL_FORMAT, host, port, dbName);
-        }
-        if (Constants.DATABASE_TYPE.SQL_SERVER.equals(type)) {
-            return String.format(SQLSERVER_URL_FORMAT, host, port, dbName);
-        }
-        if (Constants.DATABASE_TYPE.DM8.equals(type)) {
-            return String.format(DM_URL_FORMAT, host, port, dbName);
+            case Constants.DATABASE_TYPE.POSTGRESQL -> {
+                return String.format(POSTGRESQL_URL_FORMAT, host, port, dbName);
+            }
+            case Constants.DATABASE_TYPE.SQL_SERVER -> {
+                return String.format(SQLSERVER_URL_FORMAT, host, port, dbName);
+            }
+            case Constants.DATABASE_TYPE.DM8 -> {
+                return String.format(DM_URL_FORMAT, host, port, dbName);
+            }
         }
 
         // 未匹配到已知类型时返回 null，调用方按需处理
@@ -78,24 +80,21 @@ public class JdbcUrlUtil {
             return null;
         }
 
-        if (Constants.DATABASE_TYPE.MYSQL.equals(type)
-                || Constants.DATABASE_TYPE.DORIS.equals(type)) {
-            return MYSQL_DRIVER;
-        }
-        if (Constants.DATABASE_TYPE.ORACLE.equals(type)) {
-            return ORACLE_DRIVER;
-        }
-        if (Constants.DATABASE_TYPE.POSTGRESQL.equals(type)) {
-            return POSTGRESQL_DRIVER;
-        }
-        if (Constants.DATABASE_TYPE.SQL_SERVER.equals(type)) {
-            return SQLSERVER_DRIVER;
-        }
-        if (Constants.DATABASE_TYPE.DM8.equals(type)) {
-            return DM_DRIVER;
-        }
+        return switch (type) {
+            case Constants.DATABASE_TYPE.MYSQL,
+                 Constants.DATABASE_TYPE.DORIS
+                    -> MYSQL_DRIVER;
+            case Constants.DATABASE_TYPE.ORACLE
+                    -> ORACLE_DRIVER;
+            case Constants.DATABASE_TYPE.POSTGRESQL
+                    -> POSTGRESQL_DRIVER;
+            case Constants.DATABASE_TYPE.SQL_SERVER
+                    -> SQLSERVER_DRIVER;
+            case Constants.DATABASE_TYPE.DM8
+                    -> DM_DRIVER;
+            default -> throw new BusinessException(String.format("暂不支持[%s]此类型数据库!", type));
+        };
 
-        return null;
     }
 
 }

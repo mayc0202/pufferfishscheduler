@@ -6,9 +6,13 @@ import java.util.List;
 
 import com.pufferfishscheduler.common.utils.CommonUtil;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.core.xml.XMLHandlerCache;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.TransMeta;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -171,12 +175,151 @@ public class DataFlowRepository {
         
         try {
             Document doc = XMLHandler.loadXMLString(xml);
-            TransMeta transMeta = new TransMeta(XMLHandler.getSubNode(doc, "transformation"), (Repository) null);
+            Node transRoot = XMLHandler.getSubNode(doc, "transformation");
+            if (transRoot == null && doc.getDocumentElement() != null
+                    && "transformation".equalsIgnoreCase(doc.getDocumentElement().getNodeName())) {
+                transRoot = doc.getDocumentElement();
+            }
+            if (transRoot == null) {
+                throw new IllegalArgumentException("XML does not contain a <transformation> root element");
+            }
+            // 空 <name> 会导致 StepMeta.getName() 为 null，TransLogTable.loadXML → findStep NPE
+            patchBlankStepNames(transRoot);
+            patchEmptyKafkaConsumerStepType(transRoot);
+            patchEmptyRabbitMqConsumerStepType(transRoot);
+            // Pentaho XMLHandler.getSubNodeByNr 对 (父节点, tag) 有全局顺序缓存；补丁多次遍历 step 会破坏后续 TransMeta.loadXML 的 nr=0 查找，必须在解析前清空
+            XMLHandlerCache.getInstance().clear();
+            TransMeta transMeta = new TransMeta(transRoot, (Repository) null);
             return transMeta;
         } catch (Exception e) {
             log.error("Failed to convert XML to TransMeta", e);
             throw new RuntimeException("Failed to convert XML to TransMeta", e);
         }
+    }
+
+    /**
+     * 为缺少 {@code <name>} 或文本为空的 {@code <step>} 补占位名，避免 Kettle 解析 TransLogTable 时在
+     * {@link org.pentaho.di.trans.step.StepMeta#findStep} 中对 null 名称调用 {@code equalsIgnoreCase} 崩溃。
+     */
+    private static void patchBlankStepNames(Node transRoot) {
+        if (transRoot == null) {
+            return;
+        }
+        int nr = XMLHandler.countNodes(transRoot, "step");
+        for (int i = 0; i < nr; i++) {
+            Node stepNode = XMLHandler.getSubNodeByNr(transRoot, "step", i, false);
+            if (stepNode == null) {
+                continue;
+            }
+            String stepName = XMLHandler.getTagValue(stepNode, "name");
+            if (StringUtils.isNotBlank(stepName)) {
+                continue;
+            }
+            String fallback = "Unnamed_step_" + (i + 1);
+            Node nameNode = XMLHandler.getSubNode(stepNode, "name");
+            if (nameNode != null) {
+                clearChildText(nameNode);
+                nameNode.appendChild(nameNode.getOwnerDocument().createTextNode(fallback));
+            } else {
+                Document doc = stepNode.getOwnerDocument();
+                Element nameEl = doc.createElement("name");
+                nameEl.appendChild(doc.createTextNode(fallback));
+                stepNode.appendChild(nameEl);
+            }
+            log.warn("已修补空步骤名为: {}（原 name 缺失或为空）", fallback);
+        }
+    }
+
+    private static void clearChildText(Node parent) {
+        NodeList children = parent.getChildNodes();
+        for (int j = children.getLength() - 1; j >= 0; j--) {
+            parent.removeChild(children.item(j));
+        }
+    }
+
+    /**
+     * 历史/前端落库的 KTR 曾出现 {@code <type/>} 为空，Kettle 会报 plugin missing。
+     * 根据本工程 KafkaConsumerInputMeta 的 XML 形态补全为 {@code KafkaConsumerInput}。
+     */
+    private static void patchEmptyKafkaConsumerStepType(Node transRoot) {
+        if (transRoot == null) {
+            return;
+        }
+        int nr = XMLHandler.countNodes(transRoot, "step");
+        for (int i = 0; i < nr; i++) {
+            Node stepNode = XMLHandler.getSubNodeByNr(transRoot, "step", i, false);
+            if (stepNode == null) {
+                continue;
+            }
+            String type = XMLHandler.getTagValue(stepNode, "type");
+            if (StringUtils.isNotBlank(type)) {
+                continue;
+            }
+            if (!isKafkaConsumerInputStepXml(stepNode)) {
+                continue;
+            }
+            String stepName = XMLHandler.getTagValue(stepNode, "name");
+            Node typeNode = XMLHandler.getSubNode(stepNode, "type");
+            if (typeNode != null) {
+                typeNode.setTextContent("KafkaConsumerInput");
+            } else {
+                Document doc = stepNode.getOwnerDocument();
+                Element typeEl = doc.createElement("type");
+                typeEl.setTextContent("KafkaConsumerInput");
+                stepNode.appendChild(typeEl);
+            }
+            log.warn("已修补空的步骤 <type> 为 KafkaConsumerInput（步骤名: {}）", stepName);
+        }
+    }
+
+    private static boolean isKafkaConsumerInputStepXml(Node stepNode) {
+        if (XMLHandler.getSubNode(stepNode, "directBootstrapServers") != null) {
+            return true;
+        }
+        String conn = XMLHandler.getTagValue(stepNode, "connectionType");
+        return StringUtils.isNotBlank(conn)
+                && XMLHandler.getSubNode(stepNode, "consumerGroup") != null
+                && XMLHandler.countNodes(stepNode, "topic") > 0;
+    }
+
+    private static void patchEmptyRabbitMqConsumerStepType(Node transRoot) {
+        if (transRoot == null) {
+            return;
+        }
+        int nr = XMLHandler.countNodes(transRoot, "step");
+        for (int i = 0; i < nr; i++) {
+            Node stepNode = XMLHandler.getSubNodeByNr(transRoot, "step", i, false);
+            if (stepNode == null) {
+                continue;
+            }
+            String type = XMLHandler.getTagValue(stepNode, "type");
+            if (StringUtils.isNotBlank(type)) {
+                continue;
+            }
+            if (!isRabbitMqConsumerInputStepXml(stepNode)) {
+                continue;
+            }
+            String stepName = XMLHandler.getTagValue(stepNode, "name");
+            Node typeNode = XMLHandler.getSubNode(stepNode, "type");
+            if (typeNode != null) {
+                typeNode.setTextContent("RabbitMqConsumerInput");
+            } else {
+                Document doc = stepNode.getOwnerDocument();
+                Element typeEl = doc.createElement("type");
+                typeEl.setTextContent("RabbitMqConsumerInput");
+                stepNode.appendChild(typeEl);
+            }
+            log.warn("已修补空的步骤 <type> 为 RabbitMqConsumerInput（步骤名: {}）", stepName);
+        }
+    }
+
+    private static boolean isRabbitMqConsumerInputStepXml(Node stepNode) {
+        if (XMLHandler.getSubNode(stepNode, "directBootstrapServers") != null) {
+            return false;
+        }
+        return XMLHandler.getSubNode(stepNode, "queue") != null
+                && XMLHandler.getSubNode(stepNode, "virtualHost") != null
+                && XMLHandler.getSubNode(stepNode, "host") != null;
     }
 
     /**
@@ -214,6 +357,7 @@ public class DataFlowRepository {
         int update = kettleFlowRepositoryMapper.updateFlow(
                 transFlowConfig.getFlowType(),
                 transFlowConfig.getFlowContent(),
+                transFlowConfig.getFlowJson(),
                 transFlowConfig.getBizType(),
                 transFlowConfig.getBizObjectId()
         );
@@ -298,6 +442,7 @@ public class DataFlowRepository {
         transFlowConfig.setBizType(kettleFlowRepository.getBizType());
         transFlowConfig.setBizObjectId(kettleFlowRepository.getBizObjectId());
         transFlowConfig.setFlowContent(kettleFlowRepository.getFlowContent());
+        transFlowConfig.setFlowJson(kettleFlowRepository.getFlowJson());
         transFlowConfig.setExecutorHost(kettleFlowRepository.getExecutorHost());
         transFlowConfig.setId(kettleFlowRepository.getId());
         transFlowConfig.setUpdatedTime(kettleFlowRepository.getUpdatedTime());

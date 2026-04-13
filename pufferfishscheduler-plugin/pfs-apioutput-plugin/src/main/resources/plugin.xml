@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin id="ApiOutput" type="Step">
+  <name>API输出</name>
+  <description>用于API输出数据。</description>
+  <category>转换</category>
+  <classname>com.pufferfishscheduler.plugin.ApiOutputStepMeta</classname>
+  <image>api-output.svg</image>
+  <libraries>
+    <library name="lib/pfs-apioutput-plugin-1.0.0.jar"/>
+  </libraries>
+</plugin>

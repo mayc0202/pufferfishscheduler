@@ -16,12 +16,14 @@ import com.pufferfishscheduler.dao.mapper.DbTableMapper;
 import com.pufferfishscheduler.dao.mapper.DbTablePropertiesMapper;
 import com.pufferfishscheduler.domain.domain.TableColumnSchema;
 import com.pufferfishscheduler.domain.domain.TableSchema;
-import com.pufferfishscheduler.domain.model.database.DatabaseConnectionInfo;
+import com.pufferfishscheduler.domain.model.database.DBConnectionInfo;
 import com.pufferfishscheduler.worker.task.metadata.connect.AbstractDatabaseConnector;
 import com.pufferfishscheduler.worker.task.metadata.connect.DatabaseConnectorFactory;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.jfree.util.Log;
+import org.slf4j.Logger;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -59,20 +61,25 @@ public class DbSyncExecutor {
      */
     @Transactional(rollbackFor = Exception.class)
     public void syncTableInfo(int databaseId) {
-        DbDatabase dbDatabase = getDatabaseById(databaseId);
-        DatabaseConnectionInfo connInfo = buildConnectionInfo(dbDatabase);
-        AbstractDatabaseConnector connector = buildConnector(connInfo);
-        Map<String, TableSchema> tableInfoMap = connector.getTableSchema(null, null);
-        if (tableInfoMap == null || tableInfoMap.isEmpty()) {
-            return;
+        log.info("开始同步数据库表信息, databaseId={}", databaseId);
+        try {
+            DbDatabase dbDatabase = getDatabaseById(databaseId);
+            DBConnectionInfo connInfo = buildConnectionInfo(dbDatabase);
+            AbstractDatabaseConnector connector = buildConnector(connInfo);
+            Map<String, TableSchema> tableInfoMap = connector.getTableSchema(null, null);
+            if (tableInfoMap == null || tableInfoMap.isEmpty()) {
+                return;
+            }
+            String currentUser = Optional.ofNullable(UserContext.getCurrentAccount()).orElse(Constants.SYS_OP_INFO.SYSTEM_ACCOUNT);
+
+            syncTablesToDatabase(databaseId, tableInfoMap, currentUser);
+
+            List<DbTableProperties> primaryKeyList = new ArrayList<>();
+            syncFieldsToDatabase(databaseId, tableInfoMap, currentUser, primaryKeyList);
+            syncPrimaryKeysToDatabase(databaseId, primaryKeyList, currentUser);
+        } finally {
+            log.info("同步数据库表信息完成, databaseId={}", databaseId);
         }
-        String currentUser = Optional.ofNullable(UserContext.getCurrentAccount()).orElse(Constants.SYS_OP_INFO.SYSTEM_ACCOUNT);
-
-        syncTablesToDatabase(databaseId, tableInfoMap, currentUser);
-
-        List<DbTableProperties> primaryKeyList = new ArrayList<>();
-        syncFieldsToDatabase(databaseId, tableInfoMap, currentUser, primaryKeyList);
-        syncPrimaryKeysToDatabase(databaseId, primaryKeyList, currentUser);
     }
 
     /**
@@ -99,8 +106,8 @@ public class DbSyncExecutor {
      * @param dbDatabase 数据库元数据
      * @return 数据库连接信息
      */
-    private DatabaseConnectionInfo buildConnectionInfo(DbDatabase dbDatabase) {
-        DatabaseConnectionInfo info = new DatabaseConnectionInfo();
+    private DBConnectionInfo buildConnectionInfo(DbDatabase dbDatabase) {
+        DBConnectionInfo info = new DBConnectionInfo();
         BeanUtils.copyProperties(dbDatabase, info);
         info.setPassword(aesUtil.decrypt(dbDatabase.getPassword()));
         return info;
@@ -112,7 +119,7 @@ public class DbSyncExecutor {
      * @param info 数据库连接信息
      * @return 数据库连接
      */
-    private AbstractDatabaseConnector buildConnector(DatabaseConnectionInfo info) {
+    private AbstractDatabaseConnector buildConnector(DBConnectionInfo info) {
         AbstractDatabaseConnector connector = DatabaseConnectorFactory.getConnector(info.getType());
         connector.setDbName(info.getDbName());
         connector.setUsername(info.getUsername());
@@ -132,9 +139,9 @@ public class DbSyncExecutor {
     /**
      * 同步数据库表信息
      *
-     * @param databaseId 数据库id
+     * @param databaseId   数据库id
      * @param tableInfoMap 表信息映射表
-     * @param currentUser 当前用户
+     * @param currentUser  当前用户
      */
     private void syncTablesToDatabase(int databaseId, Map<String, TableSchema> tableInfoMap, String currentUser) {
         LambdaQueryWrapper<DbTable> tableQuery = new LambdaQueryWrapper<>();
@@ -180,9 +187,9 @@ public class DbSyncExecutor {
     /**
      * 同步数据库字段信息
      *
-     * @param databaseId 数据库id
-     * @param tableInfoMap 表信息映射表
-     * @param currentUser 当前用户
+     * @param databaseId     数据库id
+     * @param tableInfoMap   表信息映射表
+     * @param currentUser    当前用户
      * @param primaryKeyList 主键列表
      */
     private void syncFieldsToDatabase(int databaseId, Map<String, TableSchema> tableInfoMap,
@@ -254,8 +261,8 @@ public class DbSyncExecutor {
     /**
      * 收集主键信息
      *
-     * @param columnSchema 字段信息
-     * @param tableId 表id
+     * @param columnSchema   字段信息
+     * @param tableId        表id
      * @param primaryKeyList 主键列表
      */
     private void collectPrimaryKey(TableColumnSchema columnSchema, Integer tableId, List<DbTableProperties> primaryKeyList) {
@@ -274,9 +281,9 @@ public class DbSyncExecutor {
     /**
      * 同步数据库主键信息
      *
-     * @param databaseId 数据库id
+     * @param databaseId     数据库id
      * @param primaryKeyList 主键列表
-     * @param currentUser 当前用户
+     * @param currentUser    当前用户
      */
     private void syncPrimaryKeysToDatabase(int databaseId, List<DbTableProperties> primaryKeyList, String currentUser) {
         LambdaQueryWrapper<DbTable> tableQuery = new LambdaQueryWrapper<>();

@@ -30,26 +30,15 @@ public class SprintDataTransEngineConfiguration {
         dataEngine.setMaxLogNumber(maxLogNumber);
         dataEngine.setTransTaskLogService(transTaskLogService);
 
-		new Thread(new Runnable() {
-			@Override
-			public void run() {
-				log.info("Init data trans engine!");
-
-				try {
-					// 初始化 Kettle 环境
-					dataEngine.init();
-					
-					// 初始化数据缓存
-					DataCache.init();
-					DataCache.setEnable(true);
-
-					log.info("Finish data trans engine!");
-				} catch (Exception e) {
-					log.error("Failed to initialize data trans engine", e);
-					// 可以添加告警或其他处理逻辑
-				}
-			}
-		}).start();
+		log.info("Init data trans engine (Kettle sync)...");
+		try {
+			dataEngine.init();
+			DataCache.init();
+			DataCache.setEnable(true);
+			log.info("Finish data trans engine!");
+		} catch (Exception e) {
+			log.error("Failed to initialize data trans engine", e);
+		}
 
 		return dataEngine;
 	}

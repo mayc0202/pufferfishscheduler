@@ -7,9 +7,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.pufferfishscheduler.common.utils.JdbcUtil;
 import com.pufferfishscheduler.domain.domain.QueryResult;
-import com.pufferfishscheduler.domain.domain.TableMetadata;
+import com.pufferfishscheduler.domain.domain.TableMetaData;
 import com.pufferfishscheduler.common.utils.JdbcUrlUtil;
-import com.pufferfishscheduler.domain.model.database.DatabaseConnectionInfo;
+import com.pufferfishscheduler.domain.model.database.DBConnectionInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.prompt.PromptTemplate;
@@ -130,7 +130,7 @@ public class DataQueryNode implements NodeAction {
             }
 
             // 3. 获取数据库连接
-            DatabaseConnectionInfo connectionInfo = buildDatabaseMetadata(dataSourceInfo);
+            DBConnectionInfo connectionInfo = buildDatabaseMetadata(dataSourceInfo);
             String driverName = JdbcUrlUtil.getDriver(connectionInfo.getType());
             String url = JdbcUrlUtil.getUrl(
                     connectionInfo.getType(),
@@ -156,7 +156,7 @@ public class DataQueryNode implements NodeAction {
             log.info("要查询的表: {}", tablesToQuery);
 
             // 5. 获取表元数据
-            List<TableMetadata> metadataList = JdbcUtil.getTablesMetadata(connection, tablesToQuery);
+            List<TableMetaData> metadataList = JdbcUtil.getTablesMetadata(connection, tablesToQuery);
 
             if (metadataList.isEmpty()) {
                 return Map.of(
@@ -392,12 +392,12 @@ public class DataQueryNode implements NodeAction {
     /**
      * 构建DatabaseMetadata对象
      */
-    private DatabaseConnectionInfo buildDatabaseMetadata(DataSourceInfo info) {
+    private DBConnectionInfo buildDatabaseMetadata(DataSourceInfo info) {
         if (info.isIncomplete()) {
             throw new IllegalArgumentException("数据源信息不完整: " + info);
         }
 
-        return DatabaseConnectionInfo.builder()
+        return DBConnectionInfo.builder()
                 .type(info.getType())
                 .dbHost(info.getHost())
                 .dbPort(String.valueOf(info.getPort()))

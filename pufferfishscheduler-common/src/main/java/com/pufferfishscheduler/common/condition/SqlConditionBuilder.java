@@ -6,7 +6,7 @@ import com.pufferfishscheduler.common.constants.Constants;
 import com.pufferfishscheduler.common.exception.BusinessException;
 import com.pufferfishscheduler.common.utils.JdbcUrlUtil;
 import com.pufferfishscheduler.common.utils.JdbcUtil;
-import com.pufferfishscheduler.domain.model.database.DatabaseConnectionInfo;
+import com.pufferfishscheduler.domain.model.database.DBConnectionInfo;
 import com.pufferfishscheduler.domain.model.database.DatabaseField;
 import com.pufferfishscheduler.domain.vo.database.DatabaseTableFieldVo;
 import org.apache.commons.lang3.StringUtils;
@@ -470,7 +470,7 @@ public final class SqlConditionBuilder {
     // -------------------------------------------------------------------------
     // SQL 语法校验
     // -------------------------------------------------------------------------
-    public static void validateSqlSyntax(String sql, DatabaseConnectionInfo connInfo) {
+    public static void validateSqlSyntax(String sql, DBConnectionInfo connInfo) {
         try (Connection conn = JdbcUtil.getConnection(
                 JdbcUrlUtil.getDriver(connInfo.getType()),
                 JdbcUrlUtil.getUrl(connInfo.getType(), connInfo.getDbHost(), connInfo.getDbPort(), connInfo.getDbName(), connInfo.getProperties()),

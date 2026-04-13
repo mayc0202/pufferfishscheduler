@@ -63,23 +63,23 @@ public class TableInputConstructor extends AbstractStepMetaConstructor {
         // 从配置中提取组件属性
         String name = jsonObject.getString("name"); // 组件名称
         if (StringUtils.isBlank(name)) {
-            throw new BusinessException("组件名称不能为空！");
+            throw new BusinessException("【" + name + "】组件名称不能为空！");
         }
 
         // 从配置中提取组件数据
         JSONObject data = jsonObject.getJSONObject("data");
         if (data == null) {
-            throw new BusinessException("组件数据不能为空！");
+            throw new BusinessException("【" + name + "】组件数据不能为空！");
         }
 
         String dataSourceId = data.getString("dataSourceId"); // 数据源ID
         if (StringUtils.isBlank(dataSourceId)) {
-            throw new BusinessException("数据源ID不能为空！");
+            throw new BusinessException("【" + name + "】数据源ID不能为空！");
         }
         String rowLimit = data.getString("rowLimit"); // 行限制，如果为空则不限制
         String sql = data.getString("sql"); // SQL查询语句
         if (StringUtils.isBlank(sql)) {
-            throw new BusinessException("SQL查询语句不能为空！");
+            throw new BusinessException("【" + name + "】SQL查询语句不能为空！");
         }
         Boolean replaceVariable = data.getBoolean("replaceVariable"); // 是否替换变量
         Boolean implementEveryOne = data.getBoolean("implementEveryOne"); // 是否每个实例都执行

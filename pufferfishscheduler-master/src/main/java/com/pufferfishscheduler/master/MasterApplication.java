@@ -1,5 +1,6 @@
 package com.pufferfishscheduler.master;
 
+import com.pufferfishscheduler.common.utils.PoiJvmBootstrap;
 import org.apache.dubbo.config.spring.context.annotation.DubboComponentScan;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
@@ -21,6 +22,7 @@ public class MasterApplication {
     public static void main(String[] args) {
         // 强制关闭 ZK 的 SASL 校验，解决 canonicalize 报错
         System.setProperty("zookeeper.sasl.client", "false");
+        PoiJvmBootstrap.ensureLargeOoxmlReadLimits();
         SpringApplication.run(MasterApplication.class, args);
     }
 }

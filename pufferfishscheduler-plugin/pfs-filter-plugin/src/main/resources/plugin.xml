@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin id="DataFilter" type="Step">
+  <name>数据过滤</name>
+  <description>用于数据过滤。</description>
+  <category>转换</category>
+  <classname>com.pufferfishscheduler.plugin.DataFilterStepMeta</classname>
+  <image>datafilter.svg</image>
+  <libraries>
+    <library name="lib/pfs-filter-plugin-1.0.0.jar"/>
+  </libraries>
+</plugin>

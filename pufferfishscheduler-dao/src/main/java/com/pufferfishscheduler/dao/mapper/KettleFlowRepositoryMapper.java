@@ -34,6 +34,7 @@ public interface KettleFlowRepositoryMapper extends BaseMapper<KettleFlowReposit
          */
         int updateFlow(@Param("flowType") String flowType,
                         @Param("flowContent") String flowContent,
+                        @Param("flowJson") String flowJson,
                         @Param("bizType") String bizType,
                         @Param("bizObjectId") String bizObjectId);
 

@@ -430,5 +430,95 @@
         "description": ""
       }
     ]
+  },
+  {
+    "dictCode": "spread_sheet_type",
+    "name": "电子表格类型",
+    "list": [
+      {
+        "code": "JXL",
+        "value": "Excel 97-2003 XLS (JXL)",
+        "order": 1,
+        "description": ""
+      },
+      {
+        "code": "POI",
+        "value": "Excel 2007 XLSX (Apache POI)",
+        "order": 2,
+        "description": ""
+      },
+      {
+        "code": "SAX_POI",
+        "value": "Excel 2007 XLSX (Apache POI Streaming)",
+        "order": 3,
+        "description": ""
+      },
+      {
+        "code": "ODS",
+        "value": "Open Office ODS (ODFDOM)",
+        "order": 4,
+        "description": ""
+      }
+    ]
+  },
+  {
+    "dictCode": "operator_type",
+    "name": "操作类型",
+    "list": [
+      {
+        "code": "=",
+        "value": "=",
+        "order": 1,
+        "description": ""
+      },
+      {
+        "code": ">",
+        "value": ">",
+        "order": 2,
+        "description": ""
+      },
+      {
+        "code": "<",
+        "value": "<",
+        "order": 3,
+        "description": ""
+      },
+      {
+        "code": ">=",
+        "value": ">=",
+        "order": 4,
+        "description": ""
+      },
+      {
+        "code": "<=",
+        "value": "<=",
+        "order": 5,
+        "description": ""
+      },
+      {
+        "code": "!=",
+        "value": "!=",
+        "order": 6,
+        "description": ""
+      },
+      {
+        "code": "START_WITH",
+        "value": "以...开头",
+        "order": 7,
+        "description": ""
+      },
+      {
+        "code": "END_WITH",
+        "value": "以...结尾",
+        "order": 8,
+        "description": ""
+      },
+      {
+        "code": "CONTAINS",
+        "value": "包含",
+        "order": 9,
+        "description": ""
+      }
+    ]
   }
 ]

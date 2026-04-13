@@ -12,6 +12,8 @@ import com.pufferfishscheduler.worker.task.trans.service.TransTaskLogService;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.apache.commons.lang3.StringUtils;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
@@ -29,8 +31,18 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
+import java.net.JarURLConnection;
+import java.net.URI;
+import java.net.URL;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.util.Enumeration;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
@@ -56,9 +68,11 @@ public class DataTransEngine {
      */
     public static final String DEFAULT_BATCHID_NAME = "执行转换批次号。【系统内置参数】";
     /**
-     * 默认插件目录
+     * 默认插件目录（Kettle 会在其下追加 {@code steps} 等子目录扫描 plugin.xml）
      */
     public static final String DEFAULT_PLUGIN_DIR = "plugins";
+    private static final String CLASSPATH_PLUGINS_DIR = DEFAULT_PLUGIN_DIR;
+    private static final String CLASSPATH_STEPS_PREFIX = CLASSPATH_PLUGINS_DIR + "/steps/";
     /**
      * 限流次数参数名
      */
@@ -91,28 +105,36 @@ public class DataTransEngine {
     @Setter
     private TransTaskLogService transTaskLogService;
 
+    private volatile boolean kettleInitialized;
+    private final Object kettleInitMonitor = new Object();
+
     /**
-     * 初始化引擎
+     * 初始化引擎（幂等；避免重复注册 Kettle 日志监听器）
      */
     public void init() {
-        // kettle初始化运行环境，包括加载插件
-        try {
-            // 设置插件目录
-            String pluginsDir = getPluginsDir();
-            log.info(String.format("Load plugins from '%s'", pluginsDir));
-            System.setProperty("KETTLE_PLUGIN_BASE_FOLDERS", pluginsDir);
-            System.setProperty("KETTLE_EMPTY_STRING_DIFFERS_FROM_NULL", "Y");
-            KettleEnvironment.init(false);
+        if (kettleInitialized) {
+            return;
+        }
+        synchronized (kettleInitMonitor) {
+            if (kettleInitialized) {
+                return;
+            }
+            try {
+                String pluginsDir = getPluginsDir();
+                log.info(String.format("Load plugins from '%s'", pluginsDir));
+                System.setProperty("KETTLE_PLUGIN_BASE_FOLDERS", pluginsDir);
+                System.setProperty("KETTLE_EMPTY_STRING_DIFFERS_FROM_NULL", "Y");
+                KettleEnvironment.init(false);
 
-            //监听kettle的日志
-            initTransEventLogListener();
+                initTransEventLogListener();
 
-            // 加载插件JAR文件
-            loadPluginJars(pluginsDir);
+                loadPluginJars(pluginsDir);
 
-            log.info("Kettle environment initialized successfully.");
-        } catch (Exception e) {
-            throw new DataTransformationEngineException("初始化引擎失败！", e);
+                log.info("Kettle environment initialized successfully.");
+                kettleInitialized = true;
+            } catch (Exception e) {
+                throw new DataTransformationEngineException("初始化引擎失败！", e);
+            }
         }
     }
 
@@ -228,17 +250,217 @@ public class DataTransEngine {
     }
 
     /**
-     * 获取默认插件目录
-     *
-     * @return 默认插件目录路径
+     * 与 master 一致：优先 classpath 落地目录；Spring Boot fat-jar 下将 {@code plugins/steps/**} 解压到临时目录供 Kettle 扫描。
      */
     private String getDefaultPluginsDir() {
-        try {
-            String parentPath = URLDecoder.decode(this.getClass().getClassLoader().getResource(".").getPath(), "utf-8");
-            return String.format("%s%s", parentPath, DEFAULT_PLUGIN_DIR);
-        } catch (UnsupportedEncodingException e) {
-            throw new DataTransformationEngineException(String.format("获取默认插件目录失败！[错误:%s]", e.getMessage()));
+        Path classpathPluginsDir = getClasspathPluginsDir();
+        if (classpathPluginsDir != null && Files.exists(classpathPluginsDir)) {
+            return classpathPluginsDir.toString();
         }
+
+        Path extractedPluginsDir = extractClasspathPluginsToTempDirIfNecessary();
+        if (extractedPluginsDir != null && Files.exists(extractedPluginsDir)) {
+            return extractedPluginsDir.toString();
+        }
+
+        Path springExtracted = extractClasspathPluginsUsingSpringResources();
+        if (springExtracted != null && Files.exists(springExtracted)) {
+            return springExtracted.toString();
+        }
+
+        String kettleHomePluginsDir = getKettleHomePluginsDir();
+        if (kettleHomePluginsDir != null) {
+            return kettleHomePluginsDir;
+        }
+
+        String userDirPluginsDir = getUserDirPluginsDir();
+        if (userDirPluginsDir != null) {
+            return userDirPluginsDir;
+        }
+
+        return classpathPluginsDir == null ? DEFAULT_PLUGIN_DIR : classpathPluginsDir.toString();
+    }
+
+    private Path getClasspathPluginsDir() {
+        try {
+            URL root = this.getClass().getClassLoader().getResource(".");
+            if (root == null) {
+                return null;
+            }
+            if ("file".equalsIgnoreCase(root.getProtocol())) {
+                String parentPath = URLDecoder.decode(root.getPath(), StandardCharsets.UTF_8.name());
+                Path dir = Paths.get(parentPath, DEFAULT_PLUGIN_DIR);
+                return Files.exists(dir) ? dir : null;
+            }
+            return null;
+        } catch (Exception e) {
+            log.warn("Failed to resolve classpath plugins directory", e);
+            return null;
+        }
+    }
+
+    private Path extractClasspathPluginsToTempDirIfNecessary() {
+        try {
+            URL pluginsUrl = this.getClass().getClassLoader().getResource(CLASSPATH_PLUGINS_DIR);
+            if (pluginsUrl == null) {
+                return null;
+            }
+
+            if ("file".equalsIgnoreCase(pluginsUrl.getProtocol())) {
+                Path p = Paths.get(pluginsUrl.toURI());
+                return Files.exists(p) ? p : null;
+            }
+
+            if (!"jar".equalsIgnoreCase(pluginsUrl.getProtocol())) {
+                log.warn("Unsupported plugins URL protocol: {} (url={})", pluginsUrl.getProtocol(), pluginsUrl);
+                return null;
+            }
+
+            JarURLConnection jarConn = (JarURLConnection) pluginsUrl.openConnection();
+            JarFile jarFile = jarConn.getJarFile();
+
+            long jarLastModified = 0L;
+            try {
+                URI jarUri = jarConn.getJarFileURL().toURI();
+                if ("file".equalsIgnoreCase(jarUri.getScheme())) {
+                    jarLastModified = Files.getLastModifiedTime(Paths.get(jarUri)).toMillis();
+                }
+            } catch (Exception ignore) {
+                // ignore
+            }
+
+            String marker = Long.toString(jarLastModified);
+            Path baseDir = Paths.get(System.getProperty("java.io.tmpdir"), "pfs-kettle-plugins", marker);
+            Path targetPluginsDir = baseDir.resolve(CLASSPATH_PLUGINS_DIR);
+            Path targetStepsDir = targetPluginsDir.resolve("steps");
+
+            if (Files.exists(targetStepsDir)) {
+                return targetPluginsDir;
+            }
+
+            Files.createDirectories(targetStepsDir);
+
+            Enumeration<JarEntry> entries = jarFile.entries();
+            while (entries.hasMoreElements()) {
+                JarEntry entry = entries.nextElement();
+                String name = entry.getName();
+                if (name == null || !name.startsWith(CLASSPATH_STEPS_PREFIX) || entry.isDirectory()) {
+                    continue;
+                }
+
+                Path out = baseDir.resolve(name);
+                Files.createDirectories(out.getParent());
+                try (var in = jarFile.getInputStream(entry)) {
+                    Files.copy(in, out, StandardCopyOption.REPLACE_EXISTING);
+                }
+            }
+
+            log.info("Extracted kettle step plugins to '{}'", targetPluginsDir);
+            return targetPluginsDir;
+        } catch (Exception e) {
+            log.warn("Failed to extract classpath plugins for kettle scanning", e);
+            return null;
+        }
+    }
+
+    /**
+     * Spring Boot 3.x fat-jar 常为 {@code jar:nested:...}，{@link JarURLConnection} 无法遍历；
+     * 用 Spring 的 classpath 扫描把 {@code plugins/steps/**} 复制到临时目录供 Kettle 扫描。
+     */
+    private Path extractClasspathPluginsUsingSpringResources() {
+        try {
+            PathMatchingResourcePatternResolver resolver =
+                    new PathMatchingResourcePatternResolver(this.getClass().getClassLoader());
+            Resource[] resources = resolver.getResources("classpath*:" + CLASSPATH_STEPS_PREFIX + "**/*");
+            if (resources.length == 0) {
+                return null;
+            }
+            Path base = Paths.get(
+                    System.getProperty("java.io.tmpdir"),
+                    "pfs-kettle-plugins",
+                    "spring-res",
+                    Long.toString(System.nanoTime()));
+            Path pluginsRoot = base.resolve(CLASSPATH_PLUGINS_DIR);
+            Path stepsRoot = pluginsRoot.resolve("steps");
+            int copied = 0;
+            for (Resource res : resources) {
+                if (!res.isReadable()) {
+                    continue;
+                }
+                try {
+                    URL url = res.getURL();
+                    String rel = relativePathUnderPluginsSteps(url);
+                    if (StringUtils.isBlank(rel)) {
+                        continue;
+                    }
+                    if (rel.endsWith("/")) {
+                        Files.createDirectories(stepsRoot.resolve(rel));
+                        continue;
+                    }
+                    Path dest = stepsRoot.resolve(rel);
+                    Files.createDirectories(dest.getParent());
+                    try (var in = res.getInputStream()) {
+                        Files.copy(in, dest, StandardCopyOption.REPLACE_EXISTING);
+                        copied++;
+                    }
+                } catch (Exception one) {
+                    log.debug("Skip classpath plugin resource: {}", res, one);
+                }
+            }
+            if (copied == 0 || !Files.exists(stepsRoot)) {
+                return null;
+            }
+            log.info("Extracted {} kettle plugin files via classpath scan to '{}'", copied, pluginsRoot);
+            return pluginsRoot;
+        } catch (Exception e) {
+            log.warn("Spring classpath plugin extraction failed", e);
+            return null;
+        }
+    }
+
+    private static String relativePathUnderPluginsSteps(URL url) {
+        String u = url.toString();
+        String key = CLASSPATH_STEPS_PREFIX;
+        int i = u.indexOf(key);
+        if (i < 0) {
+            key = "plugins%2Fsteps%2F";
+            i = u.indexOf(key);
+            if (i < 0) {
+                return null;
+            }
+        }
+        String tail = u.substring(i + key.length());
+        int cut = tail.indexOf('!');
+        if (cut >= 0) {
+            tail = tail.substring(0, cut);
+        }
+        cut = tail.indexOf('?');
+        if (cut >= 0) {
+            tail = tail.substring(0, cut);
+        }
+        try {
+            tail = URLDecoder.decode(tail, StandardCharsets.UTF_8);
+        } catch (Exception ignore) {
+            // keep raw
+        }
+        while (tail.startsWith("/")) {
+            tail = tail.substring(1);
+        }
+        return tail;
+    }
+
+    private String getKettleHomePluginsDir() {
+        String kettleHome = System.getProperty("KETTLE_HOME");
+        if (StringUtils.isBlank(kettleHome)) {
+            return null;
+        }
+        Path kettleHomePluginsDir = Paths.get(kettleHome, DEFAULT_PLUGIN_DIR);
+        return Files.exists(kettleHomePluginsDir) ? kettleHomePluginsDir.toString() : null;
+    }
+
+    private String getUserDirPluginsDir() {
+        Path userDirPluginsDir = Paths.get(System.getProperty("user.dir"), DEFAULT_PLUGIN_DIR);
+        return Files.exists(userDirPluginsDir) ? userDirPluginsDir.toString() : null;
     }
 
     /**

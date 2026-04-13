@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>pufferfishscheduler</artifactId>
         <groupId>com.pufferfishscheduler</groupId>
@@ -97,86 +97,308 @@
         <dependency>
             <groupId>pentaho-kettle</groupId>
             <artifactId>kettle-core</artifactId>
-            <exclusions>
-                <!-- 避免 Kettle 传递较老 POI/XMLBeans 与 EasyExcel/POI 版本混用 -->
-                <exclusion>
-                    <groupId>org.apache.poi</groupId>
-                    <artifactId>poi</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.apache.poi</groupId>
-                    <artifactId>poi-ooxml</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.apache.poi</groupId>
-                    <artifactId>poi-ooxml-schemas</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.apache.xmlbeans</groupId>
-                    <artifactId>xmlbeans</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
         <dependency>
             <groupId>pentaho-kettle</groupId>
             <artifactId>kettle-engine</artifactId>
-            <exclusions>
-                <!-- 避免 Kettle 传递较老 POI/XMLBeans 与 EasyExcel/POI 版本混用 -->
-                <exclusion>
-                    <groupId>org.apache.poi</groupId>
-                    <artifactId>poi</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.apache.poi</groupId>
-                    <artifactId>poi-ooxml</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.apache.poi</groupId>
-                    <artifactId>poi-ooxml-schemas</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.apache.xmlbeans</groupId>
-                    <artifactId>xmlbeans</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
         <dependency>
             <groupId>pentaho-kettle</groupId>
             <artifactId>kettle-dbdialog</artifactId>
-            <exclusions>
-                <!-- 避免 Kettle 传递较老 POI/XMLBeans 与 EasyExcel/POI 版本混用 -->
-                <exclusion>
-                    <groupId>org.apache.poi</groupId>
-                    <artifactId>poi</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.apache.poi</groupId>
-                    <artifactId>poi-ooxml</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.apache.poi</groupId>
-                    <artifactId>poi-ooxml-schemas</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.apache.xmlbeans</groupId>
-                    <artifactId>xmlbeans</artifactId>
-                </exclusion>
-            </exclusions>
+        </dependency>
+
+        <!-- Kettle 使用的 Guava 需 failureaccess，否则 KettleEnvironment.init 报 InternalFutureFailureAccess -->
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>failureaccess</artifactId>
+        </dependency>
+
+        <!-- Kettle SubtransExecutor 依赖 Jetty 9 ConcurrentHashSet；显式声明以覆盖 kettle-core/Spring 传递的 Jetty 12 -->
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-util</artifactId>
+        </dependency>
+
+        <!-- 数据清洗插件：
+            1) 作为 master 依赖用于构建流程配置时实例化 StepMeta
+            2) 运行时仍通过解压分发包到 plugins/steps 供 Kettle 扫描 -->
+        <dependency>
+            <groupId>com.pufferfishscheduler.plugin</groupId>
+            <artifactId>pfs-dataclean-plugin</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+
+        <!-- Debezium报文解析插件 -->
+        <dependency>
+            <groupId>com.pufferfishscheduler.plugin</groupId>
+            <artifactId>pfs-debeziumjson-plugin</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+
+        <!-- 数据过滤插件 -->
+        <dependency>
+            <groupId>com.pufferfishscheduler.plugin</groupId>
+            <artifactId>pfs-filter-plugin</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+
+        <!-- FTP下载插件 -->
+        <dependency>
+            <groupId>com.pufferfishscheduler.plugin</groupId>
+            <artifactId>pfs-ftpdownload-plugin</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+
+        <!-- FTP上传插件 -->
+        <dependency>
+            <groupId>com.pufferfishscheduler.plugin</groupId>
+            <artifactId>pfs-ftpupload-plugin</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+
+        <!-- Doris插件 -->
+        <dependency>
+            <groupId>com.pufferfishscheduler.plugin</groupId>
+            <artifactId>pfs-doris-plugin</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+
+        <!-- KafkaConsumer插件 -->
+        <dependency>
+            <groupId>com.pufferfishscheduler.plugin</groupId>
+            <artifactId>pfs-kafkaconsumer-plugin</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+
+        <!-- KafkaProducer插件 -->
+        <dependency>
+            <groupId>com.pufferfishscheduler.plugin</groupId>
+            <artifactId>pfs-kafkaproducer-plugin</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+
+        <!-- RabbitMQ 消费/生产插件 -->
+        <dependency>
+            <groupId>com.pufferfishscheduler.plugin</groupId>
+            <artifactId>pfs-rabbitmqconsumer-plugin</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.pufferfishscheduler.plugin</groupId>
+            <artifactId>pfs-rabbitmqproducer-plugin</artifactId>
+            <version>1.0.0</version>
         </dependency>
 
     </dependencies>
 
     <build>
+        <!-- plugins/pfs-dataclean-plugin-1.0.0/** 由下方 antrun 在 process-resources 阶段
+            直接从源码目录复制到 plugins/steps/，不走标准 resources 阶段，
+            避免这些 JAR 被打进 Spring Boot fat-WAR 的 WEB-INF/classes -->
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <excludes>
+                    <exclude>plugins/pfs-dataclean-plugin-1.0.0/**</exclude>
+                    <exclude>plugins/pfs-debeziumjson-plugin-1.0.0/**</exclude>
+                    <exclude>plugins/pfs-filter-plugin-1.0.0/**</exclude>
+                    <exclude>plugins/pfs-ftpdownload-plugin-1.0.0/**</exclude>
+                    <exclude>plugins/pfs-ftpupload-plugin-1.0.0/**</exclude>
+                    <exclude>plugins/pfs-doris-plugin-1.0.0/**</exclude>
+                    <exclude>plugins/pfs-kafkaconsumer-plugin-1.0.0/**</exclude>
+                    <exclude>plugins/pfs-kafkaproducer-plugin-1.0.0/**</exclude>
+                    <exclude>plugins/pfs-rabbitmqconsumer-plugin-1.0.0/**</exclude>
+                    <exclude>plugins/pfs-rabbitmqproducer-plugin-1.0.0/**</exclude>
+                </excludes>
+            </resource>
+        </resources>
         <plugins>
+            <!-- 将数据清洗插件从源码目录直接复制到 classpath 的 plugins/steps/ 供 Kettle 扫描
+                 阶段：process-resources（早于 compile），mvn compile 即可触发 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-dataclean-plugin</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <mkdir dir="${project.build.outputDirectory}/plugins/steps/pfs-dataclean-plugin-1.0.0"/>
+                                <!-- 清理可能残留的根部游离 jar（会触发 Kettle jar-plugin 注册，与 plugin.xml 冲突） -->
+                                <delete file="${project.build.outputDirectory}/plugins/pfs-dataclean-plugin-1.0.0.jar"
+                                        quiet="true"/>
+                                <!-- 直接从源码目录复制，不依赖插件子工程的 ZIP 分发包 -->
+                                <copy todir="${project.build.outputDirectory}/plugins/steps/pfs-dataclean-plugin-1.0.0"
+                                      overwrite="true">
+                                    <fileset
+                                            dir="${project.basedir}/src/main/resources/plugins/pfs-dataclean-plugin-1.0.0"/>
+                                </copy>
+                            </target>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>copy-debeziumjson-plugin</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <mkdir dir="${project.build.outputDirectory}/plugins/steps/pfs-debeziumjson-plugin-1.0.0"/>
+                                <delete file="${project.build.outputDirectory}/plugins/pfs-debeziumjson-plugin-1.0.0.jar"
+                                        quiet="true"/>
+                                <copy todir="${project.build.outputDirectory}/plugins/steps/pfs-debeziumjson-plugin-1.0.0"
+                                      overwrite="true">
+                                    <fileset
+                                            dir="${project.basedir}/src/main/resources/plugins/pfs-debeziumjson-plugin-1.0.0"/>
+                                </copy>
+                            </target>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>copy-filter-plugin</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <mkdir dir="${project.build.outputDirectory}/plugins/steps/pfs-filter-plugin-1.0.0"/>
+                                <delete file="${project.build.outputDirectory}/plugins/pfs-filter-plugin-1.0.0.jar"
+                                        quiet="true"/>
+                                <copy todir="${project.build.outputDirectory}/plugins/steps/pfs-filter-plugin-1.0.0"
+                                      overwrite="true">
+                                    <fileset
+                                            dir="${project.basedir}/src/main/resources/plugins/pfs-filter-plugin-1.0.0"/>
+                                </copy>
+                            </target>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>copy-ftpdownload-plugin</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <mkdir dir="${project.build.outputDirectory}/plugins/steps/pfs-ftpdownload-plugin-1.0.0"/>
+                                <delete file="${project.build.outputDirectory}/plugins/pfs-ftpdownload-plugin-1.0.0.jar"
+                                        quiet="true"/>
+                                <copy todir="${project.build.outputDirectory}/plugins/steps/pfs-ftpdownload-plugin-1.0.0"
+                                      overwrite="true">
+                                    <fileset
+                                            dir="${project.basedir}/src/main/resources/plugins/pfs-ftpdownload-plugin-1.0.0"/>
+                                </copy>
+                            </target>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>copy-ftpupload-plugin</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <mkdir dir="${project.build.outputDirectory}/plugins/steps/pfs-ftpupload-plugin-1.0.0"/>
+                                <delete file="${project.build.outputDirectory}/plugins/pfs-ftpupload-plugin-1.0.0.jar"
+                                        quiet="true"/>
+                                <copy todir="${project.build.outputDirectory}/plugins/steps/pfs-ftpupload-plugin-1.0.0"
+                                      overwrite="true">
+                                    <fileset
+                                            dir="${project.basedir}/src/main/resources/plugins/pfs-ftpupload-plugin-1.0.0"/>
+                                </copy>
+                            </target>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>copy-doris-plugin</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <mkdir dir="${project.build.outputDirectory}/plugins/steps/pfs-doris-plugin-1.0.0"/>
+                                <delete file="${project.build.outputDirectory}/plugins/pfs-doris-plugin-1.0.0.jar"
+                                        quiet="true"/>
+                                <copy todir="${project.build.outputDirectory}/plugins/steps/pfs-doris-plugin-1.0.0"
+                                      overwrite="true">
+                                    <fileset
+                                            dir="${project.basedir}/src/main/resources/plugins/pfs-doris-plugin-1.0.0"/>
+                                </copy>
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>unpack-kettle-kafka-plugins</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>com.pufferfishscheduler.plugin</groupId>
+                                    <artifactId>pfs-kafkaconsumer-plugin</artifactId>
+                                    <version>1.0.0</version>
+                                    <type>zip</type>
+                                    <overWrite>true</overWrite>
+                                    <outputDirectory>${project.build.outputDirectory}/plugins/steps</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>com.pufferfishscheduler.plugin</groupId>
+                                    <artifactId>pfs-kafkaproducer-plugin</artifactId>
+                                    <version>1.0.0</version>
+                                    <type>zip</type>
+                                    <overWrite>true</overWrite>
+                                    <outputDirectory>${project.build.outputDirectory}/plugins/steps</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>com.pufferfishscheduler.plugin</groupId>
+                                    <artifactId>pfs-rabbitmqconsumer-plugin</artifactId>
+                                    <version>1.0.0</version>
+                                    <type>zip</type>
+                                    <overWrite>true</overWrite>
+                                    <outputDirectory>${project.build.outputDirectory}/plugins/steps</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>com.pufferfishscheduler.plugin</groupId>
+                                    <artifactId>pfs-rabbitmqproducer-plugin</artifactId>
+                                    <version>1.0.0</version>
+                                    <type>zip</type>
+                                    <overWrite>true</overWrite>
+                                    <outputDirectory>${project.build.outputDirectory}/plugins/steps</outputDirectory>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
                     <mainClass>com.pufferfishscheduler.worker.WorkerApplication</mainClass>
                     <!-- Java 17+：Dubbo 3.x 用 Javassist 生成 adaptive 类需打开 java.base，否则 MetricsReporterFactory 初始化失败 -->
-                    <jvmArguments>--add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.lang.reflect=ALL-UNNAMED --add-opens java.base/sun.net.www.protocol.jar=ALL-UNNAMED</jvmArguments>
+                    <jvmArguments>--add-opens java.base/java.lang=ALL-UNNAMED --add-opens
+                        java.base/java.lang.reflect=ALL-UNNAMED --add-opens
+                        java.base/sun.net.www.protocol.jar=ALL-UNNAMED
+                    </jvmArguments>
                 </configuration>
                 <executions>
                     <execution>

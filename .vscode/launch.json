@@ -31,7 +31,7 @@
             "request": "launch",
             "mainClass": "com.pufferfishscheduler.master.MasterApplication",
             "projectName": "pufferfishscheduler-master",
-            "vmArgs": "--add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.lang.reflect=ALL-UNNAMED"
+            "vmArgs": "--add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.lang.reflect=ALL-UNNAMED --add-opens java.base/sun.net.www.protocol.jar=ALL-UNNAMED"
         },
         {
             "type": "java",
@@ -39,7 +39,7 @@
             "request": "launch",
             "mainClass": "com.pufferfishscheduler.worker.WorkerApplication",
             "projectName": "pufferfishscheduler-worker",
-            "vmArgs": "--add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.lang.reflect=ALL-UNNAMED"
+            "vmArgs": "-Djava.net.preferIPv4Stack=true  -Dzookeeper.sasl.client=false  --add-opens java.base/java.lang=ALL-UNNAMED  --add-opens java.base/java.math=ALL-UNNAMED  --add-opens java.base/java.util=ALL-UNNAMED  --add-opens java.base/java.util.concurrent=ALL-UNNAMED  --add-opens java.base/java.net=ALL-UNNAMED  --add-opens java.base/java.text=ALL-UNNAMED  --add-opens java.base/java.sql=ALL-UNNAMED --add-opens java.base/sun.net.www.protocol.jar=ALL-UNNAMED"
         }
     ]
 }

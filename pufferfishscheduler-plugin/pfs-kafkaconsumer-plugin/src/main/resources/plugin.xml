@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin id="KafkaConsumerInput" type="Step">
+  <name>Kafka消费者组件</name>
+  <description>用于Kafka消费数据。</description>
+  <category>转换</category>
+  <classname>com.pufferfishscheduler.plugin.KafkaConsumerInputMeta</classname>
+  <image>kafka-input.svg</image>
+  <libraries>
+    <library name="lib/pfs-kafkaconsumer-plugin-1.0.0.jar"/>
+  </libraries>
+</plugin>
+
