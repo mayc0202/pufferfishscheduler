@@ -9,16 +9,16 @@ import com.pufferfishscheduler.dao.entity.TransFlow;
 import com.pufferfishscheduler.dao.entity.TransTask;
 import com.pufferfishscheduler.dao.mapper.TransFlowMapper;
 import com.pufferfishscheduler.dao.mapper.TransTaskMapper;
-import com.pufferfishscheduler.worker.task.trans.engine.DataTransEngine;
-import com.pufferfishscheduler.worker.task.trans.engine.TransWrapper;
-import com.pufferfishscheduler.worker.task.trans.engine.entity.TransParam;
-import com.pufferfishscheduler.worker.task.trans.engine.listener.KettleStepListener;
-import com.pufferfishscheduler.worker.task.trans.engine.listener.KettleStepRowListener;
-import com.pufferfishscheduler.worker.task.trans.engine.listener.KettleTransListener;
-import com.pufferfishscheduler.worker.task.trans.engine.logchannel.LogChannel;
-import com.pufferfishscheduler.worker.task.trans.engine.logchannel.LogChannelManager;
-import com.pufferfishscheduler.worker.task.trans.plugin.AbstractStepMetaConstructor;
-import com.pufferfishscheduler.worker.task.trans.plugin.StepMetaConstructorFactory;
+import com.pufferfishscheduler.trans.engine.DataTransEngine;
+import com.pufferfishscheduler.trans.engine.TransWrapper;
+import com.pufferfishscheduler.trans.engine.entity.TransParam;
+import com.pufferfishscheduler.trans.engine.listener.KettleStepListener;
+import com.pufferfishscheduler.trans.engine.listener.KettleStepRowListener;
+import com.pufferfishscheduler.trans.engine.listener.KettleTransListener;
+import com.pufferfishscheduler.trans.engine.logchannel.LogChannel;
+import com.pufferfishscheduler.trans.engine.logchannel.LogChannelManager;
+import com.pufferfishscheduler.trans.plugin.AbstractStepMetaConstructor;
+import com.pufferfishscheduler.trans.plugin.StepMetaConstructorFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -229,8 +229,8 @@ public class TransTaskExecutor {
                     transFlow,
                     taskId,
                     params,
-                    new KettleTransListener(listenerKey, dataTransEngine),
-                    new KettleStepListener(listenerKey, dataTransEngine),
+                    new KettleTransListener(listenerKey),
+                    new KettleStepListener(listenerKey),
                     new KettleStepRowListener(listenerKey));
 
             registerRunningTrans(taskId, trans.getInstanceId());
@@ -268,7 +268,7 @@ public class TransTaskExecutor {
             throw e;
         } finally {
             if (trans != null) {
-                dataTransEngine.removeTrans(trans.getInstanceId());
+                dataTransEngine.removeTrans(taskId);
             }
 
             logChannel.addLog(Constants.EXECUTE_STATUS.SUCCESS, "流程执行结束！");
@@ -446,21 +446,15 @@ public class TransTaskExecutor {
             return;
         }
 
-        String instanceId = RUNNING_TASK_TO_INSTANCE.get(taskId);
-        TransWrapper transWrapper = null;
-        if (StringUtils.isNotBlank(instanceId)) {
-            transWrapper = DataTransEngine.CACHE_TRANS_MAP.get(instanceId);
-        }
-        if (transWrapper == null) {
-            transWrapper = dataTransEngine.findRunningTransByTaskId(taskId);
-        }
-        if (transWrapper == null) {
+        boolean running = dataTransEngine.checkTransStatus(taskId) || RUNNING_TASK_TO_INSTANCE.containsKey(taskId);
+        if (!running) {
             log.info("未发现运行中的 Kettle 转换实例（可能尚未启动或已结束）, taskId={}", taskId);
             return;
         }
 
-        dataTransEngine.stop(transWrapper);
-        dataTransEngine.cleanRunningTransAndLog(transWrapper);
+        dataTransEngine.stopTrans(taskId);
+        dataTransEngine.removeTrans(taskId);
+        RUNNING_TASK_TO_INSTANCE.remove(taskId);
     }
 
     /**

@@ -49,6 +49,13 @@
             <version>1.0.0</version>
         </dependency>
 
+        <!-- Kettle 转换引擎与步骤构造器（共用） -->
+        <dependency>
+            <groupId>com.pufferfishscheduler.trans</groupId>
+            <artifactId>pufferfishscheduler-trans-core</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+
         <!-- springboot -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

@@ -5,7 +5,7 @@ import com.pufferfishscheduler.common.enums.DatabaseCategory;
 import com.pufferfishscheduler.common.exception.BusinessException;
 import com.pufferfishscheduler.common.node.Tree;
 import com.pufferfishscheduler.domain.vo.collect.FileVo;
-import com.pufferfishscheduler.master.common.config.file.FilePathConfig;
+import com.pufferfishscheduler.common.config.file.FilePathConfig;
 import com.pufferfishscheduler.master.collect.trans.plugin.service.FtpPluginService;
 import com.pufferfishscheduler.master.database.database.service.DbGroupService;
 import lombok.extern.slf4j.Slf4j;

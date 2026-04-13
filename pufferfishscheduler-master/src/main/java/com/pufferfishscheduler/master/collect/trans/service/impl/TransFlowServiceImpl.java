@@ -30,11 +30,11 @@ import com.pufferfishscheduler.domain.form.collect.TransFlowConfigForm;
 import com.pufferfishscheduler.domain.form.collect.TransFlowForm;
 import com.pufferfishscheduler.domain.vo.collect.TransFlowVo;
 import com.pufferfishscheduler.master.collect.group.service.TransGroupService;
-import com.pufferfishscheduler.master.collect.trans.engine.DataFlowRepository;
-import com.pufferfishscheduler.master.collect.trans.engine.DataTransEngine.ResourceType;
-import com.pufferfishscheduler.master.collect.trans.engine.entity.TransFlowConfig;
-import com.pufferfishscheduler.master.collect.trans.engine.logchannel.LogChannel;
-import com.pufferfishscheduler.master.collect.trans.engine.logchannel.LogChannelManager;
+import com.pufferfishscheduler.trans.engine.DataFlowRepository;
+import com.pufferfishscheduler.trans.engine.DataTransEngine.ResourceType;
+import com.pufferfishscheduler.trans.engine.entity.TransFlowConfig;
+import com.pufferfishscheduler.trans.engine.logchannel.LogChannel;
+import com.pufferfishscheduler.trans.engine.logchannel.LogChannelManager;
 import com.pufferfishscheduler.master.collect.trans.service.TransFlowService;
 
 import lombok.extern.slf4j.Slf4j;

@@ -46,4 +46,7 @@ public class Constants {
     public static final String READ_FAIL = "FTP上传组件读取失败！";
 
     public static final String[] FIELD_NAMES = new String[]{"源文件目录", "目标文件目录", "文件名", "文件类型", "文件大小"};
+
+    public static final String FILE_SEPARATOR = "/";
+    public static final String DIRECTORY_SIZE = "-";
 }

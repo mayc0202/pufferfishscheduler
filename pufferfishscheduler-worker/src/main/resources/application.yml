@@ -140,3 +140,10 @@ file:
     local: contfiles # 本地资源根路径，使用 项目运行目录下的相对路径，适配windows/linux/macOS
     input: contfiles/data/input # 输入文件路径
     output: contfiles/data/output # 输出文件路径
+
+# 插件配置
+plugin:
+  # master服务的API地址
+  apiUrl: http://localhost:8081/pufferfishscheduler/api
+  # 获取规则信息
+  getRuleInformation: /rule/getRuleInformation.do

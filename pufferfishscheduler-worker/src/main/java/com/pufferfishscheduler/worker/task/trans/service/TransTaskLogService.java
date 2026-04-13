@@ -1,6 +1,6 @@
 package com.pufferfishscheduler.worker.task.trans.service;
 
-import com.pufferfishscheduler.worker.task.trans.engine.entity.JobExecutingInfo;
+import com.pufferfishscheduler.trans.engine.entity.JobExecutingInfo;
 
 /**
  * <p>

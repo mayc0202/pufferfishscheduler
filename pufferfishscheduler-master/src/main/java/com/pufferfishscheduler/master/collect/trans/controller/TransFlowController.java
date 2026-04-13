@@ -17,9 +17,9 @@ import com.pufferfishscheduler.common.result.ApiResponse;
 import com.pufferfishscheduler.domain.form.collect.PreviewForm;
 import com.pufferfishscheduler.domain.form.collect.TransFlowConfigForm;
 import com.pufferfishscheduler.domain.form.collect.TransFlowForm;
-import com.pufferfishscheduler.master.collect.trans.engine.DataTransEngine.ResourceType;
-import com.pufferfishscheduler.master.collect.trans.engine.logchannel.LogChannel;
-import com.pufferfishscheduler.master.collect.trans.engine.logchannel.LogChannelManager;
+import com.pufferfishscheduler.trans.engine.DataTransEngine.ResourceType;
+import com.pufferfishscheduler.trans.engine.logchannel.LogChannel;
+import com.pufferfishscheduler.trans.engine.logchannel.LogChannelManager;
 import com.pufferfishscheduler.master.collect.trans.service.TransFlowService;
 import com.pufferfishscheduler.master.common.config.openapi.OpenApiTags;
 

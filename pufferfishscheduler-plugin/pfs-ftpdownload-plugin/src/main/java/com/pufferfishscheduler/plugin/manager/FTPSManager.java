@@ -750,6 +750,62 @@ public class FTPSManager {
         this.dataSoTimeout = dataSoTimeout;
     }
 
+    public String getHost() {
+        return host;
+    }
+
+    public String getControlEncoding() {
+        return controlEncoding;
+    }
+
+    public void setControlEncoding(String controlEncoding) {
+        this.controlEncoding = controlEncoding;
+    }
+
+    public String getMode() {
+        return mode;
+    }
+
+    public void setMode(String mode) {
+        this.mode = mode;
+    }
+
+    public int getPort() {
+        return port;
+    }
+
+    public String getUser() {
+        return user;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public boolean isBinaryMode() {
+        return binaryMode;
+    }
+
+    public void setBinaryMode(boolean binaryMode) {
+        this.binaryMode = binaryMode;
+    }
+
+    public int getTimeout() {
+        return timeout;
+    }
+
+    public void setTimeout(int timeout) {
+        this.timeout = timeout;
+    }
+
+    public int getBufferSize() {
+        return bufferSize;
+    }
+
+    public void setBufferSize(int bufferSize) {
+        this.bufferSize = bufferSize;
+    }
+
     public List<String> readFileList(String remoteDir) {
         List<String> list = new ArrayList<String>();
         try {

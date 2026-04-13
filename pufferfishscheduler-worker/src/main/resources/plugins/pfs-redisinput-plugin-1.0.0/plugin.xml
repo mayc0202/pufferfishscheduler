@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin id="RedisInput" type="Step">
+  <name>Redis输入</name>
+  <description>用于Redis输入数据。</description>
+  <category>转换</category>
+  <classname>com.pufferfishscheduler.plugin.RedisInputStepMeta</classname>
+  <image>redis-input.svg</image>
+  <libraries>
+    <library name="lib/pfs-redisinput-plugin-1.0.0.jar"/>
+  </libraries>
+</plugin>

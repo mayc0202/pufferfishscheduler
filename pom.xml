@@ -13,6 +13,7 @@
         <module>pufferfishscheduler-common</module>
         <module>pufferfishscheduler-domain</module>
         <module>pufferfishscheduler-dao</module>
+        <module>pufferfishscheduler-trans-core</module>
         <module>pufferfishscheduler-cdc</module>
         <module>pufferfishscheduler-master</module>
         <module>pufferfishscheduler-worker</module>

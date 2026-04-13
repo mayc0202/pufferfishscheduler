@@ -11,7 +11,7 @@ import com.pufferfishscheduler.dao.entity.DbDatabase;
 import com.pufferfishscheduler.domain.form.database.ResourceForm;
 import com.pufferfishscheduler.domain.vo.database.ResourceTreeVo;
 import com.pufferfishscheduler.domain.vo.database.ResourceVo;
-import com.pufferfishscheduler.master.common.config.file.FilePathConfig;
+import com.pufferfishscheduler.common.config.file.FilePathConfig;
 import com.pufferfishscheduler.master.database.database.service.DbDatabaseService;
 import com.pufferfishscheduler.master.common.dict.service.DictService;
 import com.pufferfishscheduler.master.database.connect.ftp.FTPManager;

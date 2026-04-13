@@ -3,8 +3,8 @@ package com.pufferfishscheduler.master.collect.trans.service;
 import com.pufferfishscheduler.dao.entity.TransFlow;
 import com.pufferfishscheduler.domain.form.collect.PreviewForm;
 import com.pufferfishscheduler.domain.vo.collect.PreviewVo;
-import com.pufferfishscheduler.master.collect.trans.engine.entity.TransParam;
-import com.pufferfishscheduler.master.collect.trans.engine.logchannel.LogChannel;
+import com.pufferfishscheduler.trans.engine.entity.TransParam;
+import com.pufferfishscheduler.trans.engine.logchannel.LogChannel;
 import org.pentaho.di.trans.TransMeta;
 
 import java.util.List;

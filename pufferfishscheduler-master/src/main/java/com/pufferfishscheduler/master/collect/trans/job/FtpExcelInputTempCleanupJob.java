@@ -1,6 +1,6 @@
 package com.pufferfishscheduler.master.collect.trans.job;
 
-import com.pufferfishscheduler.master.common.config.file.FilePathConfig;
+import com.pufferfishscheduler.common.config.file.FilePathConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
